@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import sys
 from datetime import datetime
-from typing import List, Any
+from typing import List, Any, Tuple
 
 from PyQt5.QtCore import Qt
 from chardet import detect
@@ -14,12 +14,13 @@ from qgis.PyQt.QtCore import QCoreApplication, NULL
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtSql import QSqlDatabase, QSqlQuery
 from qgis.PyQt.QtWidgets import QComboBox, QApplication, QProgressDialog, \
-    QMessageBox, QPushButton, QProgressBar, QTreeWidgetItem
+    QMessageBox, QPushButton, QProgressBar, QTreeWidgetItem, QDialog, QLabel
 from qgis.core import QgsProject, QgsVectorLayer, \
-    QgsRasterLayer, QgsApplication, Qgis, QgsMessageLog
+    QgsRasterLayer, QgsApplication, Qgis, QgsMessageLog, QgsMapLayerType
 from qgis.utils import iface
 
 project = QgsProject.instance()
+root = project.layerTreeRoot()
 
 plugin_name = 'PostGIS Toolbox'
 plugin_dir = os.path.dirname(__file__)
@@ -183,6 +184,17 @@ def open_other_files(filepath):
         subprocess.call(('xdg-open', filepath))
 
 
+def get_all_rasters_from_project():
+    rasters_dict = {}
+    all_layers = root.findLayers()
+    for layer in all_layers:
+        predict_layer = layer.layer()
+        if predict_layer.isValid() and \
+                predict_layer.type() == QgsMapLayerType.RasterLayer:
+            rasters_dict[predict_layer.name()] = predict_layer.source()
+    return rasters_dict
+
+
 def standarize_path(path):
     return os.path.normpath(os.sep.join(re.split(r'\\|/', path)))
 
@@ -211,7 +223,7 @@ def throw_log_message(mess):
     QgsMessageLog.logMessage(mess, tag="PostGIS Toolbox")
 
 
-def fill_item(item, value):
+def fill_item(item, value) -> None:
     def new_item(parent, text, val=None):
         child = QTreeWidgetItem([text])
         fill_item(child, val)
@@ -233,34 +245,51 @@ def fill_item(item, value):
 
 
 def get_all_tables_from_schema(db, schema_name) -> List:
-    all_tables_result = make_query(db, f'''
+    tables_list = make_query(db, f'''
         SELECT "table_name" 
         FROM information_schema.tables 
         WHERE table_schema = '{schema_name}' AND table_name NOT IN 
             ('_ogr_other_metadata', '_ogr_fields_metadata', 
             '_ogr_layers_metadata', '_ogr_layer_relationships');
     ''')
-    list_of_tables = list(zip(*all_tables_result))[
-        0] if all_tables_result else []
-    return list(list_of_tables)
+    return list(list(zip(*tables_list))[0]) if tables_list else []
 
 
-def get_schema_name_list_for_db(db: QSqlDatabase) -> List:
-    if not db:
-        return []
-    if not db.isOpen():
+def get_schema_name_list(db: QSqlDatabase, db_name: str = '',
+                         change_db: bool = True) -> Tuple[list, QSqlDatabase]:
+    if change_db:
+        db.setDatabaseName(db_name)
         db.open()
-    if not db.isOpen():
-        return []
-    schema_names_result = make_query(db, f'''
-        SELECT schema_name 
-        FROM information_schema.schemata
-        WHERE schema_name NOT IN 
-            ({','.join(f"'{name}'" for name in system_tables)});
-    ''')
-    list_to_cbbx = list(zip(*schema_names_result))[
-        0] if schema_names_result else []
-    return list(list_to_cbbx)
+    if db.isOpen() and db.isValid() and make_query(db, test_query):
+        schema_names_result = make_query(db, f'''
+            SELECT schema_name 
+            FROM information_schema.schemata
+            WHERE schema_name NOT IN 
+                ({','.join(f"'{name}'" for name in system_tables)});
+        ''')
+        list_to_cbbx = list(zip(*schema_names_result))[
+            0] if schema_names_result else []
+        return list(list_to_cbbx), db
+    else:
+        return [], db
+
+
+def get_active_db_info(db: QSqlDatabase, label: QLabel) -> bool:
+    if db and db.isOpen() and db.isValid():
+        db_hostname = db.hostName()
+        db_port = db.port()
+        db_database_name = db.databaseName()
+        label.setText(
+            f'Active database: <span style=" font-size:9pt; '
+            f'font-weight:600; color:#32CD32;">{db_hostname}:{db_port}, '
+            f'{db_database_name}</span>')
+        return True
+    else:
+        label.setText(
+            f'Active database: <span style=" font-size:9pt; '
+            f'font-weight:600; color:#aa0000;">Not connected.</span>')
+        return False
+
 
 
 class NewThreadAlg:
@@ -296,17 +325,19 @@ class NewThreadAlg:
 
 
 def create_pg_connecton(db_params: dict) -> QSqlDatabase:
-    con = QSqlDatabase.addDatabase('QPSQL', db_params['connection_name'])
-    con.setHostName(db_params['host'])
-    con.setDatabaseName(db_params['database'])
-    con.setPort(int(db_params['port']))
-    con.setUserName(db_params['username'])
-    con.setPassword(db_params['password'])
-    con.open()
-    return con
+    pg_connection = \
+        QSqlDatabase.addDatabase('QPSQL', db_params['connection_name'])
+    QApplication.processEvents()
+    pg_connection.setHostName(db_params['host'])
+    pg_connection.setDatabaseName(db_params['database'])
+    pg_connection.setPort(int(db_params['port']))
+    pg_connection.setUserName(db_params['username'])
+    pg_connection.setPassword(db_params['password'])
+    pg_connection.open()
+    return pg_connection
 
 
-def make_query(db: QSqlDatabase, query: str, schema_name: str = ''):
+def make_query(db: QSqlDatabase, query: str, schema_name: str = '') -> list:
     response = []
     if not db.isOpen():
         db.open()
@@ -325,7 +356,7 @@ def make_query(db: QSqlDatabase, query: str, schema_name: str = ''):
     return response
 
 
-def make_queries(sql_list, db, schema_name=''):
+def make_queries(sql_list, db, schema_name='') -> None:
     query = QSqlQuery(db)
     if db.driverName() == "QPSQL":
         query.exec_(f"SET search_path TO {schema_name},public;")

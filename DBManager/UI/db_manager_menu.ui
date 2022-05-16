@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>db_dialog</class>
  <widget class="QDialog" name="db_dialog">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="enabled">
    <bool>true</bool>
   </property>
@@ -10,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>400</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,7 +25,7 @@
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>400</height>
+    <height>550</height>
    </size>
   </property>
   <property name="font">
@@ -54,6 +57,12 @@
 }
 
 </string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>false</bool>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -131,7 +140,7 @@
          <number>0</number>
         </property>
         <property name="text">
-         <string>PostGIS database manager</string>
+         <string>PostGIS Database Manager</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -159,7 +168,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>Database connections</string>
+         <string>Server connections</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
@@ -267,11 +276,50 @@ p, li { white-space: pre-wrap; }
          <string>Database objects</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
-         <item row="2" column="0">
-          <layout class="QFormLayout" name="formLayout_2">
-           <item row="0" column="1">
+         <item row="3" column="0">
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="active_db_btn">
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Set as active</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
             <layout class="QGridLayout" name="gridLayout_7">
-             <item row="0" column="2">
+             <item row="0" column="3">
+              <widget class="QPushButton" name="add_obj_btn">
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="6">
+              <widget class="QPushButton" name="remove_obj_btn">
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Remove</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
               <widget class="QPushButton" name="edit_obj_btn">
                <property name="maximumSize">
                 <size>
@@ -285,32 +333,6 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QPushButton" name="add_obj_btn">
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Add</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QPushButton" name="remove_obj_btn">
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Remove</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
               <spacer name="horizontalSpacer_3">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -328,10 +350,39 @@ p, li { white-space: pre-wrap; }
              </item>
             </layout>
            </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="add_obj_btn_2">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Verify PostGIS</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
          <item row="1" column="0">
-          <widget class="QTreeWidget" name="db_obj_treeview"/>
+          <widget class="QTreeWidget" name="db_obj_treeview">
+           <property name="columnCount">
+            <number>1</number>
+           </property>
+           <column>
+            <property name="text">
+             <string>Databases</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="active_db_label">
+           <property name="text">
+            <string>Active database:</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -342,5 +393,22 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>connection_cbbx</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>db_obj_treeview</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>259</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

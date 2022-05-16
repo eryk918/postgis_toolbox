@@ -38,7 +38,8 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsApplication
 from qgis.utils import iface
 
-from .DBManager.db_manager import DBManager
+from .ImportRaster.ImportRaster import ImportRaster
+from .DBManager.DBManager import DBManager
 from .postgis_toolbox_provider import PostGISToolboxProvider
 from .utils import tr, plugin_dir
 
@@ -75,6 +76,7 @@ class PostGISToolboxPlugin(object):
         self.menu = tr('&PostGIS Toolbox')
         self.toolbar = self.iface.addToolBar('PostGIS Toolbox')
         self.toolbar.setObjectName('PostGIS Toolbox')
+        self.db = None
 
     def initProcessing(self):
         self.provider = PostGISToolboxProvider(self)
@@ -99,6 +101,12 @@ class PostGISToolboxPlugin(object):
             os.path.join(self.plugin_dir, 'icons/import_raster_layers.png'),
             text=tr('Import raster data'),
             callback=self.run_import_raster,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
+            os.path.join(self.plugin_dir, 'icons/history.png'),
+            text=tr('History'),
+            callback=self.run_history,
             parent=self.iface.mainWindow())
 
         self.add_action(
@@ -155,11 +163,15 @@ class PostGISToolboxPlugin(object):
         pass
 
     def run_import_raster(self) -> None:
-        pass
+        self.importRaster = ImportRaster(self)
+        self.importRaster.run()
 
     def run_db_config(self) -> None:
         self.dbManager = DBManager(self)
         self.dbManager.run()
 
     def run_settings(self) -> None:
+        pass
+
+    def run_history(self) -> None:
         pass
