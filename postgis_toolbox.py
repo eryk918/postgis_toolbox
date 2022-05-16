@@ -26,8 +26,6 @@ __author__ = 'Eryk Chełchowski'
 __date__ = '2022-05-12'
 __copyright__ = '(C) 2022 by Eryk Chełchowski'
 
-# This will get replaced with a git SHA1 when you do a git archive
-
 __revision__ = '$Format:%H$'
 
 import inspect
@@ -40,8 +38,9 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsApplication
 from qgis.utils import iface
 
-from .utils import tr
+from .DBManager.db_manager import DBManager
 from .postgis_toolbox_provider import PostGISToolboxProvider
+from .utils import tr, plugin_dir
 
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
@@ -55,7 +54,7 @@ class PostGISToolboxPlugin(object):
         self.iface = iface
         self.canvas = iface.mapCanvas()
         self.provider = None
-        self.plugin_dir = os.path.dirname(__file__)
+        self.plugin_dir = plugin_dir
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
             self.plugin_dir,
@@ -78,29 +77,34 @@ class PostGISToolboxPlugin(object):
         self.toolbar.setObjectName('PostGIS Toolbox')
 
     def initProcessing(self):
-        """Init Processing provider for QGIS >= 3.8."""
         self.provider = PostGISToolboxProvider(self)
         QgsApplication.processingRegistry().addProvider(self.provider)
 
     def initGui(self):
         self.initProcessing()
 
-        # icon_path = ':/plugins/postgis_toolbox/icon.png'
-        icon_path = ''
         self.add_action(
-            icon_path,
-            text=tr('PostGIS Toolbox'),
-            callback=self.run_menu,
+            os.path.join(self.plugin_dir, 'icons/manage_dbs.png'),
+            text=tr('Manage databases'),
+            callback=self.run_db_config,
             parent=self.iface.mainWindow())
 
-        # icon_path_settings = ':/plugins/postgis_toolbox/icon_settings.png'
-        icon_path_settings = ''
         self.add_action(
-            icon_path_settings,
+            os.path.join(self.plugin_dir, 'icons/import_vector_layer.png'),
+            text=tr('Import vector data'),
+            callback=self.run_import_vector,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
+            os.path.join(self.plugin_dir, 'icons/import_raster_layers.png'),
+            text=tr('Import raster data'),
+            callback=self.run_import_raster,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
+            os.path.join(self.plugin_dir, 'icons/settings.png'),
             text=tr(u'Settings'),
             callback=self.run_settings,
-            add_to_menu=True,
-            add_to_toolbar=False,
             parent=self.iface.mainWindow())
 
     def unload(self):
@@ -147,8 +151,15 @@ class PostGISToolboxPlugin(object):
 
         return action
 
-    def run_menu(self):
+    def run_import_vector(self) -> None:
         pass
 
-    def run_settings(self):
+    def run_import_raster(self) -> None:
+        pass
+
+    def run_db_config(self) -> None:
+        self.dbManager = DBManager(self)
+        self.dbManager.run()
+
+    def run_settings(self) -> None:
         pass

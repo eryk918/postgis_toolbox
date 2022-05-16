@@ -30,7 +30,6 @@ __copyright__ = '(C) 2022 by Eryk Chełchowski'
 
 __revision__ = '$Format:%H$'
 
-from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (QgsProcessing,
                        QgsFeatureSink,
                        QgsProcessingAlgorithm,
@@ -97,7 +96,9 @@ class PostGISToolboxRasterAlgorithm(QgsProcessingAlgorithm):
         # dictionary returned by the processAlgorithm function.
         source = self.parameterAsSource(parameters, self.INPUT, context)
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT,
-                context, source.fields(), source.wkbType(), source.sourceCrs())
+                                               context, source.fields(),
+                                               source.wkbType(),
+                                               source.sourceCrs())
 
         # Compute the number of steps to display within the progress bar and
         # get features from source

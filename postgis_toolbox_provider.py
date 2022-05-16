@@ -30,11 +30,16 @@ __copyright__ = '(C) 2022 by Eryk Chełchowski'
 
 __revision__ = '$Format:%H$'
 
+import os
+
+from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsProcessingProvider
 
-from .utils import tr
 from .postgis_toolbox_raster_algorithm import PostGISToolboxRasterAlgorithm
 from .postgis_toolbox_vector_algorithm import PostGISToolboxVectorAlgorithm
+from .utils import tr
+
+pluginPath = os.path.dirname(__file__)
 
 
 class PostGISToolboxProvider(QgsProcessingProvider):
@@ -80,11 +85,7 @@ class PostGISToolboxProvider(QgsProcessingProvider):
         return tr('PostGIS Spatial Functions')
 
     def icon(self):
-        """
-        Should return a QIcon which is used for your provider inside
-        the Processing toolbox.
-        """
-        return QgsProcessingProvider.icon(self)
+        return QIcon(os.path.join(pluginPath, 'icons', 'main.png'))
 
     def longName(self):
         """

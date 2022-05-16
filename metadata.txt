@@ -13,7 +13,7 @@ email=erwinek1998@gmail.com
 about=Plugin for QGIS implementing selected PostGIS spatial functions
 
 tracker=http://bugs
-repository=http://repo
+repository=https://github.com/eryk918/postgis_toolbox
 # End of mandatory metadata
 
 # Recommended items:
@@ -27,7 +27,7 @@ tags=processing, raster, database, postgis, postgres, spatial, schema
 
 homepage=http://homepage
 category=Analysis
-icon=icon.png
+icon=icons/main.png
 # experimental flag
 experimental=True
 
