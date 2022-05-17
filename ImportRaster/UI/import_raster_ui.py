@@ -31,7 +31,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
         if not self.raster_dict:
             self.close()
             QMessageBox.critical(
-                self.dlg, plugin_name,
+                self, plugin_name,
                 'No raster layers were detected in the project.',
                 QMessageBox.Ok)
         self.exec_()
