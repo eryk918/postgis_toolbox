@@ -8,7 +8,7 @@ from ..utils.raster_utils import raster_extensions, max_raster_untiled_size
 from ...utils import repair_dialog, main_plugin_icon, os, \
     QDialog, get_all_rasters_from_project, plugin_name, get_active_db_info, \
     get_schema_name_list, standarize_path, NewThreadAlg, tr, \
-    remove_unsupported_chars
+    remove_unsupported_chars, get_main_plugin_class
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_raster_ui.ui'))
@@ -40,8 +40,9 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
             self.get_raster_filesize)
         self.overview_combobox.addItems(OVERVIEW_LEVELS)
         self.overview_combobox.setCheckedItems(OVERVIEW_LEVELS)
+        self.change_conn_btn.clicked.connect(self.change_db)
 
-    def run_dialog(self) -> None:
+    def run_dialog(self, check: bool = True) -> None:
         self.show()
         if not self.raster_dict:
             self.close()
@@ -51,16 +52,19 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
                 QMessageBox.Ok)
         self.tablename_lineedit.setText(
             list(self.raster_dict.keys())[0].lower())
-        self.get_raster_filesize(self.raster_layer_cbbx.currentText())
+        if check:
+            self.get_raster_filesize(self.raster_layer_cbbx.currentText())
         self.exec_()
 
     def manage_rasters(self) -> None:
+        self.raster_layer_cbbx.clear()
         self.raster_dict = get_all_rasters_from_project()
         if not self.raster_dict:
             return
         self.raster_layer_cbbx.addItems(list(self.raster_dict.keys()))
 
     def get_schemas(self) -> None:
+        self.schema_cbbx.clear()
         schemas_list, _ = get_schema_name_list(
             self.importRaster.db, change_db=False)
         if schemas_list:
@@ -85,7 +89,22 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
             self.tiling_groupbox.clicked.connect(
                 lambda: self.tiling_groupbox.setChecked(True))
         else:
-            self.tiling_groupbox.disconnect()
+            try:
+                self.tiling_groupbox.disconnect()
+            except TypeError:
+                pass
+
+    def change_db(self):
+        get_main_plugin_class().run_db_config()
+        self.importRaster.db = get_main_plugin_class().db
+        self.close()
+        self.manage_rasters()
+        con_status = \
+            get_active_db_info(self.importRaster.db, self.active_db_label)
+        if con_status:
+            self.get_schemas()
+        self.set_object_visibility(con_status)
+        self.run_dialog(False)
 
     def select_raster_file(self) -> None:
         filepath, __ = QFileDialog.getOpenFileName(

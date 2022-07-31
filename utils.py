@@ -9,6 +9,7 @@ import sys
 from datetime import datetime
 from typing import List, Tuple, Any, Dict
 
+import qgis
 from PyQt5.QtCore import Qt
 from chardet import detect
 from qgis.PyQt.QtCore import QCoreApplication, NULL
@@ -30,6 +31,7 @@ root = project.layerTreeRoot()
 
 plugin_name = 'PostGIS Toolbox'
 plugin_dir = os.path.dirname(__file__)
+plugin_dir_name = 'postgis_toolbox'
 main_plugin_icon = QIcon(os.path.join(plugin_dir, 'icons', 'main.png'))
 
 connection_key_names = [
@@ -246,6 +248,10 @@ def get_all_rasters_from_project() -> Dict[str, str]:
 
 def standarize_path(path: str) -> str:
     return os.path.normpath(os.sep.join(re.split(r'\\|/', path)))
+
+
+def get_main_plugin_class() -> object:
+    return qgis.utils.plugins[plugin_dir_name]
 
 
 def repair_encoding(tmp_dir: str, infile: str) -> None:
