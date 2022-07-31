@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-
 from qgis.PyQt import uic
+from qgis.PyQt.QtWidgets import QDialog
 
-from ...utils import repair_comboboxes, main_plugin_icon, fill_item, \
+from ...utils import repair_dialog, main_plugin_icon, fill_item, \
     get_all_tables_from_schema, make_query, \
     get_schema_name_list, unpack_nested_lists, create_progress_bar, Qt, os, \
-    QDialog, QApplication, get_active_db_info
+    QApplication, get_active_db_info
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'db_manager_menu.ui'))
@@ -16,7 +16,7 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         super(DBManagerMenu_UI, self).__init__(parent)
         self.setupUi(self)
         self.dbManager = dbManager
-        repair_comboboxes(self)
+        repair_dialog(self)
         self.setWindowIcon(main_plugin_icon)
         self.setWindowFlags(Qt.Window)
         self.setWindowModality(Qt.NonModal)
@@ -69,5 +69,3 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         model.setHeaderData(0, 1, 'Databases')
         progress_bar.close()
         return db_dict
-
-

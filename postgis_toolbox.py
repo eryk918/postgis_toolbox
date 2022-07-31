@@ -34,14 +34,15 @@ import sys
 
 from qgis.PyQt.QtCore import QSettings, QCoreApplication, qVersion, QTranslator
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QLabel
 from qgis.core import QgsApplication
 from qgis.utils import iface
 
-from .ImportRaster.ImportRaster import ImportRaster
 from .DBManager.DBManager import DBManager
+from .ImportRaster.ImportRaster import ImportRaster
 from .postgis_toolbox_provider import PostGISToolboxProvider
-from .utils import tr, plugin_dir
+from .utils import tr, plugin_dir, get_active_db_info, create_pg_connecton, \
+    plugin_name
 
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
@@ -73,10 +74,18 @@ class PostGISToolboxPlugin(object):
         # self.dlg_settings
 
         self.actions = []
-        self.menu = tr('&PostGIS Toolbox')
-        self.toolbar = self.iface.addToolBar('PostGIS Toolbox')
-        self.toolbar.setObjectName('PostGIS Toolbox')
+        self.menu = tr(f'&{plugin_name}')
+        self.toolbar = self.iface.addToolBar(plugin_name)
+        self.toolbar.setObjectName(plugin_name)
         self.db = None
+        self.create_test_db()
+
+    def create_test_db(self):
+        self.db = create_pg_connecton(
+            {'authcfg': '', 'database': 'test_postgis', 'host': 'localhost',
+             'password': '4ZcVABhMHJEtytL8', 'port': '5432', 'service': '',
+             'sslmode': 'SslAllow', 'username': 'admin_rpo',
+             'connection_name': 'bdot'})
 
     def initProcessing(self):
         self.provider = PostGISToolboxProvider(self)
@@ -115,6 +124,8 @@ class PostGISToolboxPlugin(object):
             callback=self.run_settings,
             parent=self.iface.mainWindow())
 
+        self.connection_label = self.add_action(label=True)
+
     def unload(self):
         QgsApplication.processingRegistry().removeProvider(self.provider)
         for action in self.actions:
@@ -126,34 +137,40 @@ class PostGISToolboxPlugin(object):
 
     def add_action(
             self,
-            icon_path,
-            text,
-            callback,
-            enabled_flag=True,
-            add_to_menu=True,
-            add_to_toolbar=True,
+            icon_path=None,
+            text=None,
+            callback=None,
+            enabled_flag: bool = True,
+            add_to_menu: bool = True,
+            add_to_toolbar: bool = True,
             status_tip=None,
             whats_this=None,
-            parent=None):
+            parent=None,
+            label: bool = False):
+        if not label:
+            icon = QIcon(icon_path)
+            action = QAction(icon, text, parent)
+            action.triggered.connect(callback)
+            action.setEnabled(enabled_flag)
 
-        icon = QIcon(icon_path)
-        action = QAction(icon, text, parent)
-        action.triggered.connect(callback)
-        action.setEnabled(enabled_flag)
+            if status_tip is not None:
+                action.setStatusTip(status_tip)
 
-        if status_tip is not None:
-            action.setStatusTip(status_tip)
+            if whats_this is not None:
+                action.setWhatsThis(whats_this)
 
-        if whats_this is not None:
-            action.setWhatsThis(whats_this)
+            if add_to_toolbar:
+                self.toolbar.addAction(action)
 
-        if add_to_toolbar:
-            self.toolbar.addAction(action)
-
-        if add_to_menu:
-            self.iface.addPluginToDatabaseMenu(
-                self.menu,
-                action)
+            if add_to_menu:
+                self.iface.addPluginToDatabaseMenu(self.menu, action)
+        else:
+            dummy_label = QLabel()
+            get_active_db_info(self.db, dummy_label, True)
+            action = QAction(QIcon(), dummy_label.text(), parent)
+            action.setEnabled(False)
+            if add_to_toolbar:
+                self.toolbar.addAction(action)
 
         self.actions.append(action)
 

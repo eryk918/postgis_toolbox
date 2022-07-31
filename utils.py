@@ -1,22 +1,28 @@
 # -*- coding: utf-8 -*-
 
 import os
+import os.path
 import re
 import shutil
 import subprocess
 import sys
 from datetime import datetime
-from typing import List, Any, Tuple
+from typing import List, Tuple, Any, Dict
 
 from PyQt5.QtCore import Qt
 from chardet import detect
 from qgis.PyQt.QtCore import QCoreApplication, NULL
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtSql import QSqlDatabase, QSqlQuery
-from qgis.PyQt.QtWidgets import QComboBox, QApplication, QProgressDialog, \
-    QMessageBox, QPushButton, QProgressBar, QTreeWidgetItem, QDialog, QLabel
+from qgis.PyQt.QtSql import QSqlDatabase
+from qgis.PyQt.QtSql import QSqlQuery
+from qgis.PyQt.QtWidgets import QComboBox, QProgressBar, QTreeWidgetItem, \
+    QDialog, QLineEdit, QRadioButton, QToolButton, QCheckBox, QFrame, QGroupBox
+from qgis.PyQt.QtWidgets import QProgressDialog, QPushButton, QMessageBox, \
+    QApplication, QLabel
+from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, \
+    QgsProviderRegistry
 from qgis.core import QgsProject, QgsVectorLayer, \
-    QgsRasterLayer, QgsApplication, Qgis, QgsMessageLog, QgsMapLayerType
+    QgsRasterLayer, QgsApplication, QgsMapLayerType
 from qgis.utils import iface
 
 project = QgsProject.instance()
@@ -36,6 +42,11 @@ system_tables = ['pg_catalog', 'pg_toast_temp_1', 'pg_temp_1', 'pg_toast',
 
 test_query = 'SELECT version();'
 
+PG_unsupported_chars = '"&<>)¡/\-{}[]\':>?</*~-,!@#$`%^&*()¢ł¤¥¦§¨©ª«¬­' \
+                       '®¯°±²ł´µ¶·¸ąº»¼½¾żàáâãäåæçèąćęłńóśźżéęëìíîïðńòóôõö×ø' \
+                       'ùúûüýþßàáâãäåæçèéęëìíîïðńòóôõö÷øùúûüýþÿœœššÿˆ˜–—‘’‚“' \
+                       '”„†‡‰‹›€™+=|;.'
+
 
 def tr(string):
     return QCoreApplication.translate('Processing', string)
@@ -52,8 +63,13 @@ class CreateTemporaryLayer(QgsVectorLayer):
         self.updateFields()
 
 
-def repair_comboboxes(dlg):
+def repair_dialog(dlg: QDialog):
+    obj_types = [QLabel, QLineEdit, QRadioButton, QToolButton, QCheckBox,
+                 QGroupBox, QFrame]
     dialog_obj_list = [dlg.__getattribute__(obj) for obj in dlg.__dir__()]
+    objs_to_repair = [elem for obj_list in
+                      [dlg.findChildren(obj) for obj in obj_types]
+                      for elem in obj_list]
     combo_list = list(
         filter(lambda elem: isinstance(elem, QComboBox), dialog_obj_list))
     if not combo_list:
@@ -67,6 +83,12 @@ def repair_comboboxes(dlg):
         combo.setMaxVisibleItems(10)
         combo.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         combo.setEditable(temp_value)
+    for dlg_obj in objs_to_repair:
+        if dlg_obj.objectName() != 'title_frame':
+            dlg_obj.setStyleSheet(
+                dlg_obj.styleSheet() +
+                ''' QLabel, QLineEdit, QRadioButton, QToolButton, 
+                QFrame, QCheckBox, QGroupBox{background-color: 0;}''')
 
 
 def get_project_settings(parameter, key, default=''):
@@ -77,8 +99,8 @@ def set_project_settings(parameter, key, value):
     return project.writeEntry(parameter, key, value)
 
 
-def create_progress_bar(max_len, title='Please wait',
-                        txt='Data is being processed...', start_val=0,
+def create_progress_bar(max_len, title=tr('Please wait'),
+                        txt=tr('Data is being processed...'), start_val=0,
                         auto_close=True, cancel_btn=None, silent=False):
     progress_bar = QProgressDialog()
     progress_bar.setFixedWidth(500)
@@ -133,14 +155,18 @@ def add_layer_into_map(layer, group_name, parent_name=None, position=0):
         group.setExpanded(False)
 
 
-def add_rasters_to_project(group_name, list_of_rasters, symbology=None):
+def add_rasters_to_project(group_name: str,
+                           list_of_rasters: List[str or QgsRasterLayer],
+                           symbology: str = None,
+                           postgis_raster: bool = False) -> None:
     QApplication.processEvents()
     group_import = project.layerTreeRoot().findGroup(group_name)
     if not group_import:
         project.layerTreeRoot().addGroup(group_name)
-    for raster_path in list_of_rasters:
+    for raster in list_of_rasters:
         QApplication.processEvents()
-        rlayer = QgsRasterLayer(raster_path, os.path.basename(raster_path))
+        rlayer = raster if postgis_raster \
+            else QgsRasterLayer(raster, os.path.basename(raster))
         add_layer_into_map(rlayer, group_name)
         if symbology:
             rlayer.loadNamedStyle(symbology)
@@ -148,18 +174,40 @@ def add_rasters_to_project(group_name, list_of_rasters, symbology=None):
             iface.layerTreeView().refreshLayerSymbology(rlayer.id())
 
 
-def add_vectors_to_project(group_name, list_of_vectors, symbology=None):
+def create_postgis_raster_layer(db: QSqlDatabase, schema_name: str,
+                                table_name: str, raster_name: str,
+                                rast_column: str = 'rast') -> QgsRasterLayer:
+    uri_config = {
+        'dbname': db.databaseName(),
+        'host': db.hostName(),
+        'port': db.port(),
+        'sslmode': QgsDataSourceUri.SslDisable,
+        'authcfg': 'QconfigId',
+        'username': db.userName(),
+        'password': db.password(),
+        'schema': schema_name,
+        'table': table_name,
+        'geometrycolumn': rast_column,
+        'estimatedmetadata': 'False',
+        'mode': '2',
+    }
+    meta = QgsProviderRegistry.instance().providerMetadata('postgresraster')
+    uri = QgsDataSourceUri(meta.encodeUri(uri_config))
+    return QgsRasterLayer(uri.uri(False), raster_name, "postgresraster")
+
+
+def add_vectors_to_project(group_name: str,
+                           list_of_vectors: List[str or QgsVectorLayer],
+                           symbology: str = None) -> None:
     QApplication.processEvents()
     group_import = project.layerTreeRoot().findGroup(group_name)
     if not group_import:
         project.layerTreeRoot().addGroup(group_name)
     for vector_path in list_of_vectors:
         QApplication.processEvents()
-        if isinstance(vector_path, QgsVectorLayer):
-            vlayer = vector_path
-        else:
-            vlayer = QgsVectorLayer(vector_path, os.path.basename(vector_path),
-                                    "ogr")
+        vlayer = vector_path if isinstance(vector_path, QgsVectorLayer) \
+            else QgsVectorLayer(vector_path, os.path.basename(vector_path),
+                                "ogr")
         add_layer_into_map(vlayer, group_name)
         if symbology:
             vlayer.loadNamedStyle(symbology)
@@ -167,7 +215,7 @@ def add_vectors_to_project(group_name, list_of_vectors, symbology=None):
             iface.layerTreeView().refreshLayerSymbology(vlayer.id())
 
 
-def open_other_files(filepath):
+def open_other_files(filepath: str) -> None:
     if sys.platform.startswith('darwin'):
         subprocess.call(('open', filepath))
     elif os.name == 'nt':
@@ -176,7 +224,7 @@ def open_other_files(filepath):
         except WindowsError:
             ext = os.path.splitext(filepath)[-1]
             QMessageBox.critical(
-                None, 'PostGIS Toolbox',
+                None, plugin_name,
                 f'''Error opening a file with the file extension *.{ext}.''',
                 QMessageBox.Ok)
             return
@@ -184,22 +232,23 @@ def open_other_files(filepath):
         subprocess.call(('xdg-open', filepath))
 
 
-def get_all_rasters_from_project():
+def get_all_rasters_from_project() -> Dict[str, str]:
     rasters_dict = {}
     all_layers = root.findLayers()
     for layer in all_layers:
         predict_layer = layer.layer()
         if predict_layer.isValid() and \
-                predict_layer.type() == QgsMapLayerType.RasterLayer:
+                predict_layer.type() == QgsMapLayerType.RasterLayer and \
+                'postgres' not in predict_layer.dataProvider().name():
             rasters_dict[predict_layer.name()] = predict_layer.source()
     return rasters_dict
 
 
-def standarize_path(path):
+def standarize_path(path: str) -> str:
     return os.path.normpath(os.sep.join(re.split(r'\\|/', path)))
 
 
-def repair_encoding(tmp_dir, infile):
+def repair_encoding(tmp_dir: str, infile: str) -> None:
     tmp_file = os.path.join(
         tmp_dir,
         f"{datetime.now().strftime('%H_%M_%S_%f')[:-3]}.{os.path.splitext(infile)[-1]}"
@@ -215,12 +264,25 @@ def repair_encoding(tmp_dir, infile):
         output_file.write(text)
 
 
-def repair_path_for_exec(string):
+def repair_path_for_exec(string: str) -> str:
     return string.replace('\\', '\\\\')
 
 
-def throw_log_message(mess):
-    QgsMessageLog.logMessage(mess, tag="PostGIS Toolbox")
+def remove_unsupported_chars(input_str: str) -> str:
+    temp_str = input_str
+    for char in [char for char in PG_unsupported_chars]:
+        temp_str = temp_str.replace(char, '')
+    return temp_str
+
+
+def throw_log_message(mess: str) -> None:
+    QgsMessageLog.logMessage(mess, tag=plugin_name)
+
+
+def clean_after_analysis(base_class) -> None:
+    QApplication.processEvents()
+    if hasattr(base_class, 'temp_dir'):
+        shutil.rmtree(base_class.temp_dir, ignore_errors=True)
 
 
 def fill_item(item, value) -> None:
@@ -244,7 +306,7 @@ def fill_item(item, value) -> None:
         new_item(item, str(value))
 
 
-def get_all_tables_from_schema(db, schema_name) -> List:
+def get_all_tables_from_schema(db: QSqlDatabase, schema_name: str) -> List:
     tables_list = make_query(db, f'''
         SELECT "table_name" 
         FROM information_schema.tables 
@@ -274,54 +336,30 @@ def get_schema_name_list(db: QSqlDatabase, db_name: str = '',
         return [], db
 
 
-def get_active_db_info(db: QSqlDatabase, label: QLabel) -> bool:
+def get_active_db_info(db: QSqlDatabase, label: QLabel,
+                       simple: bool = False) -> bool:
     if db and db.isOpen() and db.isValid():
         db_hostname = db.hostName()
         db_port = db.port()
         db_database_name = db.databaseName()
-        label.setText(
-            f'Active database: <span style=" font-size:9pt; '
-            f'font-weight:600; color:#32CD32;">{db_hostname}:{db_port}, '
-            f'{db_database_name}</span>')
+        if simple:
+            label.setText(
+                f'Active database: {db_hostname}:{db_port}, '
+                f'{db_database_name}')
+        else:
+            label.setText(
+                f'Active database: <span style=" font-size:9pt; '
+                f'font-weight:600; color:#32CD32;">{db_hostname}:{db_port}, '
+                f'{db_database_name}</span>')
         return True
     else:
-        label.setText(
-            f'Active database: <span style=" font-size:9pt; '
-            f'font-weight:600; color:#aa0000;">Not connected.</span>')
+        if simple:
+            label.setText(f'Active database: Not connected.')
+        else:
+            label.setText(
+                f'Active database: <span style=" font-size:9pt; '
+                f'font-weight:600; color:#aa0000;">Not connected.</span>')
         return False
-
-
-
-class NewThreadAlg:
-    def __init__(self, info_dict, func_to_run, progress=False):
-        self.info_dict = info_dict
-        self.func_to_run = func_to_run
-        self.progress = progress
-
-    def start(self):
-        self.msg = iface.messageBar().createMessage(
-            self.info_dict['plugin_name'], self.info_dict['alg_name'])
-        self.prog = QProgressBar(self.msg)
-        if not self.progress:
-            self.prog.setMaximum(0)
-        self.btn_cancel = QPushButton(self.msg)
-        self.btn_cancel.setText('Cancel')
-        self.btn_cancel.clicked.connect(self.cancel)
-        self.msg.layout().addWidget(self.prog)
-        self.msg.layout().addWidget(self.btn_cancel)
-        self.task = self.func_to_run
-        self.task.begun.connect(
-            lambda: iface.messageBar().pushWidget(self.msg, Qgis.Info))
-        self.task.progressChanged.connect(
-            lambda: self.prog.setValue(self.task.progress()))
-        self.task.taskCompleted.connect(
-            lambda: iface.messageBar().popWidget(self.msg))
-        self.task.taskTerminated.connect(
-            lambda: iface.messageBar().popWidget(self.msg))
-        QgsApplication.taskManager().addTask(self.task)
-
-    def cancel(self):
-        self.task.cancel()
 
 
 def create_pg_connecton(db_params: dict) -> QSqlDatabase:
@@ -337,14 +375,20 @@ def create_pg_connecton(db_params: dict) -> QSqlDatabase:
     return pg_connection
 
 
-def make_query(db: QSqlDatabase, query: str, schema_name: str = '') -> list:
+def make_query(db: QSqlDatabase, query: str, schema_name: str = '',
+               prepare: Any = None, postgis_raster: bool = False) -> list:
     response = []
     if not db.isOpen():
         db.open()
     query_obj = QSqlQuery(db)
     if schema_name:
         query_obj.exec_(f'SET search_path TO "{schema_name}",public;')
-    request = query_obj.exec_(query)
+    if postgis_raster:
+        query_obj.exec_('''SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';''')
+    if prepare is not None:
+        query_obj.prepare(query)
+        query_obj.addBindValue(prepare)
+    request = query_obj.exec_(query) if prepare is None else query_obj.exec()
     if request:
         object_amount = query_obj.record().count()
         while query_obj.next():
@@ -353,18 +397,75 @@ def make_query(db: QSqlDatabase, query: str, schema_name: str = '') -> list:
                 val = query_obj.value(object_id)
                 row.append(None if val == NULL else val)
             response.append(row)
+    else:
+        response = [query_obj.lastError().databaseText()]
     return response
 
 
-def make_queries(sql_list, db, schema_name='') -> None:
+def make_queries(sql_list: List[str] or List[str, Any], db: QSqlDatabase,
+                 schema_name: str = '', postgis_raster: bool = False,
+                 prepare: bool = False, base_class=None,
+                 percent_amount: int = None) -> bool:
     query = QSqlQuery(db)
     if db.driverName() == "QPSQL":
         query.exec_(f"SET search_path TO {schema_name},public;")
     query.exec_('BEGIN;')
+    if postgis_raster:
+        query.exec_('''SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';''')
     for exp in sql_list:
-        query.exec_(exp)
+        if prepare:
+            query.prepare(exp[0])
+            query.addBindValue((exp[1]))
+            query.exec()
+        else:
+            query.exec_(exp)
+        if base_class and hasattr(base_class, 'cancel_detection'):
+            if base_class.cancel_detection():
+                return False
+        if base_class and hasattr(base_class, 'last_progress_value'):
+            base_class.last_progress_value = \
+                change_alg_progress(base_class, base_class.last_progress_value,
+                                    percent_amount / len(sql_list))
+
     query.exec_('COMMIT;')
+    return True
 
 
 def unpack_nested_lists(n_list: List[List[Any]]) -> List[Any]:
     return [elem for nested_list in n_list for elem in nested_list]
+
+
+class NewThreadAlg:
+    def __init__(self, info_dict, func_to_run, progress=False):
+        self.info_dict = info_dict
+        self.func_to_run = func_to_run
+        self.progress = progress
+
+    def start(self) -> None:
+        self.msg = iface.messageBar().createMessage(
+            self.info_dict['plugin_name'], self.info_dict['alg_name'])
+        self.prog = QProgressBar(self.msg)
+        if not self.progress:
+            self.prog.setMaximum(0)
+        self.btn_cancel = QPushButton(self.msg)
+        self.btn_cancel.setText(tr('Cancel'))
+        self.btn_cancel.clicked.connect(self.cancel)
+        self.msg.layout().addWidget(self.prog)
+        self.msg.layout().addWidget(self.btn_cancel)
+        self.task = self.func_to_run
+        self.task.begun.connect(
+            lambda: iface.messageBar().pushWidget(self.msg, Qgis.Info))
+        self.task.progressChanged.connect(
+            lambda: self.prog.setValue(self.task.progress()))
+        self.task.taskCompleted.connect(lambda: self.task_ended_info())
+        self.task.taskTerminated.connect(lambda: self.task_ended_info(False))
+        QgsApplication.taskManager().addTask(self.task)
+
+    def task_ended_info(self, successfully: bool = True) -> None:
+        iface.messageBar().clearWidgets()
+        self.task.finished(True) if successfully \
+            else self.task.finished('canceled')
+        del self.task
+
+    def cancel(self) -> None:
+        self.task.cancel()

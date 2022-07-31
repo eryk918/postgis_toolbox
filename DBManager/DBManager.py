@@ -89,6 +89,8 @@ class DBManager:
                         self.main.db = self.db
                         get_active_db_info(
                             self.main.db, self.dlg.active_db_label)
+                        get_active_db_info(
+                            self.main.db, self.main.connection_label, True)
                     else:
                         QMessageBox.critical(
                             self.dlg, plugin_name,
