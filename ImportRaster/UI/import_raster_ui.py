@@ -23,7 +23,6 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
         self.setupUi(self)
         self.importRaster = importRaster
         repair_dialog(self)
-        self.setWindowIcon(main_plugin_icon)
 
     def setup_dialog(self) -> None:
         self.manage_rasters()
@@ -50,6 +49,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
                 self, plugin_name,
                 'No raster layers were detected in the project.',
                 QMessageBox.Ok)
+            return
         self.tablename_lineedit.setText(
             list(self.raster_dict.keys())[0].lower())
         if check:
@@ -108,7 +108,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
 
     def select_raster_file(self) -> None:
         filepath, __ = QFileDialog.getOpenFileName(
-            self, tr("Select a raster file:"),
+            self, tr("Select a raster file: "),
             "", ' '.join([f'*.{ext}' for ext in raster_extensions]))
         filepath = standarize_path(filepath)
         if filepath and filepath != '.':

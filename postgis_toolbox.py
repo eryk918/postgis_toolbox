@@ -39,6 +39,7 @@ from qgis.core import QgsApplication
 from qgis.utils import iface
 
 from .DBManager.DBManager import DBManager
+from .ImportVector.ImportVector import ImportVector
 from .ImportRaster.ImportRaster import ImportRaster
 from .postgis_toolbox_provider import PostGISToolboxProvider
 from .utils import tr, plugin_dir, get_active_db_info, create_pg_connecton, \
@@ -177,15 +178,16 @@ class PostGISToolboxPlugin(object):
         return action
 
     def run_import_vector(self) -> None:
-        pass
+        self.import_vector = ImportVector(self)
+        self.import_vector.run()
 
     def run_import_raster(self) -> None:
-        self.importRaster = ImportRaster(self)
-        self.importRaster.run()
+        self.import_raster = ImportRaster(self)
+        self.import_raster.run()
 
     def run_db_config(self) -> None:
-        self.dbManager = DBManager(self)
-        self.dbManager.run()
+        self.db_manager = DBManager(self)
+        self.db_manager.run()
 
     def run_settings(self) -> None:
         pass

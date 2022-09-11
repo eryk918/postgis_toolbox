@@ -17,7 +17,6 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         self.setupUi(self)
         self.dbManager = dbManager
         repair_dialog(self)
-        self.setWindowIcon(main_plugin_icon)
         self.setWindowFlags(Qt.Window)
         self.setWindowModality(Qt.NonModal)
 

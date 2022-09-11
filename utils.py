@@ -47,7 +47,7 @@ test_query = 'SELECT version();'
 PG_unsupported_chars = '"&<>)¡/\-{}[]\':>?</*~-,!@#$`%^&*()¢ł¤¥¦§¨©ª«¬­' \
                        '®¯°±²ł´µ¶·¸ąº»¼½¾żàáâãäåæçèąćęłńóśźżéęëìíîïðńòóôõö×ø' \
                        'ùúûüýþßàáâãäåæçèéęëìíîïðńòóôõö÷øùúûüýþÿœœššÿˆ˜–—‘’‚“' \
-                       '”„†‡‰‹›€™+=|;.'
+                       '”„†‡‰‹›€™+=|;. '
 
 
 def tr(string):
@@ -91,13 +91,14 @@ def repair_dialog(dlg: QDialog):
                 dlg_obj.styleSheet() +
                 ''' QLabel, QLineEdit, QRadioButton, QToolButton, 
                 QFrame, QCheckBox, QGroupBox{background-color: 0;}''')
+    dlg.setWindowIcon(main_plugin_icon)
 
 
-def get_project_settings(parameter, key, default=''):
+def get_project_setting(parameter, key, default=''):
     return project.readEntry(parameter, key, default)[0]
 
 
-def set_project_settings(parameter, key, value):
+def set_project_setting(parameter, key, value):
     return project.writeEntry(parameter, key, value)
 
 
@@ -198,6 +199,26 @@ def create_postgis_raster_layer(db: QSqlDatabase, schema_name: str,
     return QgsRasterLayer(uri.uri(False), raster_name, "postgresraster")
 
 
+def create_postgis_vector_layer(
+        db, schema_name, table_name,
+        geom_col=None, layer_name='', ignore_validation=False):
+    uri = QgsDataSourceUri()
+    uri.setConnection(db.hostName(), str(db.port()), db.databaseName(),
+                      db.userName(), db.password())
+    if geom_col:
+        uri.setDataSource(schema_name, table_name, geom_col)
+    else:
+        uri.setSchema(schema_name)
+        uri.setTable(table_name)
+
+    vlayer = QgsVectorLayer(uri.uri(), layer_name or table_name, "postgres")
+    if ignore_validation:
+        if vlayer.isValid():
+            return vlayer
+    else:
+        return vlayer
+
+
 def add_vectors_to_project(group_name: str,
                            list_of_vectors: List[str or QgsVectorLayer],
                            symbology: str = None) -> None:
@@ -244,6 +265,19 @@ def get_all_rasters_from_project() -> Dict[str, str]:
                 'postgres' not in predict_layer.dataProvider().name():
             rasters_dict[predict_layer.name()] = predict_layer.source()
     return rasters_dict
+
+
+def get_all_vectors_from_project() -> Dict[str, Tuple[str, int]]:
+    vectors_dict = {}
+    all_layers = root.findLayers()
+    for layer in all_layers:
+        predict_layer = layer.layer()
+        if predict_layer.isValid() and \
+                predict_layer.type() == QgsMapLayerType.VectorLayer and \
+                'postgres' not in predict_layer.dataProvider().name():
+            vectors_dict[predict_layer.name()] = \
+                (predict_layer.source(), predict_layer.wkbType())
+    return vectors_dict
 
 
 def standarize_path(path: str) -> str:
