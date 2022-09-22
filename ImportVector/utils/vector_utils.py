@@ -4,12 +4,17 @@ from qgis.core import QgsWkbTypes
 vector_extensions = [
     'shp',
     'gpkg',
-    'dbf'
+    'dbf',
+    'xml'
+]
+
+simple_vector_extensions = [
+    'shp',
+    'dbf',
 ]
 
 none_geometry_types = (
     QgsWkbTypes.Unknown,
-    QgsWkbTypes.UnknownGeometry,
     QgsWkbTypes.NoGeometry,
     QgsWkbTypes.NullGeometry
 )

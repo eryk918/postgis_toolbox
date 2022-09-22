@@ -155,7 +155,6 @@ def add_layer_into_map(layer, group_name, parent_name=None, position=0):
     project.addMapLayer(layer, False)
     if group_name:
         group.insertLayer(position, layer)
-        group.setExpanded(False)
 
 
 def add_rasters_to_project(group_name: str,

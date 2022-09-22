@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
+from typing import Dict
 
+from osgeo import ogr
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog
 from qgis.core import QgsVectorLayer
 
 from .. import ImportVector
-from ..utils.vector_utils import vector_extensions
+from ..utils.vector_utils import vector_extensions, simple_vector_extensions
 from ...utils import repair_dialog, os, \
     QDialog, get_all_vectors_from_project, plugin_name, get_active_db_info, \
     get_schema_name_list, standarize_path, NewThreadAlg, tr, \
-    remove_unsupported_chars, get_main_plugin_class
+    remove_unsupported_chars, get_main_plugin_class, project
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_vector_ui.ui'))
@@ -33,7 +35,9 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         self.browse_layer_btn.clicked.connect(self.select_vector_file)
         self.vector_layer_cbbx.currentTextChanged[str].connect(
             lambda: self.tablename_lineedit.setText(
-                ', '.join(self.vector_layer_cbbx.checkedItems())))
+                ', '.join(self.vector_layer_cbbx.checkedItems()).lower()))
+        self.vector_layer_cbbx.currentTextChanged[str].connect(
+            self.manage_table_names_visibility)
         self.change_conn_btn.clicked.connect(self.change_db)
 
     def run_dialog(self) -> None:
@@ -65,6 +69,10 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         self.additional_params_groupbox.setEnabled(visible)
         self.import_btn.setEnabled(visible)
 
+    def manage_table_names_visibility(self) -> None:
+        self.tablename_lineedit.setEnabled(
+            not len(self.vector_layer_cbbx.checkedItems()) > 1)
+
     def change_db(self):
         get_main_plugin_class().run_db_config()
         self.import_vector.db = get_main_plugin_class().db
@@ -82,21 +90,40 @@ class ImportVector_UI(QDialog, FORM_CLASS):
             self, tr("Select a vector file: "),
             "", ' '.join([f'*.{ext}' for ext in vector_extensions]))
         filepath = standarize_path(filepath)
-        if filepath and filepath != '.':
+        if filepath and filepath != '.' and os.path.exists(filepath):
             filename, ext = os.path.splitext(os.path.basename(filepath))
-            tmp_layer = QgsVectorLayer(filepath, filename, "ogr")
-            if not tmp_layer.isValid():
-                QMessageBox.warning(
-                    self,
-                    tr('Error'),
-                    tr('The selected file is not a vector format file!'),
-                    QMessageBox.Ok)
-                return
-            self.vector_dict[filename] = (filepath, tmp_layer.wkbType())
+            filenames = []
+            if ext.lower() not in simple_vector_extensions:
+                for filename, filepath in self.get_layers_from_container(filepath).items():
+                    tmp_layer = QgsVectorLayer(filepath, filename, "ogr")
+                    if not tmp_layer.isValid():
+                        QMessageBox.warning(
+                            self,
+                            tr('Error'),
+                            tr('The selected file is not a vector format file!'),
+                            QMessageBox.Ok)
+                        return
+                    self.vector_dict[filename] = (
+                        filepath, tmp_layer.wkbType())
+                    filenames.append(filename)
+            else:
+                tmp_layer = QgsVectorLayer(filepath, filename, "ogr")
+                if not tmp_layer.isValid():
+                    QMessageBox.warning(
+                        self,
+                        tr('Error'),
+                        tr('The selected file is not a vector format file!'),
+                        QMessageBox.Ok)
+                    return
+                self.vector_dict[filename] = (filepath, tmp_layer.wkbType())
+                filenames = [filename]
             self.vector_layer_cbbx.clear()
             self.vector_layer_cbbx.addItems(list(self.vector_dict.keys()))
-            self.vector_layer_cbbx.setCheckedItems([filename])
-            self.tablename_lineedit.setText(filename.lower())
+            self.vector_layer_cbbx.setCheckedItems(filenames)
+
+    def get_layers_from_container(self, input_file: str) -> Dict[str, str]:
+        return {layer.GetName(): f'{input_file}|layername={layer.GetName()}'
+                for layer in ogr.Open(input_file)}
 
     def validate_fields(self) -> None:
         if self.vector_layer_cbbx.checkedItems() and \
