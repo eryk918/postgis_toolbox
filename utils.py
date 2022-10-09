@@ -54,6 +54,11 @@ def tr(string):
     return QCoreApplication.translate('Processing', string)
 
 
+PROCESSING_LAYERS_GROUP = tr('Processing layers')
+RASTERS_LAYERS_GROUP = tr("IMPORTED RASTERS")
+VECTORS_LAYERS_GROUP = tr("IMPORTED VECTORS")
+
+
 class CreateTemporaryLayer(QgsVectorLayer):
     parent_layer = None
 
@@ -266,20 +271,25 @@ def get_all_rasters_from_project() -> Dict[str, str]:
     return rasters_dict
 
 
-def get_all_vectors_from_project() -> Dict[str, Tuple[str, int]]:
+def get_all_vectors_from_project(only_postgis: bool = False) \
+        -> Dict[str, Tuple[str, int]]:
     vectors_dict = {}
     all_layers = root.findLayers()
     for layer in all_layers:
         predict_layer = layer.layer()
         if predict_layer.isValid() and \
-                predict_layer.type() == QgsMapLayerType.VectorLayer and \
-                'postgres' not in predict_layer.dataProvider().name():
-            vectors_dict[predict_layer.name()] = \
-                (predict_layer.source(), predict_layer.wkbType())
+                predict_layer.type() == QgsMapLayerType.VectorLayer:
+            if only_postgis and \
+                    'postgres' in predict_layer.dataProvider().name():
+                vectors_dict[f'{predict_layer.name()} [EPSG:{predict_layer.crs().postgisSrid()}]'] = predict_layer
+            elif not only_postgis and \
+                    'postgres' not in predict_layer.dataProvider().name():
+                vectors_dict[predict_layer.name()] = \
+                    (predict_layer.source(), predict_layer.wkbType())
     return vectors_dict
 
 
-def standarize_path(path: str) -> str:
+def standardize_path(path: str) -> str:
     return os.path.normpath(os.sep.join(re.split(r'\\|/', path)))
 
 

@@ -32,12 +32,11 @@ __revision__ = '$Format:%H$'
 
 import os
 
-from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsProcessingProvider
 
 from .postgis_toolbox_raster_algorithm import PostGISToolboxRasterAlgorithm
-from .postgis_toolbox_vector_algorithm import PostGISToolboxVectorAlgorithm
-from .utils import tr
+from .VectorAlgorithms.PostGISToolboxVectorClip import PostGISToolboxVectorClip
+from .utils import tr, plugin_dir_name, main_plugin_icon
 
 pluginPath = os.path.dirname(__file__)
 
@@ -45,53 +44,24 @@ pluginPath = os.path.dirname(__file__)
 class PostGISToolboxProvider(QgsProcessingProvider):
 
     def __init__(self, main_class):
-        """
-        Default constructor.
-        """
         QgsProcessingProvider.__init__(self)
         self.main_class = main_class
 
     def unload(self):
-        """
-        Unloads the provider. Any tear-down steps required by the provider
-        should be implemented here.
-        """
         pass
 
     def loadAlgorithms(self):
-        """
-        Loads all algorithms belonging to this provider.
-        """
-        self.addAlgorithm(PostGISToolboxVectorAlgorithm())
+        self.addAlgorithm(PostGISToolboxVectorClip())
         self.addAlgorithm(PostGISToolboxRasterAlgorithm())
-        # add additional algorithms here
-        # self.addAlgorithm(MyOtherAlgorithm())
 
     def id(self):
-        """
-        Returns the unique provider id, used for identifying the provider. This
-        string should be a unique, short, character only string, eg "qgis" or
-        "gdal". This string should not be localised.
-        """
-        return 'PostGIS Spatial Functions'
+        return plugin_dir_name
 
     def name(self):
-        """
-        Returns the provider name, which is used to describe the provider
-        within the GUI.
-
-        This string should be short (e.g. "Lastools") and localised.
-        """
         return tr('PostGIS Spatial Functions')
 
     def icon(self):
-        return QIcon(os.path.join(pluginPath, 'icons', 'main.png'))
+        return main_plugin_icon
 
     def longName(self):
-        """
-        Returns the a longer version of the provider name, which can include
-        extra details such as version numbers. E.g. "Lastools LIDAR tools
-        (version 2.2.1)". This string should be localised. The default
-        implementation returns the same string as name().
-        """
         return self.name()

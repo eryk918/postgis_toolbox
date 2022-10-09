@@ -10,7 +10,7 @@ from .. import ImportVector
 from ..utils.vector_utils import vector_extensions, simple_vector_extensions
 from ...utils import repair_dialog, os, \
     QDialog, get_all_vectors_from_project, plugin_name, get_active_db_info, \
-    get_schema_name_list, standarize_path, NewThreadAlg, tr, \
+    get_schema_name_list, standardize_path, NewThreadAlg, tr, \
     remove_unsupported_chars, get_main_plugin_class, project
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -42,12 +42,6 @@ class ImportVector_UI(QDialog, FORM_CLASS):
 
     def run_dialog(self) -> None:
         self.show()
-        if not self.vector_dict:
-            self.close()
-            QMessageBox.critical(
-                self, plugin_name,
-                'No vector layers were detected in the project.',
-                QMessageBox.Ok)
         self.exec_()
 
     def manage_vectors(self) -> None:
@@ -89,7 +83,7 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         filepath, __ = QFileDialog.getOpenFileName(
             self, tr("Select a vector file: "),
             "", ' '.join([f'*.{ext}' for ext in vector_extensions]))
-        filepath = standarize_path(filepath)
+        filepath = standardize_path(filepath)
         if filepath and filepath != '.' and os.path.exists(filepath):
             filename, ext = os.path.splitext(os.path.basename(filepath))
             filenames = []
@@ -136,7 +130,7 @@ class ImportVector_UI(QDialog, FORM_CLASS):
             }
             self.param_dict = {
                 'input_files': [
-                    standarize_path(self.vector_dict[file][0])
+                    standardize_path(self.vector_dict[file][0])
                     for file in self.vector_layer_cbbx.checkedItems()
                 ],
                 'layer_names': [

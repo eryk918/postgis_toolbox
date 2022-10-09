@@ -17,7 +17,7 @@ from .utils.raster_utils import make_sql_create_table, \
     make_sql_insert_raster
 from ..utils import project, iface, repair_path_for_exec, make_queries, \
     make_query, tr, add_rasters_to_project, create_postgis_raster_layer, \
-    clean_after_analysis, change_alg_progress
+    clean_after_analysis, change_alg_progress, RASTERS_LAYERS_GROUP
 
 
 class ImportRaster:
@@ -97,7 +97,7 @@ class RasterImporter(QgsTask):
 
         if self.q_add_to_project:
             add_rasters_to_project(
-                tr("IMPORTED RASTERS"),
+                RASTERS_LAYERS_GROUP,
                 [
                     create_postgis_raster_layer(
                         self.main.db,

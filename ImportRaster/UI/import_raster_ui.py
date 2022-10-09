@@ -7,7 +7,7 @@ from .. import ImportRaster
 from ..utils.raster_utils import raster_extensions, max_raster_untiled_size
 from ...utils import repair_dialog, main_plugin_icon, os, \
     QDialog, get_all_rasters_from_project, plugin_name, get_active_db_info, \
-    get_schema_name_list, standarize_path, NewThreadAlg, tr, \
+    get_schema_name_list, standardize_path, NewThreadAlg, tr, \
     remove_unsupported_chars, get_main_plugin_class
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -43,15 +43,9 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
 
     def run_dialog(self, check: bool = True) -> None:
         self.show()
-        if not self.raster_dict:
-            self.close()
-            QMessageBox.critical(
-                self, plugin_name,
-                'No raster layers were detected in the project.',
-                QMessageBox.Ok)
-            return
-        self.tablename_lineedit.setText(
-            list(self.raster_dict.keys())[0].lower())
+        if self.raster_dict:
+            self.tablename_lineedit.setText(
+                list(self.raster_dict.keys())[0].lower())
         if check:
             self.get_raster_filesize(self.raster_layer_cbbx.currentText())
         self.exec_()
@@ -110,7 +104,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
         filepath, __ = QFileDialog.getOpenFileName(
             self, tr("Select a raster file: "),
             "", ' '.join([f'*.{ext}' for ext in raster_extensions]))
-        filepath = standarize_path(filepath)
+        filepath = standardize_path(filepath)
         if filepath and filepath != '.':
             filename, ext = os.path.splitext(os.path.basename(filepath))
             self.raster_dict[filename] = filepath
@@ -136,7 +130,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
                 'alg_name': tr('Import raster into PostGIS database')
             }
             self.param_dict = {
-                'input_file': standarize_path(
+                'input_file': standardize_path(
                     self.raster_dict[self.raster_layer_cbbx.currentText()]),
                 'layer_name': self.raster_layer_cbbx.currentText(),
                 'tile_width': self.raster_tile_width_spinbox.value(),

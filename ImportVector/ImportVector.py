@@ -8,7 +8,7 @@ from .UI.import_vector_ui import ImportVector_UI
 from .utils.vector_utils import none_geometry_types
 from ..utils import project, iface, repair_path_for_exec, change_alg_progress, \
     clean_after_analysis, tr, add_vectors_to_project, \
-    create_postgis_vector_layer
+    create_postgis_vector_layer, VECTORS_LAYERS_GROUP
 
 
 class ImportVector:
@@ -54,7 +54,7 @@ class VectorImporter(QgsTask):
 
         if self.q_add_to_project:
             add_vectors_to_project(
-                tr("IMPORTED VECTORS"),
+                VECTORS_LAYERS_GROUP,
                 [
                     create_postgis_vector_layer(
                         self.main.db,
