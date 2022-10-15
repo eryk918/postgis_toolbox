@@ -22,8 +22,9 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
 
     def setup_dialog(self) -> None:
         self.load_db_data_btn.clicked.connect(self.dbManager.connect_server)
-        self.active_db_btn.clicked.connect(
-            self.dbManager.select_operative_database)
+        self.active_db_btn.clicked.connect(self.dbManager.select_operative_database)
+        self.verify_postgis_btn.clicked.connect(self.dbManager.check_postgis_in_db)
+        self.add_obj_btn.clicked.connect(self.dbManager.add_db_object)
         get_active_db_info(self.dbManager.db, self.active_db_label)
 
     def run_dialog(self) -> None:
@@ -54,15 +55,12 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
             schema_dict = {}
             schema_list, new_db = \
                 get_schema_name_list(self.dbManager.dummydb, db_name)
-            if schema_list:
-                for schema_name in schema_list:
-                    table_list = get_all_tables_from_schema(
-                        new_db, schema_name)
-                    table_list.sort()
-                    if table_list:
-                        schema_dict[schema_name] = list(table_list)
-                if schema_dict:
-                    db_dict[db_name] = schema_dict
+            for schema_name in schema_list:
+                table_list = get_all_tables_from_schema(
+                    new_db, schema_name)
+                table_list.sort()
+                schema_dict[schema_name] = list(table_list)
+            db_dict[db_name] = schema_dict
             QApplication.processEvents()
         fill_item(table.invisibleRootItem(), db_dict)
         model.setHeaderData(0, 1, 'Databases')

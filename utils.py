@@ -44,11 +44,6 @@ system_tables = ['pg_catalog', 'pg_toast_temp_1', 'pg_temp_1', 'pg_toast',
 
 test_query = 'SELECT version();'
 
-PG_unsupported_chars = '"&<>)¡/\-{}[]\':>?</*~-,!@#$`%^&*()¢ł¤¥¦§¨©ª«¬­' \
-                       '®¯°±²ł´µ¶·¸ąº»¼½¾żàáâãäåæçèąćęłńóśźżéęëìíîïðńòóôõö×ø' \
-                       'ùúûüýþßàáâãäåæçèéęëìíîïðńòóôõö÷øùúûüýþÿœœššÿˆ˜–—‘’‚“' \
-                       '”„†‡‰‹›€™+=|;. '
-
 
 def tr(string):
     return QCoreApplication.translate('Processing', string)
@@ -319,7 +314,10 @@ def repair_path_for_exec(string: str) -> str:
 
 def remove_unsupported_chars(input_str: str) -> str:
     temp_str = input_str
-    for char in [char for char in PG_unsupported_chars]:
+    for char in [char for char in
+                 '"&<>)¡/\-{}[]\':>?</*~-,!@#$`%^&*()¢ł¤¥¦§¨©ª«¬­®¯°±²ł´' \
+                 'µ¶·¸ąº»¼½¾żàáâãäåæçèąćęłńóśźżéęëìíîïðńòóôõö×øùúûüýþßàáâã' \
+                 'äåæçèéęëìíîïðńòóôõö÷øùúûüýþÿœœššÿˆ˜–—‘’‚“”„†‡‰‹›€™+=|;. ']:
         temp_str = temp_str.replace(char, '')
     return temp_str
 
@@ -482,6 +480,11 @@ def make_queries(sql_list: List[str] or List[str, Any], db: QSqlDatabase,
 
 def unpack_nested_lists(n_list: List[List[Any]]) -> List[Any]:
     return [elem for nested_list in n_list for elem in nested_list]
+
+
+def universal_db_check(db: QSqlDatabase) -> bool:
+    return True if db and db.isOpen() and db.isValid() and \
+                   make_query(db, test_query) else False
 
 
 class NewThreadAlg:

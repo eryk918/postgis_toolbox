@@ -3,10 +3,14 @@ import os
 
 from qgis.PyQt.QtCore import QSettings
 
+from .UI.db_manager_add import DBManagerAdd_UI
 from .UI.db_manager_menu import DBManagerMenu_UI
+from .db_utils.db_utils import get_postgis_version_extended_query, \
+    get_postgis_version_query, create_schema, create_db
 from ..utils import project, iface, connection_key_names, \
     create_pg_connecton, make_query, plugin_name, test_query, QMessageBox, \
-    create_progress_bar, QSqlDatabase, get_active_db_info
+    create_progress_bar, QSqlDatabase, get_active_db_info, universal_db_check, \
+    unpack_nested_lists, tr, main_plugin_icon, remove_unsupported_chars
 
 
 class DBManager:
@@ -27,6 +31,7 @@ class DBManager:
 
     def fetch_connections(self) -> None:
         self.connections_dict = {}
+        self.dummydb = None
         base_group_name = 'PostgreSQL/connections'
         settings_object = QSettings()
         settings_object.beginGroup(base_group_name)
@@ -62,7 +67,7 @@ class DBManager:
                 self.dlg, plugin_name,
                 'Failed to connect.', QMessageBox.Ok)
 
-    def select_operative_database(self) -> None:
+    def select_operative_database(self, silent: bool = False) -> None:
         self.db = None
         db_treeview = self.dlg.db_obj_treeview
         treeview_model = db_treeview.model()
@@ -79,26 +84,108 @@ class DBManager:
                     self.db = QSqlDatabase(self.dummydb)
                     self.db.setDatabaseName(db_name)
                     self.db.open()
-                    if self.db.isOpen() and self.db.isValid() and \
-                            make_query(self.db, test_query):
-                        QMessageBox.information(
-                            self.dlg, plugin_name,
-                            f'Succesfully selected "{db_name}" '
-                            f'as active database.',
-                            QMessageBox.Ok)
+                    if universal_db_check(self.db):
+                        if not silent:
+                            QMessageBox.information(
+                                self.dlg, plugin_name,
+                                f'Successfully selected "{db_name}" '
+                                f'as active database.',
+                                QMessageBox.Ok)
                         self.main.db = self.db
                         get_active_db_info(
                             self.main.db, self.dlg.active_db_label)
                         get_active_db_info(
                             self.main.db, self.main.connection_label, True)
                     else:
-                        QMessageBox.critical(
-                            self.dlg, plugin_name,
-                            'Selection failed - db user permission error.',
-                            QMessageBox.Ok)
+                        if not silent:
+                            QMessageBox.critical(
+                                self.dlg, plugin_name,
+                                'Selection failed - db user permission error.',
+                                QMessageBox.Ok)
+        else:
+            if not silent:
+                QMessageBox.critical(
+                    self.dlg, plugin_name,
+                    'Selection failed - '
+                    'connect to correct PostgreSQL server.',
+                    QMessageBox.Ok)
+
+    def check_postgis_in_db(self) -> None:
+        if universal_db_check(self.db):
+            simple_pg_ver = unpack_nested_lists(make_query(
+                self.db, get_postgis_version_query))
+            extended_pg_ver = unpack_nested_lists(make_query(
+                self.db, get_postgis_version_extended_query))
+            if simple_pg_ver and extended_pg_ver:
+                info_box = QMessageBox()
+                info_box.setIcon(QMessageBox.Information)
+                info_box.setText(tr(f"PostGIS extension was detected, "
+                                    f"version is: {', '.join(simple_pg_ver)}"))
+                info_box.setWindowTitle(plugin_name)
+                info_box.setWindowIcon(main_plugin_icon)
+                info_box.setDetailedText(extended_pg_ver[0])
+                info_box.exec_()
+            else:
+                QMessageBox.critical(
+                    self.dlg, plugin_name,
+                    tr('No PostGIS extension was '
+                       'detected in the selected database!'),
+                    QMessageBox.Ok)
         else:
             QMessageBox.critical(
                 self.dlg, plugin_name,
-                'Selection failed - '
-                'connect to correct PostgreSQL server.',
+                tr('No PostGIS extension was '
+                   'detected in the selected database!'),
                 QMessageBox.Ok)
+
+    def add_db_object(self) -> None:
+        db = self.dummydb if universal_db_check(self.dummydb) else self.db
+        refresh = False
+        db_info_list = []
+        db_treeview = self.dlg.db_obj_treeview
+        treeview_selection_model = db_treeview.selectionModel()
+        selected_items = treeview_selection_model.selectedRows()
+        if selected_items and selected_items[0]:
+            db_name = selected_items[0]
+            db_info_list.append(db_name.data())
+            if db_name.parent().data():
+                while db_name.parent().data():
+                    db_name = db_name.parent()
+                    db_info_list.append(db_name.data())
+        if universal_db_check(db):
+            if len(db_info_list) > 0:
+                print('schema')
+                print(db_info_list[0])
+                add_dialog = DBManagerAdd_UI(self)
+                add_dialog.setup_dialog(
+                    tr('Enter a name for the new schema'),
+                    tr('Schema name...')
+                )
+                add_dialog.run_dialog(self.save_schema)
+            elif not db_info_list:
+                print('db')
+                add_dialog = DBManagerAdd_UI(self)
+                add_dialog.setup_dialog(
+                    tr('Enter a name for the new database'),
+                    tr('Database name...')
+                )
+                add_dialog.run_dialog(self.save_database)
+
+    def save_database(self, db_name: str) -> None:
+        create_db(self.dummydb, db_name)
+        QMessageBox.information(
+            self.dlg, plugin_name,
+            f'Successfully added "{db_name}" '
+            f'and set as active database.',
+            QMessageBox.Ok)
+        self.connect_server()
+
+    def save_schema(self, schema_name: str) -> None:
+        self.select_operative_database(True)
+        create_schema(self.db, schema_name)
+        QMessageBox.information(
+            self.dlg, plugin_name,
+            f'Successfully added "{schema_name}" '
+            f'and set as active schema.',
+            QMessageBox.Ok)
+        self.connect_server()
