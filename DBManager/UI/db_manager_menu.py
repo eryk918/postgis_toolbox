@@ -2,7 +2,7 @@
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog
 
-from ...utils import repair_dialog, main_plugin_icon, fill_item, \
+from ...utils import repair_dialog, fill_item, \
     get_all_tables_from_schema, make_query, \
     get_schema_name_list, unpack_nested_lists, create_progress_bar, Qt, os, \
     QApplication, get_active_db_info
@@ -22,10 +22,18 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
 
     def setup_dialog(self) -> None:
         self.load_db_data_btn.clicked.connect(self.dbManager.connect_server)
-        self.active_db_btn.clicked.connect(self.dbManager.select_operative_database)
-        self.verify_postgis_btn.clicked.connect(self.dbManager.check_postgis_in_db)
+        self.active_db_btn.clicked.connect(
+            self.dbManager.select_operative_database)
+        self.verify_postgis_btn.clicked.connect(
+            self.dbManager.check_postgis_in_db)
         self.add_obj_btn.clicked.connect(self.dbManager.add_db_object)
+        self.edit_obj_btn.clicked.connect(self.dbManager.edit_db_object)
+        self.remove_obj_btn.clicked.connect(self.dbManager.remove_db_object)
+        self.disconnect_btn.clicked.connect(self.dbManager.disconnect_db)
         get_active_db_info(self.dbManager.db, self.active_db_label)
+        self.disconnect_btn.setEnabled(
+            True if 'Not connected.' not in self.active_db_label.text()
+            else False)
 
     def run_dialog(self) -> None:
         self.show()

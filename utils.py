@@ -276,7 +276,8 @@ def get_all_vectors_from_project(only_postgis: bool = False) \
                 predict_layer.type() == QgsMapLayerType.VectorLayer:
             if only_postgis and \
                     'postgres' in predict_layer.dataProvider().name():
-                vectors_dict[f'{predict_layer.name()} [EPSG:{predict_layer.crs().postgisSrid()}]'] = predict_layer
+                vectors_dict[
+                    f'{predict_layer.name()} [EPSG:{predict_layer.crs().postgisSrid()}]'] = predict_layer
             elif not only_postgis and \
                     'postgres' not in predict_layer.dataProvider().name():
                 vectors_dict[predict_layer.name()] = \
@@ -383,7 +384,7 @@ def get_schema_name_list(db: QSqlDatabase, db_name: str = '',
         return [], db
 
 
-def get_active_db_info(db: QSqlDatabase, label: QLabel,
+def get_active_db_info(db: QSqlDatabase or None, label: QLabel,
                        simple: bool = False) -> bool:
     if db and db.isOpen() and db.isValid():
         db_hostname = db.hostName()
@@ -478,8 +479,9 @@ def make_queries(sql_list: List[str] or List[str, Any], db: QSqlDatabase,
     return True
 
 
-def unpack_nested_lists(n_list: List[List[Any]]) -> List[Any]:
-    return [elem for nested_list in n_list for elem in nested_list]
+def unpack_nested_lists(n_list: List[List[Any]]) -> List[Any] or str:
+    return [elem for nested_list in n_list for elem in nested_list
+            if not isinstance(nested_list, str)]
 
 
 def universal_db_check(db: QSqlDatabase) -> bool:

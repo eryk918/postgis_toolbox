@@ -159,6 +159,153 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="0">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>Database objects</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="4" column="0">
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="active_db_btn">
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Set as active</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="3">
+              <widget class="QPushButton" name="add_obj_btn">
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="6">
+              <widget class="QPushButton" name="remove_obj_btn">
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Remove</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="QPushButton" name="edit_obj_btn">
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Edit</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::MinimumExpanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>37</width>
+                 <height>24</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="verify_postgis_btn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Verify PostGIS</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="2" column="0">
+          <widget class="QTreeWidget" name="db_obj_treeview">
+           <property name="columnCount">
+            <number>1</number>
+           </property>
+           <column>
+            <property name="text">
+             <string>Databases</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <layout class="QGridLayout" name="gridLayout_10">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="active_db_label">
+             <property name="text">
+              <string>Active database:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="disconnect_btn">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Disconnect</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="0" column="0" rowspan="2">
        <widget class="QGroupBox" name="groupBox_2">
         <property name="sizePolicy">
@@ -261,128 +408,21 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="load_db_data_btn">
-           <property name="text">
-            <string>Connect</string>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <property name="leftMargin">
+            <number>0</number>
            </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QGroupBox" name="groupBox_4">
-        <property name="title">
-         <string>Database objects</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="3" column="0">
-          <layout class="QGridLayout" name="gridLayout_3">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
            <item row="0" column="0">
-            <widget class="QPushButton" name="active_db_btn">
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>16777215</height>
-              </size>
-             </property>
+            <widget class="QPushButton" name="load_db_data_btn">
              <property name="text">
-              <string>Set as active</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <layout class="QGridLayout" name="gridLayout_7">
-             <item row="0" column="3">
-              <widget class="QPushButton" name="add_obj_btn">
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Add</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="6">
-              <widget class="QPushButton" name="remove_obj_btn">
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Remove</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
-              <widget class="QPushButton" name="edit_obj_btn">
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Edit</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <spacer name="horizontalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::MinimumExpanding</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>37</width>
-                 <height>24</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="verify_postgis_btn">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Verify PostGIS</string>
+              <string>Connect</string>
              </property>
             </widget>
            </item>
           </layout>
-         </item>
-         <item row="1" column="0">
-          <widget class="QTreeWidget" name="db_obj_treeview">
-           <property name="columnCount">
-            <number>1</number>
-           </property>
-           <column>
-            <property name="text">
-             <string>Databases</string>
-            </property>
-           </column>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="active_db_label">
-           <property name="text">
-            <string>Active database:</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </widget>

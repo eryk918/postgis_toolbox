@@ -39,8 +39,8 @@ from qgis.core import QgsApplication
 from qgis.utils import iface
 
 from .DBManager.DBManager import DBManager
-from .ImportVector.ImportVector import ImportVector
 from .ImportRaster.ImportRaster import ImportRaster
+from .ImportVector.ImportVector import ImportVector
 from .postgis_toolbox_provider import PostGISToolboxProvider
 from .utils import tr, plugin_dir, get_active_db_info, create_pg_connecton, \
     plugin_name
@@ -83,10 +83,10 @@ class PostGISToolboxPlugin(object):
 
     def create_test_db(self):
         self.db = create_pg_connecton(
-            {'authcfg': '', 'database': 'test_postgis', 'host': 'localhost',
-             'password': '4ZcVABhMHJEtytL8', 'port': '5432', 'service': '',
-             'sslmode': 'SslAllow', 'username': 'admin_rpo',
-             'connection_name': 'bdot'})
+            {'authcfg': '', 'database': 'postgres', 'host': 'localhost',
+             'password': '1234', 'port': '5432', 'service': '',
+             'sslmode': 'SslAllow', 'username': 'postgres',
+             'connection_name': 'test_postgis'})
 
     def initProcessing(self):
         self.provider = PostGISToolboxProvider(self)
