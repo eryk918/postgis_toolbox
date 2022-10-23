@@ -358,8 +358,8 @@ class DBManager:
                 tr(f'Successfully removed "{self.old_name}" database.'),
                 QMessageBox.Ok)
             self.connect_server()
-            if hasattr(self,
-                       'db') and self.db and self.db.databaseName() == self.old_name:
+            if hasattr(self, 'db') and self.db and \
+                    self.db.databaseName() == self.old_name:
                 self.disconnect_db(True)
         else:
             QMessageBox.critical(

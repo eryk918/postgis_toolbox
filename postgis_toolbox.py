@@ -83,7 +83,7 @@ class PostGISToolboxPlugin(object):
 
     def create_test_db(self):
         self.db = create_pg_connecton(
-            {'authcfg': '', 'database': 'postgres', 'host': 'localhost',
+            {'authcfg': '', 'database': 'test_postgis', 'host': 'localhost',
              'password': '1234', 'port': '5432', 'service': '',
              'sslmode': 'SslAllow', 'username': 'postgres',
              'connection_name': 'test_postgis'})

@@ -44,12 +44,12 @@ from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     get_all_vectors_from_project, remove_unsupported_chars, plugin_name
 
 
-class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
+class PostGISToolboxVectorDifference(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
-    INPUT_CLIP = 'INPUT_CLIP'
+    INPUT_DIFF = 'INPUT_DIFF'
     FIELDS_INPUT = 'FIELDS_INPUT'
-    FIELDS_CLIP = 'FIELDS_CLIP'
+    FIELDS_DIFF = 'FIELDS_DIFF'
     DEST_TABLE = 'DEST_TABLE'
     DEST_SCHEMA = 'DEST_SCHEMA'
     SINGLE = 'SINGLE'
@@ -78,8 +78,8 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
             defaultValue=self.input_layers[0]))
 
         self.addParameter(QgsProcessingParameterEnum(
-            self.INPUT_CLIP,
-            tr('Layer to be clipped'),
+            self.INPUT_DIFF,
+            tr('Layer to be subtracted'),
             options=self.input_layers,
             allowMultiple=False,
             defaultValue=default_layer))
@@ -95,7 +95,7 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
             defaultValue=default_layer))
 
         self.addParameter(QgsProcessingParameterString(
-            self.DEST_TABLE, tr('Output table name'), 'clip'))
+            self.DEST_TABLE, tr('Output table name'), 'difference'))
 
         self.addParameter(QgsProcessingParameterBoolean(
             self.OVERWRITE,
@@ -127,7 +127,7 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
 
         input_layer_b = self.input_layers_dict[
             self.input_layers[self.parameterAsEnum(
-                parameters, self.INPUT_CLIP, context)]]
+                parameters, self.INPUT_DIFF, context)]]
         schema_name_b, table_name_b = get_pg_table_name_from_uri(
             input_layer_b.dataProvider().dataSourceUri()).split('.')
         uri_b = QgsDataSourceUri(input_layer_b.source())
@@ -181,25 +181,32 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            geom_b_part = f'g2."{geom_col_b}"'
+
+            union_geom_part = f"""
+                WITH union_geom AS (
+                    SELECT ST_Union("{geom_col_b}") AS geom
+                FROM "{schema_name_b}"."{table_name_b}"
+                )
+            """
+
+            geom_b_part = f'g2."geom"'
             if srid_b != srid_a:
                 geom_b_part = f'ST_Transform(g2."{geom_col_b}", {srid_a})'
-            geom_query_part = f'(ST_Multi(ST_Intersection(g1."{geom_col_a}"' \
+            geom_query_part = f'(ST_Multi(ST_Difference(g1."{geom_col_a}"' \
                               f', {geom_b_part})))::geometry({out_geom_type}' \
                               f', {srid_a}) AS geom'
             if q_single_type:
-                geom_query_part = f'(ST_Intersection(g1."{geom_col_a}", ' \
-                                  f'g2."{geom_col_b}"))::geometry(' \
+                geom_query_part = f'(ST_Difference(g1."{geom_col_a}", ' \
+                                  f'{geom_b_part}))::geometry(' \
                                   f'{out_geom_type}, {srid_a}) AS geom'
 
             make_query(self.db, f'''
               CREATE TABLE "{out_schema}"."{out_table}" AS (
+                  {union_geom_part}
                   SELECT g1."{'", g1."'.join(columns)}", {geom_query_part}
                   FROM "{schema_name_a}"."{table_name_a}" AS g1, 
-                      "{schema_name_b}"."{table_name_b}" AS g2 
-                  WHERE ST_Contains(g1."{geom_col_a}", {geom_b_part}) IS TRUE OR 
-                      ST_Overlaps(g1."{geom_col_a}", {geom_b_part}) IS TRUE OR 
-                      ST_Contains({geom_b_part}, g1."{geom_col_a}") IS TRUE
+                      union_geom AS g2 
+                  WHERE ST_Intersects(g1."{geom_col_a}", {geom_b_part}) IS TRUE
               );
             ''')
             create_vector_geom_index(self.db, out_table, 'geom')
@@ -210,7 +217,7 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
             self.db,
             out_schema,
             out_table,
-            layer_name=f'{tr("Clipped")} {input_layer_a.name()}',
+            layer_name=f'{tr("Subtracted")} {input_layer_a.name()}',
             geom_col='geom'
         )
         if feedback.isCanceled():
@@ -226,10 +233,10 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return 'clip'
+        return 'difference'
 
     def displayName(self):
-        return tr('Clip')
+        return tr('Difference')
 
     def group(self):
         return tr(self.groupId())
@@ -238,4 +245,4 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
         return 'Vector'
 
     def createInstance(self):
-        return PostGISToolboxVectorClip()
+        return PostGISToolboxVectorDifference()
