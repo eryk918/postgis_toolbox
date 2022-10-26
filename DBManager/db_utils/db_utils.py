@@ -1,3 +1,5 @@
+from qgis.PyQt.QtCore import QSettings
+
 from ...utils import make_query, QSqlDatabase
 
 get_postgis_version_query = 'SELECT PostGIS_Lib_Version();'
@@ -54,3 +56,46 @@ def remove_db(db: QSqlDatabase, name: str) -> None:
 
 def remove_schema(db: QSqlDatabase, name: str) -> None:
     make_query(db, drop_schema_query.format(name=name))
+
+
+def set_postgis_connection_processing(db: QSqlDatabase) -> bool:
+    connection_dict = {
+        'service': '',
+        'host': db.hostName(),
+        'port': db.port(),
+        'database': db.databaseName(),
+        'username': db.userName(),
+        'password': db.password(),
+        'authcfg': None,
+        'publicOnly': False,
+        'geometryColumnsOnly': False,
+        'dontResolveType': False,
+        'allowGeometrylessTables': True,
+        'sslmode': 1,
+        'savePassword': True,
+        'saveUsername': True,
+        'estimatedMetadata': False,
+        'projectsInDatabase': False,
+    }
+    base_group_name = 'PostgreSQL/connections'
+    settings_object = QSettings()
+    settings_object.beginGroup(base_group_name)
+    if db.databaseName() not in settings_object.childGroups():
+        settings_object = QSettings()
+        settings_object.beginGroup(
+            f"{base_group_name}/{db.databaseName()}")
+        for key, value in connection_dict.items():
+            settings_object.setValue(key, value)
+        settings_object.endGroup()
+        return True
+    else:
+        return False
+
+
+def remove_postgis_connection_processing(db: QSqlDatabase) -> bool:
+    base_group_name = 'PostgreSQL/connections'
+    settings_object = QSettings()
+    settings_object.beginGroup(base_group_name)
+    if db and db.databaseName() in settings_object.childGroups():
+        settings_object.remove(db.databaseName())
+    return False

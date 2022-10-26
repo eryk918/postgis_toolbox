@@ -79,11 +79,12 @@ class PostGISToolboxPlugin(object):
         self.toolbar = self.iface.addToolBar(plugin_name)
         self.toolbar.setObjectName(plugin_name)
         self.db = None
-        self.create_test_db()
+        self.added_processing_connection = False
+        # self.create_test_db()
 
     def create_test_db(self):
         self.db = create_pg_connecton(
-            {'authcfg': '', 'database': 'test_postgis', 'host': 'localhost',
+            {'authcfg': '', 'database': 'postgres', 'host': 'localhost',
              'password': '1234', 'port': '5432', 'service': '',
              'sslmode': 'SslAllow', 'username': 'postgres',
              'connection_name': 'test_postgis'})

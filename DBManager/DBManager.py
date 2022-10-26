@@ -8,7 +8,8 @@ from .UI.db_manager_add import DBManagerAdd_UI
 from .UI.db_manager_menu import DBManagerMenu_UI
 from .db_utils.db_utils import get_postgis_version_extended_query, \
     get_postgis_version_query, create_schema, create_db, alter_schema, \
-    alter_db, remove_schema, remove_db, get_dbs_query
+    alter_db, remove_schema, remove_db, get_dbs_query, \
+    set_postgis_connection_processing, remove_postgis_connection_processing
 from ..utils import project, iface, connection_key_names, \
     create_pg_connecton, make_query, plugin_name, test_query, QMessageBox, \
     create_progress_bar, QSqlDatabase, get_active_db_info, \
@@ -96,7 +97,12 @@ class DBManager:
                             f'Successfully selected "{db_name}" '
                             f'as active database.',
                             QMessageBox.Ok)
+                    if self.main.added_processing_connection:
+                        self.main.added_processing_connection = \
+                            remove_postgis_connection_processing(self.main.db)
                     self.main.db = self.db
+                    self.main.added_processing_connection = \
+                        set_postgis_connection_processing(self.main.db)
                     get_active_db_info(
                         self.main.db, self.dlg.active_db_label)
                     get_active_db_info(
@@ -121,6 +127,9 @@ class DBManager:
 
     def disconnect_db(self, silent: bool = False):
         if hasattr(self.main, 'db') and self.main.db:
+            if self.main.added_processing_connection:
+                self.main.added_processing_connection = \
+                    remove_postgis_connection_processing(self.main.db)
             self.db = None
             self.main.db = None
             get_active_db_info(
