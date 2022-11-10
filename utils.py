@@ -28,6 +28,7 @@ from qgis.utils import iface
 
 project = QgsProject.instance()
 root = project.layerTreeRoot()
+main_window = iface.mainWindow()
 
 plugin_name = 'PostGIS Toolbox'
 plugin_dir = os.path.dirname(__file__)
@@ -261,7 +262,7 @@ def get_all_rasters_from_project() -> Dict[str, str]:
         predict_layer = layer.layer()
         if predict_layer.isValid() and \
                 predict_layer.type() == QgsMapLayerType.RasterLayer and \
-                'postgres' not in predict_layer.dataProvider().name():
+                predict_layer.dataProvider().name() not in ('postgres', 'wms'):
             rasters_dict[predict_layer.name()] = predict_layer.source()
     return rasters_dict
 

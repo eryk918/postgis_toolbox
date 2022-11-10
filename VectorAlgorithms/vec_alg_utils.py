@@ -2,10 +2,12 @@ import re
 from typing import List
 
 import psycopg2
+from PyQt5.QtWidgets import QMessageBox
 from qgis.PyQt.QtSql import QSqlDatabase
 from qgis.core import QgsDataSourceUri, QgsCredentials
 
-from ..utils import make_query, test_query, unpack_nested_lists
+from ..utils import make_query, test_query, unpack_nested_lists, plugin_name, \
+    main_window, tr
 
 
 def get_pg_table_name_from_uri(uri: str) -> str:
@@ -118,3 +120,16 @@ def check_table_exists_in_schema(
             )
         )[0]
     return False
+
+
+def check_db_connection(parent: object, schemas_list_name: str) -> bool:
+    if not hasattr(parent, schemas_list_name) or \
+            not getattr(parent, schemas_list_name):
+        QMessageBox.critical(
+            main_window, plugin_name,
+            tr('No active connection to the database was found.\n'
+               'Use DB Manager and try again.'),
+            QMessageBox.Ok)
+        return False
+    else:
+        return True
