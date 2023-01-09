@@ -260,6 +260,8 @@ def get_all_rasters_from_project() -> Dict[str, str]:
     all_layers = root.findLayers()
     for layer in all_layers:
         predict_layer = layer.layer()
+        if not predict_layer:
+            continue
         if predict_layer.isValid() and \
                 predict_layer.type() == QgsMapLayerType.RasterLayer and \
                 predict_layer.dataProvider().name() not in ('postgres', 'wms'):
@@ -273,12 +275,13 @@ def get_all_vectors_from_project(only_postgis: bool = False) \
     all_layers = root.findLayers()
     for layer in all_layers:
         predict_layer = layer.layer()
+        if not predict_layer:
+            continue
         if predict_layer.isValid() and \
                 predict_layer.type() == QgsMapLayerType.VectorLayer:
             if only_postgis and \
                     'postgres' in predict_layer.dataProvider().name():
-                vectors_dict[
-                    f'{predict_layer.name()} [EPSG:{predict_layer.crs().postgisSrid()}]'] = predict_layer
+                vectors_dict[f'{predict_layer.name()} [EPSG:{predict_layer.crs().postgisSrid()}]'] = predict_layer
             elif not only_postgis and \
                     'postgres' not in predict_layer.dataProvider().name():
                 vectors_dict[predict_layer.name()] = \
@@ -451,7 +454,7 @@ def make_query(db: QSqlDatabase, query: str, schema_name: str = '',
     return response
 
 
-def make_queries(sql_list: List[str] or List[str, Any], db: QSqlDatabase,
+def make_queries(db: QSqlDatabase, sql_list: List[str] or List[str, Any],
                  schema_name: str = '', postgis_raster: bool = False,
                  prepare: bool = False, base_class=None,
                  percent_amount: int = None) -> bool:

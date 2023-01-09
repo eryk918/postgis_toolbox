@@ -1,6 +1,6 @@
 from qgis.PyQt.QtCore import QSettings
 
-from ...utils import make_query, QSqlDatabase
+from ...utils import make_query, QSqlDatabase, make_queries
 
 get_postgis_version_query = 'SELECT PostGIS_Lib_Version();'
 get_postgis_version_extended_query = 'SELECT PostGIS_Full_Version();'
@@ -11,7 +11,8 @@ drop_schema_query = 'DROP SCHEMA IF EXISTS "{name}";'
 create_db_query = 'CREATE DATABASE "{name}";'
 alter_db_query = 'ALTER DATABASE "{old_name}" RENAME TO "{name}";'
 drop_db_query = 'DROP DATABASE IF EXISTS "{name}";'
-create_postgis_query = 'CREATE EXTENSION postgis;'
+create_postgis_vector_query = 'CREATE EXTENSION IF NOT EXISTS postgis;'
+create_postgis_raster_query = 'CREATE EXTENSION IF NOT EXISTS postgis_raster;'
 
 terminate_users_query = """SELECT pg_terminate_backend(pg_stat_activity.pid)
                             FROM pg_stat_activity
@@ -26,7 +27,7 @@ def create_db(db: QSqlDatabase, name: str) -> None:
     make_query(db, create_db_query.format(name=name))
     db.setDatabaseName(name)
     db.open()
-    make_query(db, create_postgis_query)
+    make_queries(db, [create_postgis_vector_query, create_postgis_raster_query])
 
 
 def create_schema(db: QSqlDatabase, name: str) -> None:

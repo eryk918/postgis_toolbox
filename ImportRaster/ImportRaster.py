@@ -159,7 +159,7 @@ class RasterImporter(QgsTask):
                     change_alg_progress(self, self.last_progress_value,
                                         32 / len(raster_list))
         make_queries(
-            query_list, self.main.db, destination_schema, True, True, self, 20)
+            self.main.db, query_list, destination_schema, True, True, self, 20)
         make_query(
             self.main.db,
             make_sql_addrastercolumn(destination_table, destination_schema),

@@ -253,6 +253,10 @@ class DBManager:
                     add_dialog.run_dialog(self.rename_database, db_list)
 
     def remove_db_object(self) -> None:
+        if hasattr(self.main, 'db') and self.main.db:
+            if self.main.added_processing_connection:
+                self.main.added_processing_connection = \
+                    remove_postgis_connection_processing(self.main.db)
         db = self.dummydb if universal_db_check(self.dummydb) else self.db
         db_info_list = []
         db_treeview = self.dlg.db_obj_treeview
