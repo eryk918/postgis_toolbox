@@ -21,7 +21,7 @@ from qgis.PyQt.QtWidgets import QComboBox, QProgressBar, QTreeWidgetItem, \
 from qgis.PyQt.QtWidgets import QProgressDialog, QPushButton, QMessageBox, \
     QApplication, QLabel
 from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, \
-    QgsProviderRegistry
+    QgsProviderRegistry, QgsWkbTypes
 from qgis.core import QgsProject, QgsVectorLayer, \
     QgsRasterLayer, QgsApplication, QgsMapLayerType
 from qgis.utils import iface
@@ -269,7 +269,7 @@ def get_all_rasters_from_project() -> Dict[str, str]:
     return rasters_dict
 
 
-def get_all_vectors_from_project(only_postgis: bool = False) \
+def get_all_vectors_from_project(only_postgis: bool = False, wkb: bool = False) \
         -> Dict[str, Tuple[str, int]]:
     vectors_dict = {}
     all_layers = root.findLayers()
@@ -281,7 +281,11 @@ def get_all_vectors_from_project(only_postgis: bool = False) \
                 predict_layer.type() == QgsMapLayerType.VectorLayer:
             if only_postgis and \
                     'postgres' in predict_layer.dataProvider().name():
-                vectors_dict[f'{predict_layer.name()} [EPSG:{predict_layer.crs().postgisSrid()}]'] = predict_layer
+                name = f'{predict_layer.name()} '
+                if wkb:
+                    name += f'[{QgsWkbTypes.geometryDisplayString(predict_layer.geometryType())}] '
+                name += f'[EPSG:{predict_layer.crs().postgisSrid()}]'
+                vectors_dict[name] = predict_layer
             elif not only_postgis and \
                     'postgres' not in predict_layer.dataProvider().name():
                 vectors_dict[predict_layer.name()] = \
