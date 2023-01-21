@@ -32,12 +32,15 @@ import inspect
 import os
 import sys
 
-from qgis.PyQt.QtCore import QSettings, QCoreApplication, qVersion, QTranslator
+from plugins.db_manager.db_manager_plugin import DBManagerPlugin
+from qgis.PyQt.QtCore import QSettings, QCoreApplication, qVersion, \
+    QTranslator, QModelIndex
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QLabel
 from qgis.core import QgsApplication
 from qgis.utils import iface
 
+from .CustomQueryBuilder.CustomQueryBuilder import CustomQueryBuilder
 from .DBManager.DBManager import DBManager
 from .ImportRaster.ImportRaster import ImportRaster
 from .ImportVector.ImportVector import ImportVector
@@ -115,6 +118,12 @@ class PostGISToolboxPlugin(object):
             parent=self.iface.mainWindow())
 
         self.add_action(
+            os.path.join(self.plugin_dir, 'icons/query_editor.png'),
+            text=tr('Query editor'),
+            callback=self.run_query_editor,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
             os.path.join(self.plugin_dir, 'icons/history.png'),
             text=tr('History'),
             callback=self.run_history,
@@ -122,7 +131,7 @@ class PostGISToolboxPlugin(object):
 
         self.add_action(
             os.path.join(self.plugin_dir, 'icons/settings.png'),
-            text=tr(u'Settings'),
+            text=tr('Settings'),
             callback=self.run_settings,
             parent=self.iface.mainWindow())
 
@@ -195,3 +204,53 @@ class PostGISToolboxPlugin(object):
 
     def run_history(self) -> None:
         pass
+
+    def run_query_editor(self) -> None:
+        if not hasattr(self, 'db') or not self.db:
+            return
+
+        self.open_db_manager()
+        db_model = self.db_manager_plugin.dlg.tree.model()
+        index = QModelIndex()
+        for row in range(db_model.rowCount(QModelIndex())):
+            index = db_model.index(row, 0, QModelIndex())
+            if index.data() == 'PostGIS':
+                break
+        if not index.isValid():
+            return
+        db_model.treeView.setExpanded(index, True)
+
+        index2 = db_model.treeView.indexBelow(index)
+        while index2.data() != self.db.connectionName():
+            index2 = db_model.treeView.indexBelow(index2)
+            if index2.data() is None:
+                break
+        if not index2.isValid():
+            return
+        db_model.treeView.setExpanded(index2, True)
+
+        self.db_manager_plugin.dlg.runSqlWindow()
+        sqlwindow = self.db_manager_plugin.dlg.tabs.currentWidget()
+        sqlwindow.queryBuilderBtn.clicked.disconnect()
+        sqlwindow.queryBuilderBtn.clicked.connect(self.displayQueryBuilder)
+
+        self.displayQueryBuilder()
+
+    def open_db_manager(self) -> None:
+        self.db_manager_plugin = DBManagerPlugin(self.iface)
+        if not hasattr(self, 'db_manager_plugin'):
+            return
+        if self.db_manager_plugin.dlg is None:
+            self.db_manager_plugin.run()
+        else:
+            self.db_manager_plugin.dlg.activateWindow()
+
+    def displayQueryBuilder(self) -> None:
+        parent = self.db_manager_plugin.dlg.tabs.currentWidget()
+        self.query_dlg = CustomQueryBuilder(
+            self, parent.db, parent, parent.queryBuilderFirst)
+        parent.queryBuilderFirst = False
+
+        result = self.query_dlg.exec_()
+        if result:
+            parent.editSql.setText(self.query_dlg.query)
