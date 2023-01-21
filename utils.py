@@ -264,7 +264,7 @@ def get_all_rasters_from_project() -> Dict[str, str]:
             continue
         if predict_layer.isValid() and \
                 predict_layer.type() == QgsMapLayerType.RasterLayer and \
-                predict_layer.dataProvider().name() not in ('postgres', 'wms'):
+                predict_layer.dataProvider().name() == 'gdal':
             rasters_dict[predict_layer.name()] = predict_layer.source()
     return rasters_dict
 

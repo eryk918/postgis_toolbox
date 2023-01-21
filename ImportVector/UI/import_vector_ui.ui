@@ -449,7 +449,7 @@
          <item>
           <widget class="QCheckBox" name="create_index_chkbox">
            <property name="text">
-            <string>Create index</string>
+            <string>Create spatial index</string>
            </property>
            <property name="checked">
             <bool>true</bool>
