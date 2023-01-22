@@ -32,15 +32,15 @@ import inspect
 import os
 import sys
 
-from plugins.db_manager.db_manager_plugin import DBManagerPlugin
 from qgis.PyQt.QtCore import QSettings, QCoreApplication, qVersion, \
     QTranslator, QModelIndex
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QLabel
+from qgis.PyQt.QtWidgets import QAction, QLabel, QMessageBox
 from qgis.core import QgsApplication
 from qgis.utils import iface
 
-from .CustomQueryBuilder.CustomQueryBuilder import CustomQueryBuilder
+from .CustomQueryBuilder.CustomQueryBuilder import CustomQueryBuilder, \
+    FilteredDBManagerPlugin
 from .DBManager.DBManager import DBManager
 from .ImportRaster.ImportRaster import ImportRaster
 from .ImportVector.ImportVector import ImportVector
@@ -74,6 +74,7 @@ class PostGISToolboxPlugin(object):
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(translator)
 
+        self.db_manager_plugin = FilteredDBManagerPlugin(self.iface)
         # self.dlg
         # self.dlg_settings
 
@@ -83,14 +84,14 @@ class PostGISToolboxPlugin(object):
         self.toolbar.setObjectName(plugin_name)
         self.db = None
         self.added_processing_connection = False
-        # self.create_test_db()
+        self.create_test_db()
 
     def create_test_db(self):
         self.db = create_pg_connecton(
-            {'authcfg': '', 'database': 'postgres', 'host': 'localhost',
+            {'authcfg': '', 'database': 'UMCS', 'host': 'localhost',
              'password': '1234', 'port': '5432', 'service': '',
              'sslmode': 'SslAllow', 'username': 'postgres',
-             'connection_name': 'test_postgis'})
+             'connection_name': 'UMCS'})
 
     def initProcessing(self):
         self.provider = PostGISToolboxProvider(self)
@@ -123,11 +124,11 @@ class PostGISToolboxPlugin(object):
             callback=self.run_query_editor,
             parent=self.iface.mainWindow())
 
-        self.add_action(
-            os.path.join(self.plugin_dir, 'icons/history.png'),
-            text=tr('History'),
-            callback=self.run_history,
-            parent=self.iface.mainWindow())
+        # self.add_action(
+        #     os.path.join(self.plugin_dir, 'icons/history.png'),
+        #     text=tr('History'),
+        #     callback=self.run_history,
+        #     parent=self.iface.mainWindow())
 
         self.add_action(
             os.path.join(self.plugin_dir, 'icons/settings.png'),
@@ -207,37 +208,52 @@ class PostGISToolboxPlugin(object):
 
     def run_query_editor(self) -> None:
         if not hasattr(self, 'db') or not self.db:
+            QMessageBox.critical(
+                iface.mainWindow(), plugin_name,
+                'There is no connection to the PostGIS database!',
+                QMessageBox.Ok)
             return
 
         self.open_db_manager()
-        db_model = self.db_manager_plugin.dlg.tree.model()
-        index = QModelIndex()
-        for row in range(db_model.rowCount(QModelIndex())):
-            index = db_model.index(row, 0, QModelIndex())
-            if index.data() == 'PostGIS':
-                break
-        if not index.isValid():
-            return
-        db_model.treeView.setExpanded(index, True)
-
-        index2 = db_model.treeView.indexBelow(index)
-        while index2.data() != self.db.connectionName():
-            index2 = db_model.treeView.indexBelow(index2)
-            if index2.data() is None:
-                break
-        if not index2.isValid():
-            return
-        db_model.treeView.setExpanded(index2, True)
-
+        self.expand_sections()
         self.db_manager_plugin.dlg.runSqlWindow()
         sqlwindow = self.db_manager_plugin.dlg.tabs.currentWidget()
         sqlwindow.queryBuilderBtn.clicked.disconnect()
         sqlwindow.queryBuilderBtn.clicked.connect(self.displayQueryBuilder)
-
         self.displayQueryBuilder()
 
+    def expand_sections(self) -> None:
+        tree = self.db_manager_plugin.dlg.tree
+        # self.proxyModel = QtCore.QSortFilterProxyModel(
+        #     tree,
+        #     filterKeyColumn=1,
+        #     recursiveFilteringEnabled=True
+        # )
+        # self.proxyModel.setSourceModel(tree.model())
+        # self.db_manager_plugin.dlg.tree.setModel(self.proxyModel)
+        # self.proxyModel.setFilterFixedString('PostGIS')
+
+        # db_model = self.proxyModel
+        db_model = self.db_manager_plugin.dlg.tree.model()
+        top_idx = QModelIndex()
+        for row in range(db_model.rowCount(QModelIndex())):
+            top_idx = db_model.index(row, 0, QModelIndex())
+            if top_idx.data() == 'PostGIS':
+                break
+        if not top_idx.isValid():
+            return
+        tree.setExpanded(top_idx, True)
+
+        below_idx = db_model.treeView.indexBelow(top_idx)
+        while below_idx.data() != self.db.connectionName():
+            below_idx = tree.indexBelow(below_idx)
+            if below_idx.data() is None:
+                break
+        if not below_idx.isValid():
+            return
+        tree.setExpanded(below_idx, True)
+
     def open_db_manager(self) -> None:
-        self.db_manager_plugin = DBManagerPlugin(self.iface)
         if not hasattr(self, 'db_manager_plugin'):
             return
         if self.db_manager_plugin.dlg is None:
@@ -250,7 +266,6 @@ class PostGISToolboxPlugin(object):
         self.query_dlg = CustomQueryBuilder(
             self, parent.db, parent, parent.queryBuilderFirst)
         parent.queryBuilderFirst = False
-
         result = self.query_dlg.exec_()
         if result:
             parent.editSql.setText(self.query_dlg.query)
