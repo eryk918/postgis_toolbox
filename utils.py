@@ -66,7 +66,7 @@ class CreateTemporaryLayer(QgsVectorLayer):
         self.updateFields()
 
 
-def repair_dialog(dlg: QDialog):
+def repair_dialog(dlg: QDialog, icon_file: str = None) -> None:
     obj_types = [QLabel, QLineEdit, QRadioButton, QToolButton, QCheckBox,
                  QGroupBox, QFrame]
     dialog_obj_list = [dlg.__getattribute__(obj) for obj in dlg.__dir__()]
@@ -92,7 +92,10 @@ def repair_dialog(dlg: QDialog):
                 dlg_obj.styleSheet() +
                 ''' QLabel, QLineEdit, QRadioButton, QToolButton, 
                 QFrame, QCheckBox, QGroupBox{background-color: 0;}''')
-    dlg.setWindowIcon(main_plugin_icon)
+    if icon_file:
+        dlg.setWindowIcon(QIcon(os.path.join(plugin_dir, 'icons', icon_file)))
+    else:
+        dlg.setWindowIcon(main_plugin_icon)
 
 
 def get_project_setting(parameter, key, default=''):

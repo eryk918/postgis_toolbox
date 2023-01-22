@@ -224,17 +224,7 @@ class PostGISToolboxPlugin(object):
 
     def expand_sections(self) -> None:
         tree = self.db_manager_plugin.dlg.tree
-        # self.proxyModel = QtCore.QSortFilterProxyModel(
-        #     tree,
-        #     filterKeyColumn=1,
-        #     recursiveFilteringEnabled=True
-        # )
-        # self.proxyModel.setSourceModel(tree.model())
-        # self.db_manager_plugin.dlg.tree.setModel(self.proxyModel)
-        # self.proxyModel.setFilterFixedString('PostGIS')
-
-        # db_model = self.proxyModel
-        db_model = self.db_manager_plugin.dlg.tree.model()
+        db_model = tree.model()
         top_idx = QModelIndex()
         for row in range(db_model.rowCount(QModelIndex())):
             top_idx = db_model.index(row, 0, QModelIndex())
