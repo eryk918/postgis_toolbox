@@ -32,7 +32,7 @@ from ..utils import tr
 class CustomQueryBuilder(QueryBuilderDlg):
     saveParameter = None
 
-    def __init__(self, main_class, db, parent=None, reset=False):
+    def __init__(self, main_class, db, parent=None, reset=False) -> None:
         QDialog.__init__(self, parent)
         self.main_class = main_class
         self.plugin_dir = main_class.plugin_dir
@@ -99,14 +99,15 @@ class CustomQueryBuilder(QueryBuilderDlg):
             self.ui.toolBox.setItemEnabled(2, False)
         self.setup_window()
 
-    def add_tables(self):
+    def add_tables(self) -> None:
         if self.ui.tables.currentIndex() <= 0:
             return
         selected_text = self.ui.tables.currentText()
         table_objects = []
         for table in self.tables:
             if len(selected_text.upper().split('.')) > 1:
-                if f'"{table.schema().name.upper()}"."{table.name.upper()}"' == selected_text.upper():
+                if f'"{table.schema().name.upper()}"."{table.name.upper()}"' \
+                        == selected_text.upper():
                     table_objects.append(table)
             elif table.name.upper() == selected_text.upper():
                 table_objects.append(table)
@@ -153,7 +154,7 @@ class CustomQueryBuilder(QueryBuilderDlg):
             1, [f'"{table.schema().name}"."{table.name}"' for table in
                 self.tables])
 
-    def list_cols(self):
+    def list_cols(self) -> None:
         table = self.table
         if table is None:
             return
@@ -320,7 +321,7 @@ class FilteredDBManager(DBManager):
         self.toolBar.addAction(self.actionImport)
         self.toolBar.addAction(self.actionExport)
 
-    def runSqlWindow(self):
+    def runSqlWindow(self) -> None:
         db = self.tree.currentDatabase()
         if db is None:
             self.infoBar.pushMessage(
@@ -346,10 +347,10 @@ class FilteredDBManager(DBManager):
 
 
 class CustomDbSqlWindow(DlgSqlWindow):
-    def __init__(self, iface, db, parent=None) -> None:
+    def __init__(self, iface: QgisInterface, db, parent=None) -> None:
         super(CustomDbSqlWindow, self).__init__(iface, db, parent)
 
-    def loadAsLayerToggled(self, checked):
+    def loadAsLayerToggled(self, checked) -> None:
         self.loadAsLayerGroup.setChecked(checked)
         self.loadAsLayerWidget.setVisible(checked)
 

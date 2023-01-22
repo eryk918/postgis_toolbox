@@ -55,88 +55,56 @@ if cmd_folder not in sys.path:
 
 
 class PostGISToolboxPlugin(object):
-
     def __init__(self):
+        self.db = None
+        self.actions = []
         self.iface = iface
-        self.canvas = iface.mapCanvas()
         self.provider = None
         self.plugin_dir = plugin_dir
-        locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(
-            self.plugin_dir,
-            'i18n',
-            'pgtoolbox_{}.qm'.format(locale))
-
-        if os.path.exists(locale_path):
-            translator = QTranslator()
-            translator.load(locale_path)
-
-            if qVersion() > '4.3.3':
-                QCoreApplication.installTranslator(translator)
-
-        self.db_manager_plugin = FilteredDBManagerPlugin(self.iface)
-        # self.dlg
-        # self.dlg_settings
-
-        self.actions = []
+        self.canvas = iface.mapCanvas()
+        self._install_translator()
         self.menu = tr(f'&{plugin_name}')
+        self.added_processing_connection = False
         self.toolbar = self.iface.addToolBar(plugin_name)
         self.toolbar.setObjectName(plugin_name)
-        self.db = None
-        self.added_processing_connection = False
-        self.create_test_db()
+        self.db_manager_plugin = FilteredDBManagerPlugin(self.iface)
+        # self._create_test_db()
 
-    def create_test_db(self):
+    def _create_test_db(self):
         self.db = create_pg_connecton(
             {'authcfg': '', 'database': 'UMCS', 'host': 'localhost',
              'password': '1234', 'port': '5432', 'service': '',
              'sslmode': 'SslAllow', 'username': 'postgres',
              'connection_name': 'UMCS'})
 
-    def initProcessing(self):
-        self.provider = PostGISToolboxProvider(self)
-        QgsApplication.processingRegistry().addProvider(self.provider)
-
     def initGui(self):
-        self.initProcessing()
-
-        self.add_action(
-            os.path.join(self.plugin_dir, 'icons/manage_dbs.png'),
+        self._initProcessing()
+        self._add_action(
+            os.path.join(self.plugin_dir, 'icons', 'manage_dbs.png'),
             text=tr('Manage databases'),
             callback=self.run_db_config,
             parent=self.iface.mainWindow())
-
-        self.add_action(
-            os.path.join(self.plugin_dir, 'icons/import_vector_layer.png'),
+        self._add_action(
+            os.path.join(self.plugin_dir, 'icons', 'import_vector_layer.png'),
             text=tr('Import vector data'),
             callback=self.run_import_vector,
             parent=self.iface.mainWindow())
-
-        self.add_action(
-            os.path.join(self.plugin_dir, 'icons/import_raster_layers.png'),
+        self._add_action(
+            os.path.join(self.plugin_dir, 'icons', 'import_raster_layers.png'),
             text=tr('Import raster data'),
             callback=self.run_import_raster,
             parent=self.iface.mainWindow())
-
-        self.add_action(
-            os.path.join(self.plugin_dir, 'icons/query_editor.png'),
+        self._add_action(
+            os.path.join(self.plugin_dir, 'icons', 'query_editor.png'),
             text=tr('Query editor'),
             callback=self.run_query_editor,
             parent=self.iface.mainWindow())
-
-        # self.add_action(
-        #     os.path.join(self.plugin_dir, 'icons/history.png'),
-        #     text=tr('History'),
-        #     callback=self.run_history,
-        #     parent=self.iface.mainWindow())
-
-        self.add_action(
-            os.path.join(self.plugin_dir, 'icons/settings.png'),
+        self._add_action(
+            os.path.join(self.plugin_dir, 'icons', 'settings.png'),
             text=tr('Settings'),
             callback=self.run_settings,
             parent=self.iface.mainWindow())
-
-        self.connection_label = self.add_action(label=True)
+        self.connection_label = self._add_action(label=True)
 
     def unload(self):
         QgsApplication.processingRegistry().removeProvider(self.provider)
@@ -147,33 +115,39 @@ class PostGISToolboxPlugin(object):
             self.iface.removeToolBarIcon(action)
         del self.toolbar
 
-    def add_action(
-            self,
-            icon_path=None,
-            text=None,
-            callback=None,
-            enabled_flag: bool = True,
-            add_to_menu: bool = True,
-            add_to_toolbar: bool = True,
-            status_tip=None,
-            whats_this=None,
-            parent=None,
-            label: bool = False):
+    def _initProcessing(self):
+        self.provider = PostGISToolboxProvider(self)
+        QgsApplication.processingRegistry().addProvider(self.provider)
+
+    def _install_translator(self) -> None:
+        locale = QSettings().value('locale/userLocale')[0:2]
+        locale_path = os.path.join(
+            self.plugin_dir,
+            'i18n',
+            'pgtoolbox_{}.qm'.format(locale))
+        if os.path.exists(locale_path):
+            translator = QTranslator()
+            translator.load(locale_path)
+            if qVersion() > '4.3.3':
+                QCoreApplication.installTranslator(translator)
+
+    def _add_action(
+            self, icon_path=None, text=None, callback=None,
+            enabled_flag: bool = True, add_to_menu: bool = True,
+            add_to_toolbar: bool = True, status_tip=None, whats_this=None,
+            parent=None, label: bool = False) -> QAction:
+
         if not label:
             icon = QIcon(icon_path)
             action = QAction(icon, text, parent)
             action.triggered.connect(callback)
             action.setEnabled(enabled_flag)
-
             if status_tip is not None:
                 action.setStatusTip(status_tip)
-
             if whats_this is not None:
                 action.setWhatsThis(whats_this)
-
             if add_to_toolbar:
                 self.toolbar.addAction(action)
-
             if add_to_menu:
                 self.iface.addPluginToDatabaseMenu(self.menu, action)
         else:
@@ -183,9 +157,7 @@ class PostGISToolboxPlugin(object):
             action.setEnabled(False)
             if add_to_toolbar:
                 self.toolbar.addAction(action)
-
         self.actions.append(action)
-
         return action
 
     def run_import_vector(self) -> None:
@@ -203,9 +175,6 @@ class PostGISToolboxPlugin(object):
     def run_settings(self) -> None:
         pass
 
-    def run_history(self) -> None:
-        pass
-
     def run_query_editor(self) -> None:
         if not hasattr(self, 'db') or not self.db:
             QMessageBox.critical(
@@ -213,16 +182,15 @@ class PostGISToolboxPlugin(object):
                 'There is no connection to the PostGIS database!',
                 QMessageBox.Ok)
             return
-
-        self.open_db_manager()
-        self.expand_sections()
+        self._open_db_manager()
+        self._expand_query_sections()
         self.db_manager_plugin.dlg.runSqlWindow()
         sqlwindow = self.db_manager_plugin.dlg.tabs.currentWidget()
         sqlwindow.queryBuilderBtn.clicked.disconnect()
-        sqlwindow.queryBuilderBtn.clicked.connect(self.displayQueryBuilder)
-        self.displayQueryBuilder()
+        sqlwindow.queryBuilderBtn.clicked.connect(self._display_query_builder)
+        self._display_query_builder()
 
-    def expand_sections(self) -> None:
+    def _expand_query_sections(self) -> None:
         tree = self.db_manager_plugin.dlg.tree
         db_model = tree.model()
         top_idx = QModelIndex()
@@ -243,7 +211,7 @@ class PostGISToolboxPlugin(object):
             return
         tree.setExpanded(below_idx, True)
 
-    def open_db_manager(self) -> None:
+    def _open_db_manager(self) -> None:
         if not hasattr(self, 'db_manager_plugin'):
             return
         if self.db_manager_plugin.dlg is None:
@@ -251,7 +219,7 @@ class PostGISToolboxPlugin(object):
         else:
             self.db_manager_plugin.dlg.activateWindow()
 
-    def displayQueryBuilder(self) -> None:
+    def _display_query_builder(self) -> None:
         parent = self.db_manager_plugin.dlg.tabs.currentWidget()
         self.query_dlg = CustomQueryBuilder(
             self, parent.db, parent, parent.queryBuilderFirst)
