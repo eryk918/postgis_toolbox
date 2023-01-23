@@ -1,6 +1,7 @@
 from qgis.PyQt.QtCore import QSettings
+from qgis._core import QgsDataSourceUri
 
-from ...utils import make_query, QSqlDatabase, make_queries
+from ...utils import make_query, QSqlDatabase, make_queries, tr
 
 get_postgis_version_query = 'SELECT PostGIS_Lib_Version();'
 get_postgis_version_extended_query = 'SELECT PostGIS_Full_Version();'
@@ -22,12 +23,31 @@ get_dbs_query = '''SELECT datname
                    FROM pg_database 
                    WHERE datistemplate = false;'''
 
+ssl_modes = {
+    tr('disable'):  'SslDisable',
+    tr('allow'):  'SslAllow',
+    tr('prefer'):  'SslPrefer',
+    tr('require'):  'SslRequire',
+    tr('verify-ca'): 'SslVerifyCa',
+    tr('verity-full'): 'SslVerifyFull'
+}
+
+ssl_modes_enum = {
+    QgsDataSourceUri.SslDisable: tr('disable'),
+    QgsDataSourceUri.SslAllow: tr('allow'),
+    QgsDataSourceUri.SslPrefer: tr('prefer'),
+    QgsDataSourceUri.SslRequire: tr('require'),
+    QgsDataSourceUri.SslVerifyCa: tr('verify-ca'),
+    QgsDataSourceUri.SslVerifyFull: tr('verity-full')
+}
+
 
 def create_db(db: QSqlDatabase, name: str) -> None:
     make_query(db, create_db_query.format(name=name))
     db.setDatabaseName(name)
     db.open()
-    make_queries(db, [create_postgis_vector_query, create_postgis_raster_query])
+    make_queries(db,
+                 [create_postgis_vector_query, create_postgis_raster_query])
 
 
 def create_schema(db: QSqlDatabase, name: str) -> None:

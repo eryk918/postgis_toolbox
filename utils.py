@@ -21,7 +21,7 @@ from qgis.PyQt.QtWidgets import QComboBox, QProgressBar, QTreeWidgetItem, \
 from qgis.PyQt.QtWidgets import QProgressDialog, QPushButton, QMessageBox, \
     QApplication, QLabel
 from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, \
-    QgsProviderRegistry, QgsWkbTypes
+    QgsProviderRegistry, QgsWkbTypes, QgsAuthMethodConfig
 from qgis.core import QgsProject, QgsVectorLayer, \
     QgsRasterLayer, QgsApplication, QgsMapLayerType
 from qgis.utils import iface
@@ -424,14 +424,20 @@ def get_active_db_info(db: QSqlDatabase or None, label: QLabel,
 
 
 def create_pg_connecton(db_params: dict) -> QSqlDatabase:
-    pg_connection = \
-        QSqlDatabase.addDatabase('QPSQL', db_params['connection_name'])
+    pg_connection = QSqlDatabase.addDatabase('QPSQL', db_params['connection_name'])
     QApplication.processEvents()
     pg_connection.setHostName(db_params['host'])
     pg_connection.setDatabaseName(db_params['database'])
     pg_connection.setPort(int(db_params['port']))
-    pg_connection.setUserName(db_params['username'])
-    pg_connection.setPassword(db_params['password'])
+    if db_params.get('authcfg'):
+        conf = QgsAuthMethodConfig()
+        auth_manager = QgsApplication.authManager()
+        auth_manager.loadAuthenticationConfig(db_params['authcfg'], conf, True)
+        pg_connection.setUserName(conf.config('username', ''))
+        pg_connection.setPassword(conf.config('password', ''))
+    else:
+        pg_connection.setUserName(db_params['username'])
+        pg_connection.setPassword(db_params['password'])
     pg_connection.open()
     return pg_connection
 
@@ -500,6 +506,10 @@ def unpack_nested_lists(n_list: List[List[Any]]) -> List[Any] or str:
 def universal_db_check(db: QSqlDatabase) -> bool:
     return True if db and db.isOpen() and db.isValid() and \
                    make_query(db, test_query) else False
+
+
+def invert_dict(input_dict: dict) -> dict:
+    return {value: key for key, value in input_dict.items()}
 
 
 class NewThreadAlg:
