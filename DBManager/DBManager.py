@@ -3,7 +3,7 @@ import os
 from typing import List
 
 from qgis.PyQt.QtCore import QSettings
-
+from .UI.new_connection_dialog import NewPGConnectionDialog
 from .UI.db_manager_add import DBManagerAdd_UI
 from .UI.db_manager_menu import DBManagerMenu_UI
 from .db_utils.db_utils import get_postgis_version_extended_query, \
@@ -14,7 +14,7 @@ from ..utils import project, iface, connection_key_names, \
     create_pg_connecton, make_query, plugin_name, test_query, QMessageBox, \
     create_progress_bar, QSqlDatabase, get_active_db_info, \
     universal_db_check, unpack_nested_lists, tr, main_plugin_icon, \
-    get_schema_name_list
+    get_schema_name_list, conn_key_string, delete_item_from_combo
 
 
 class DBManager:
@@ -53,6 +53,44 @@ class DBManager:
             self.connections_dict[connection_name] = tmp_dict
         self.dlg.connection_cbbx.clear()
         self.dlg.connection_cbbx.addItems(list(self.connections_dict))
+
+    def add_connection(self) -> None:
+        connection_dlg = NewPGConnectionDialog()
+        result = connection_dlg.exec_()
+        if result:
+            result_conn_dict = connection_dlg.save_conn()
+            self.connections_dict.update(result_conn_dict)
+            self.dlg.connection_cbbx.addItem(list(result_conn_dict.keys())[0])
+            self.dlg.connection_cbbx.setCurrentIndex(
+                self.dlg.connection_cbbx.findText(list(result_conn_dict.keys())[0]))
+
+    def edit_connection(self) -> None:
+        question = QMessageBox.question(self.dlg, tr('Edit connection'),
+                                        tr('Do you want to overwrite selected connection?'),
+                                        QMessageBox.Ok | QMessageBox.Cancel)
+        if question == QMessageBox.Ok:
+            choosen_conn_name = self.dlg.connection_cbbx.currentText()
+            connection_dlg = NewPGConnectionDialog(conn_name=choosen_conn_name)
+            result = connection_dlg.exec_()
+            if result:
+                result_conn_dict = connection_dlg.save_conn()
+                self.connections_dict.update(result_conn_dict)
+                delete_item_from_combo(choosen_conn_name, self.dlg.connection_cbbx)
+                self.dlg.connection_cbbx.addItem(list(result_conn_dict.keys())[0])
+                self.dlg.connection_cbbx.setCurrentIndex(
+                    self.dlg.connection_cbbx.findText(list(result_conn_dict.keys())[0]))
+
+    def delete_connection(self) -> None:
+        question = QMessageBox.question(self.dlg, tr('Delete connection'), tr('Should this connection be deleted?'),
+                                        QMessageBox.Ok | QMessageBox.Cancel)
+        if question == QMessageBox.Ok:
+            settings = QSettings()
+            conn_name = self.dlg.connection_cbbx.currentText()
+            settings.remove(f'{conn_key_string}{conn_name}')
+            settings.sync()
+            if conn_name in self.connections_dict.keys():
+                self.connections_dict.pop(conn_name)
+            delete_item_from_combo(conn_name, self.dlg.connection_cbbx)
 
     def connect_server(self) -> None:
         progressbar = create_progress_bar(0, txt='Trying to connect...')

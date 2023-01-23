@@ -34,6 +34,9 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         self.disconnect_btn.setEnabled(
             True if 'Not connected.' not in self.active_db_label.text()
             else False)
+        self.add_conn_btn.clicked.connect(self.dbManager.add_connection)
+        self.edit_conn_btn.clicked.connect(self.dbManager.edit_connection)
+        self.remove_conn_btn.clicked.connect(self.dbManager.delete_connection)
 
     def run_dialog(self) -> None:
         self.show()

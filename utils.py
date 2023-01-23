@@ -43,6 +43,8 @@ connection_key_names = [
 system_tables = ['pg_catalog', 'pg_toast_temp_1', 'pg_temp_1', 'pg_toast',
                  'information_schema', 'public', 'topology']
 
+conn_key_string = '/PostgreSQL/connections/'
+
 test_query = 'SELECT version();'
 
 
@@ -534,3 +536,9 @@ class NewThreadAlg:
 
     def cancel(self) -> None:
         self.task.cancel()
+
+
+def delete_item_from_combo(item_name: str, combo: QComboBox) -> None:
+    value_idx = combo.findText(item_name)
+    if value_idx != -1:
+        combo.removeItem(value_idx)
