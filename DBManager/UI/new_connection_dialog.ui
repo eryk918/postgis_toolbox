@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
-    <height>590</height>
+    <width>450</width>
+    <height>690</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,8 +16,14 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>690</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>Create a New PostGIS Connection</string>
+   <string>PostGIS Toolbox - Create a New PostGIS Connection</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

@@ -76,7 +76,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
         if size >= max_raster_untiled_size:
             QMessageBox.warning(
                 self,
-                tr('Warning'),
+                f"PostGIS Toolbox - {tr('Warning')}",
                 tr('The file size exceeds the maximum size allowed for an '
                    'untiled raster.\nThe tiling option has been forced.'),
                 QMessageBox.Ok)
@@ -102,7 +102,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
 
     def select_raster_file(self) -> None:
         filepath, __ = QFileDialog.getOpenFileName(
-            self, tr("Select a raster file: "),
+            self, f"PostGIS Toolbox - {tr('select a raster file: ')}",
             "", ' '.join([f'*.{ext}' for ext in raster_extensions]))
         filepath = standardize_path(filepath)
         if filepath and filepath != '.':
@@ -154,6 +154,6 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
         else:
             QMessageBox.warning(
                 self,
-                tr('Warning'),
+                f"PostGIS Toolbox - {tr('Warning')}",
                 tr('Setup correct parameters!'),
                 QMessageBox.Ok)

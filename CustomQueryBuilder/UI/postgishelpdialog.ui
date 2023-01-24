@@ -48,7 +48,13 @@
     <normaloff>../../../../../../../../../../../images/icon.png</normaloff>../../../../../../../../../../../images/icon.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QComboBox {
+	color: rgb(0,0,0);
+}
+* {
+    font: 10pt &quot;Segoe UI&quot;; 
+}
+</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
@@ -118,7 +124,11 @@
              <widget class="QFrame" name="frame_web">
               <property name="font">
                <font>
-                <pointsize>9</pointsize>
+                <family>Segoe UI</family>
+                <pointsize>10</pointsize>
+                <weight>50</weight>
+                <italic>false</italic>
+                <bold>false</bold>
                </font>
               </property>
               <property name="frameShape">

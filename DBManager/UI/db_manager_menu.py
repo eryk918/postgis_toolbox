@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+from PyQt5.QtCore import QEvent, QObject
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog
 
 from ...utils import repair_dialog, fill_item, \
     get_all_tables_from_schema, make_query, \
     get_schema_name_list, unpack_nested_lists, create_progress_bar, Qt, os, \
-    QApplication, get_active_db_info
+    QApplication, get_active_db_info, plugin_name
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'db_manager_menu.ui'))
@@ -37,6 +38,9 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         self.add_conn_btn.clicked.connect(self.dbManager.add_connection)
         self.edit_conn_btn.clicked.connect(self.dbManager.edit_connection)
         self.remove_conn_btn.clicked.connect(self.dbManager.delete_connection)
+        self.db_obj_treeview.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.db_obj_treeview.customContextMenuRequested.connect(
+            lambda: self.db_obj_treeview.selectionModel().clearSelection())
 
     def run_dialog(self) -> None:
         self.show()
@@ -53,7 +57,7 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         table.clear()
         model = table.model()
         progress_bar = create_progress_bar(
-            0, txt='Loading server structure...')
+            0, txt='Loading server structure...', title='Fetching DB Info')
         progress_bar.open()
         db_dict = {}
         db_list = unpack_nested_lists(make_query(

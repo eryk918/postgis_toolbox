@@ -52,10 +52,8 @@
 	color: rgb(0,0,0);
 }
 * {
-	background-color: rgb(255, 255, 255);
     font: 10pt &quot;Segoe UI&quot;; 
 }
-
 </string>
   </property>
   <property name="sizeGripEnabled">

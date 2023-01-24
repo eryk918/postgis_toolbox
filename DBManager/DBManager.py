@@ -3,9 +3,10 @@ import os
 from typing import List
 
 from qgis.PyQt.QtCore import QSettings
-from .UI.new_connection_dialog import NewPGConnectionDialog
+
 from .UI.db_manager_add import DBManagerAdd_UI
 from .UI.db_manager_menu import DBManagerMenu_UI
+from .UI.new_connection_dialog import NewPGConnectionDialog
 from .db_utils.db_utils import get_postgis_version_extended_query, \
     get_postgis_version_query, create_schema, create_db, alter_schema, \
     alter_db, remove_schema, remove_db, get_dbs_query, \
@@ -62,12 +63,14 @@ class DBManager:
             self.connections_dict.update(result_conn_dict)
             self.dlg.connection_cbbx.addItem(list(result_conn_dict.keys())[0])
             self.dlg.connection_cbbx.setCurrentIndex(
-                self.dlg.connection_cbbx.findText(list(result_conn_dict.keys())[0]))
+                self.dlg.connection_cbbx.findText(
+                    list(result_conn_dict.keys())[0]))
 
     def edit_connection(self) -> None:
-        question = QMessageBox.question(self.dlg, tr('Edit connection'),
-                                        tr('Do you want to overwrite selected connection?'),
-                                        QMessageBox.Ok | QMessageBox.Cancel)
+        question = QMessageBox.question(
+            self.dlg, f"PostGIS Toolbox - {tr('Edit connection')}",
+            tr('Do you want to overwrite selected connection?'),
+            QMessageBox.Ok | QMessageBox.Cancel)
         if question == QMessageBox.Ok:
             choosen_conn_name = self.dlg.connection_cbbx.currentText()
             connection_dlg = NewPGConnectionDialog(conn_name=choosen_conn_name)
@@ -75,14 +78,19 @@ class DBManager:
             if result:
                 result_conn_dict = connection_dlg.save_conn()
                 self.connections_dict.update(result_conn_dict)
-                delete_item_from_combo(choosen_conn_name, self.dlg.connection_cbbx)
-                self.dlg.connection_cbbx.addItem(list(result_conn_dict.keys())[0])
+                delete_item_from_combo(choosen_conn_name,
+                                       self.dlg.connection_cbbx)
+                self.dlg.connection_cbbx.addItem(
+                    list(result_conn_dict.keys())[0])
                 self.dlg.connection_cbbx.setCurrentIndex(
-                    self.dlg.connection_cbbx.findText(list(result_conn_dict.keys())[0]))
+                    self.dlg.connection_cbbx.findText(
+                        list(result_conn_dict.keys())[0]))
 
     def delete_connection(self) -> None:
-        question = QMessageBox.question(self.dlg, tr('Delete connection'), tr('Should this connection be deleted?'),
-                                        QMessageBox.Ok | QMessageBox.Cancel)
+        question = QMessageBox.question(
+            self.dlg, f"PostGIS Toolbox - {tr('Delete connection')}",
+            tr('Should this connection be deleted?'),
+            QMessageBox.Ok | QMessageBox.Cancel)
         if question == QMessageBox.Ok:
             settings = QSettings()
             conn_name = self.dlg.connection_cbbx.currentText()

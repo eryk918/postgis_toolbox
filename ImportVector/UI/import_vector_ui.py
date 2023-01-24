@@ -81,7 +81,7 @@ class ImportVector_UI(QDialog, FORM_CLASS):
 
     def select_vector_file(self) -> None:
         filepath, __ = QFileDialog.getOpenFileName(
-            self, tr("Select a vector file: "),
+            self, f"PostGIS Toolbox - {tr('select a vector file: ')}",
             "", ' '.join([f'*.{ext}' for ext in vector_extensions]))
         filepath = standardize_path(filepath)
         if filepath and filepath != '.' and os.path.exists(filepath):

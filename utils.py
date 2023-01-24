@@ -17,9 +17,12 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtSql import QSqlDatabase
 from qgis.PyQt.QtSql import QSqlQuery
 from qgis.PyQt.QtWidgets import QComboBox, QProgressBar, QTreeWidgetItem, \
-    QDialog, QLineEdit, QRadioButton, QToolButton, QCheckBox, QFrame, QGroupBox
+    QDialog, QLineEdit, QRadioButton, QToolButton, QCheckBox, QFrame, \
+    QGroupBox, QPlainTextEdit, QDoubleSpinBox, QWidget, QTextEdit, QSpinBox, \
+    QGridLayout, QHBoxLayout, QVBoxLayout
 from qgis.PyQt.QtWidgets import QProgressDialog, QPushButton, QMessageBox, \
     QApplication, QLabel
+from qgis._gui import QgsCheckableComboBox
 from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, \
     QgsProviderRegistry, QgsWkbTypes, QgsAuthMethodConfig
 from qgis.core import QgsProject, QgsVectorLayer, \
@@ -49,7 +52,7 @@ test_query = 'SELECT version();'
 
 
 def tr(string):
-    return QCoreApplication.translate('Processing', string)
+    return QCoreApplication.translate(plugin_name, string)
 
 
 PROCESSING_LAYERS_GROUP = tr('Processing layers')
@@ -68,13 +71,22 @@ class CreateTemporaryLayer(QgsVectorLayer):
         self.updateFields()
 
 
-def repair_dialog(dlg: QDialog, icon_file: str = None) -> None:
+def repair_dialog(dlg: QDialog, icon_file: str = None,
+                  translate_dialog: bool = True) -> None:
     obj_types = [QLabel, QLineEdit, QRadioButton, QToolButton, QCheckBox,
                  QGroupBox, QFrame]
     dialog_obj_list = [dlg.__getattribute__(obj) for obj in dlg.__dir__()]
     objs_to_repair = [elem for obj_list in
                       [dlg.findChildren(obj) for obj in obj_types]
                       for elem in obj_list]
+    
+    if translate_dialog:
+        for obj in dialog_obj_list:
+            data = get_dialog_label_values(obj)
+            if not data:
+                continue
+            set_dialog_labels(obj, tr(data))
+
     combo_list = list(
         filter(lambda elem: isinstance(elem, QComboBox), dialog_obj_list))
     if not combo_list:
@@ -113,7 +125,8 @@ def create_progress_bar(max_len, title=tr('Please wait'),
                         auto_close=True, cancel_btn=None, silent=False):
     progress_bar = QProgressDialog()
     progress_bar.setFixedWidth(500)
-    progress_bar.setWindowTitle(title)
+    progress_bar.setWindowTitle(f"{plugin_name} - {title}")
+    progress_bar.setWindowIcon(main_plugin_icon)
     progress_bar.setLabelText(txt)
     progress_bar.setMaximum(max_len)
     progress_bar.setValue(start_val)
@@ -510,6 +523,23 @@ def universal_db_check(db: QSqlDatabase) -> bool:
 
 def invert_dict(input_dict: dict) -> dict:
     return {value: key for key, value in input_dict.items()}
+
+
+def get_dialog_label_values(dlg_obj: QWidget) -> Any:
+    if isinstance(dlg_obj, (QLabel, QPushButton, QToolButton, QCheckBox, 
+                            QRadioButton)):
+        return dlg_obj.text()
+    elif not dlg_obj:
+        return
+
+
+def set_dialog_labels(dlg_obj: QWidget, value: str) -> None:
+    value = value if value.upper() not in ('NULL', 'NONE') else ''
+    if not dlg_obj or not value:
+        return
+    if isinstance(dlg_obj, (QLabel, QPushButton, QToolButton, QCheckBox, 
+                            QRadioButton)):
+        dlg_obj.setText(value)
 
 
 class NewThreadAlg:
