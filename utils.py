@@ -79,7 +79,7 @@ def repair_dialog(dlg: QDialog, icon_file: str = None,
     objs_to_repair = [elem for obj_list in
                       [dlg.findChildren(obj) for obj in obj_types]
                       for elem in obj_list]
-    
+
     if translate_dialog:
         for obj in dialog_obj_list:
             data = get_dialog_label_values(obj)

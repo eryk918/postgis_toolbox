@@ -3,27 +3,27 @@ import functools
 import os
 from functools import partial
 
-from plugins.db_manager.db_manager import DBManager
-from plugins.db_manager.db_manager_plugin import DBManagerPlugin
-from plugins.db_manager.db_model import PluginItem, TreeItem, DBModel
-from plugins.db_manager.db_plugins import supportedDbTypes, createDbPlugin
-from plugins.db_manager.db_plugins.plugin import Database, VectorTable
-from plugins.db_manager.db_tree import DBTree
-from plugins.db_manager.dlg_query_builder import QueryBuilderDlg, \
-    FocusEventFilter
-from plugins.db_manager.dlg_sql_window import DlgSqlWindow
-from plugins.db_manager.info_viewer import InfoViewer
-from plugins.db_manager.layer_preview import LayerPreview
-from plugins.db_manager.table_viewer import TableViewer
-from qgis.PyQt.QtCore import QAbstractItemModel, \
-    pyqtSignal, QModelIndex, Qt, QSize, QSettings
+from qgis.PyQt.QtCore import QAbstractItemModel, pyqtSignal, QModelIndex, Qt, \
+    QSize, QSettings
 from qgis.PyQt.QtGui import QIcon, QKeySequence
 from qgis.PyQt.QtWidgets import QTreeView, QApplication, QToolBar, QMenu, \
     QStatusBar, QDockWidget, QSizePolicy, QSpacerItem, QGridLayout, QTabBar, \
-    QTabWidget, QMenuBar, QDialog, QMessageBox
+    QTabWidget, QMenuBar, QDialog, QMessageBox, QPushButton, QInputDialog
 from qgis.core import QgsVectorLayer, QgsDataSourceUri, QgsApplication, Qgis
 from qgis.gui import QgsMessageBar, QgisInterface
 
+from .db_manager.db_manager import DBManager
+from .db_manager.db_manager_plugin import DBManagerPlugin
+from .db_manager.db_model import PluginItem, TreeItem, DBModel
+from .db_manager.db_plugins import supportedDbTypes, createDbPlugin
+from .db_manager.db_plugins.plugin import Database, VectorTable, BaseError
+from .db_manager.db_tree import DBTree
+from .db_manager.dlg_db_error import DlgDbError
+from .db_manager.dlg_query_builder import QueryBuilderDlg, FocusEventFilter
+from .db_manager.dlg_sql_window import DlgSqlWindow
+from .db_manager.info_viewer import InfoViewer
+from .db_manager.layer_preview import LayerPreview
+from .db_manager.table_viewer import TableViewer
 from ..CustomQueryBuilder.UI.CustomQueryBuilderDialog import \
     CustomQueryBuilderDialog
 from ..utils import tr
@@ -349,10 +349,36 @@ class FilteredDBManager(DBManager):
 class CustomDbSqlWindow(DlgSqlWindow):
     def __init__(self, iface: QgisInterface, db, parent=None) -> None:
         super(CustomDbSqlWindow, self).__init__(iface, db, parent)
+        self.btnCreateTable = QPushButton(
+            QApplication.translate("DBManager", "Create a table"),
+            self.layoutWidget)
+        self.btnCreateTable.setObjectName("btnCreateTable")
+        self.buttonLayout.insertWidget(3, self.btnCreateTable)
+        self.btnCreateTable.clicked.connect(self.create_table)
+
+        if QSettings().value('locale/userLocale')[0:2] == 'pl':
+            self.btnCreateTable.setText(
+                QApplication.translate("DBManager", "Utwórz tabelę"))
 
     def loadAsLayerToggled(self, checked) -> None:
         self.loadAsLayerGroup.setChecked(checked)
         self.loadAsLayerWidget.setVisible(checked)
+
+    def create_table(self):
+        if QSettings().value('locale/userLocale')[0:2] == 'pl':
+            table_name, response = QInputDialog.getText(
+                None, QApplication.translate(
+                    "DBManager", "Stwórz tabelę na podstawie zapytania."),
+                QApplication.translate("DBManager", "Nazwa tabeli"))
+        else:
+            table_name, response = QInputDialog.getText(
+                None, self.tr("Table name"), self.tr("Table name"))
+        if response:
+            try:
+                self.db.connector.create_table(table_name,
+                                               self._getExecutableSqlQuery())
+            except BaseError as e:
+                DlgDbError.showError(e, self)
 
 
 class FilteredDBManagerPlugin(DBManagerPlugin):
