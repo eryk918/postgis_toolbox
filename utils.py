@@ -421,21 +421,21 @@ def get_active_db_info(db: QSqlDatabase or None, label: QLabel,
         db_database_name = db.databaseName()
         if simple:
             label.setText(
-                f'Active database: {db_hostname}:{db_port}, '
+                f'{tr("Active database:")} {db_hostname}:{db_port}, '
                 f'{db_database_name}')
         else:
             label.setText(
-                f'Active database: <span style=" font-size:9pt; '
+                f'{tr("Active database:")} <span style=" font-size:9pt; '
                 f'font-weight:600; color:#32CD32;">{db_hostname}:{db_port}, '
                 f'{db_database_name}</span>')
         return True
     else:
         if simple:
-            label.setText(f'Active database: Not connected.')
+            label.setText(f'{tr("Active database:")} {tr("Not connected.")}')
         else:
             label.setText(
-                f'Active database: <span style=" font-size:9pt; '
-                f'font-weight:600; color:#aa0000;">Not connected.</span>')
+                f'{tr("Active database:")} <span style=" font-size:9pt; '
+                f'font-weight:600; color:#aa0000;">{tr("Not connected.")}</span>')
         return False
 
 

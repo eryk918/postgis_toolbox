@@ -285,81 +285,39 @@ class CustomQueryBuilderDialog(object):
         self.reset.setText(
             _translate("CustomQueryBuilderDialog", "&Reset"))
 
-        if QSettings().value('locale/userLocale')[0:2] == 'pl':
-            self.tables.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Tabele"))
-            self.checkBox.setText(
-                _translate("DbManagerQueryBuilderDlg",
-                           "Pokaż tabele systemowe"))
-            self.columns.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Kolumny"))
-            self.columns_2.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Kolumny"))
-            self.aggregates.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Agregujące"))
-            self.functions.setItemText(
-                0, _translate("CustomQueryBuilderDialog",
-                              "Przestrzenne (geometryczne)"))
-            self.math.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Matematyczne"))
-            self.stringfct.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Tekstowe"))
-            self.operators.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Operatory"))
-            self.toolBox.setItemText(
-                self.toolBox.indexOf(self.page),
-                _translate("CustomQueryBuilderDialog", "Dane"))
-            self.extract.setText(
-                _translate("CustomQueryBuilderDialog", "Pierwsze 10 wartości"))
-            self.toolBox.setItemText(
-                self.toolBox.indexOf(self.page_2),
-                _translate("CustomQueryBuilderDialog", "Wartości kolumn"))
-            self.table_idx.setItemText(
-                0, _translate("CustomQueryBuilderDialog",
-                              "Table (with spatial index)"))
-            self.table_target.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Tabela (docelowa)"))
-            self.usertree.setText(
-                _translate("CustomQueryBuilderDialog",
-                           "Użyj indeksu przestrzennego"))
-            self.toolBox.setItemText(
-                self.toolBox.indexOf(self.page_3),
-                _translate("CustomQueryBuilderDialog", "Indeks przestrzenny"))
-
-        else:
-            self.checkBox.setText(
-                _translate("CustomQueryBuilderDialog", "Show system tables"))
-            self.tables.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Tables"))
-            self.columns.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Columns"))
-            self.aggregates.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Aggregates"))
-            self.functions.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Functions"))
-            self.math.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Math"))
-            self.stringfct.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Strings functions"))
-            self.operators.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Operators"))
-            self.toolBox.setItemText(
-                self.toolBox.indexOf(self.page),
-                _translate("CustomQueryBuilderDialog", "Data"))
-            self.columns_2.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Columns"))
-            self.extract.setText(
-                _translate("CustomQueryBuilderDialog", "Only 10 first values"))
-            self.toolBox.setItemText(
-                self.toolBox.indexOf(self.page_2),
-                _translate("CustomQueryBuilderDialog", "Columns values"))
-            self.table_idx.setItemText(
-                0, _translate("CustomQueryBuilderDialog",
-                              "Table (with spatial index)"))
-            self.table_target.setItemText(
-                0, _translate("CustomQueryBuilderDialog", "Table (Target)"))
-            self.usertree.setText(
-                _translate("CustomQueryBuilderDialog", "Use spatial index"))
-            self.toolBox.setItemText(
-                self.toolBox.indexOf(self.page_3),
-                _translate("CustomQueryBuilderDialog", "Spatial index"))
+        self.checkBox.setText(
+            _translate("CustomQueryBuilderDialog", "Show system tables"))
+        self.tables.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Tables"))
+        self.columns.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Columns"))
+        self.aggregates.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Aggregates"))
+        self.functions.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Functions"))
+        self.math.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Math"))
+        self.stringfct.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Strings functions"))
+        self.operators.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Operators"))
+        self.toolBox.setItemText(
+            self.toolBox.indexOf(self.page),
+            _translate("CustomQueryBuilderDialog", "Data"))
+        self.columns_2.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Columns"))
+        self.extract.setText(
+            _translate("CustomQueryBuilderDialog", "Only 10 first values"))
+        self.toolBox.setItemText(
+            self.toolBox.indexOf(self.page_2),
+            _translate("CustomQueryBuilderDialog", "Columns values"))
+        self.table_idx.setItemText(
+            0, _translate("CustomQueryBuilderDialog",
+                          "Table (with spatial index)"))
+        self.table_target.setItemText(
+            0, _translate("CustomQueryBuilderDialog", "Table (Target)"))
+        self.usertree.setText(
+            _translate("CustomQueryBuilderDialog", "Use spatial index"))
+        self.toolBox.setItemText(
+            self.toolBox.indexOf(self.page_3),
+            _translate("CustomQueryBuilderDialog", "Spatial index"))

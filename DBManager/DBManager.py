@@ -101,7 +101,7 @@ class DBManager:
             delete_item_from_combo(conn_name, self.dlg.connection_cbbx)
 
     def connect_server(self) -> None:
-        progressbar = create_progress_bar(0, txt='Trying to connect...')
+        progressbar = create_progress_bar(0, txt=tr('Trying to connect...'))
         progressbar.open()
         self.fetched_dbs = {}
         current_server = self.dlg.connection_cbbx.currentText()
@@ -115,7 +115,7 @@ class DBManager:
             progressbar.close()
             QMessageBox.critical(
                 self.dlg, plugin_name,
-                'Failed to connect.', QMessageBox.Ok)
+                tr('Failed to connect.'), QMessageBox.Ok)
 
     def select_operative_database(self, silent: bool = False,
                                   db_name: str = False) -> None:
@@ -140,8 +140,8 @@ class DBManager:
                     if not silent:
                         QMessageBox.information(
                             self.dlg, plugin_name,
-                            f'Successfully selected "{db_name}" '
-                            f'as active database.',
+                            tr(f'Successfully selected "{db_name}" '
+                            f'as active database.'),
                             QMessageBox.Ok)
                     if self.main.added_processing_connection:
                         self.main.added_processing_connection = \
@@ -157,18 +157,18 @@ class DBManager:
                     if not silent:
                         QMessageBox.critical(
                             self.dlg, plugin_name,
-                            'Selection failed - db user permission error.',
+                            tr('Selection failed - db user permission error.'),
                             QMessageBox.Ok)
         else:
             if not silent:
                 QMessageBox.critical(
                     self.dlg, plugin_name,
-                    'Selection failed - '
+                    tr('Selection failed - '
                     'connect to correct PostgreSQL server or '
-                    'no databases detected in server.',
+                    'no databases detected in server.'),
                     QMessageBox.Ok)
         self.dlg.disconnect_btn.setEnabled(
-            True if 'Not connected.' not in self.dlg.active_db_label.text()
+            True if tr('Not connected.') not in self.dlg.active_db_label.text()
             else False)
 
     def disconnect_db(self, silent: bool = False):
@@ -217,7 +217,7 @@ class DBManager:
                        'detected in the selected database!'),
                     QMessageBox.Ok)
         else:
-            if 'Not connected.' in self.dlg.active_db_label.text():
+            if tr('Not connected.') in self.dlg.active_db_label.text():
                 QMessageBox.critical(
                     self.dlg, plugin_name,
                     tr('PostGIS version check failed!\n'
@@ -320,16 +320,16 @@ class DBManager:
             if len(db_info_list) == 2:
                 response = QMessageBox.warning(
                     self.dlg, plugin_name,
-                    f'Deletion of the "{self.old_name}" schema is '
-                    f'irreversible!\nDo you want to continue?',
+                    tr(f'Deletion of the "{self.old_name}" schema is '
+                    f'irreversible!\nDo you want to continue?'),
                     QMessageBox.Yes, QMessageBox.No)
                 if response == QMessageBox.Yes:
                     self.remove_schema()
             elif len(db_info_list) == 1:
                 response = QMessageBox.warning(
                     self.dlg, plugin_name,
-                    f'Deletion of the "{self.old_name}" database is '
-                    f'irreversible!\nDo you want to continue?',
+                    tr(f'Deletion of the "{self.old_name}" database is '
+                    f'irreversible!\nDo you want to continue?'),
                     QMessageBox.Yes, QMessageBox.No)
                 if response == QMessageBox.Yes:
                     self.remove_database()

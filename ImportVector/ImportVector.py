@@ -5,10 +5,10 @@ import processing
 from qgis.core import QgsTask, Qgis
 
 from .UI.import_vector_ui import ImportVector_UI
-from .utils.vector_utils import none_geometry_types
+from .utils.vector_utils import none_geometry_types, make_sql_set_geometry_srid
 from ..utils import project, iface, repair_path_for_exec, change_alg_progress, \
     clean_after_analysis, tr, add_vectors_to_project, \
-    create_postgis_vector_layer, VECTORS_LAYERS_GROUP
+    create_postgis_vector_layer, VECTORS_LAYERS_GROUP, make_query
 
 
 class ImportVector:
@@ -94,6 +94,14 @@ class VectorImporter(QgsTask):
                     'FORCE_SINGLEPART': self.q_force_singlepart
                 }
             )
+            make_query(
+                self.main.db,
+                make_sql_set_geometry_srid(
+                    self.destination_tables[self.input_files.index(vector)],
+                    self.destination_schema,
+                    vector
+                ),
+                self.destination_schema)
             if self.cancel_detection():
                 return False
             self.last_progress_value = \

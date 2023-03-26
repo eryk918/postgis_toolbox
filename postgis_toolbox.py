@@ -182,7 +182,7 @@ class PostGISToolboxPlugin(object):
         if not hasattr(self, 'db') or not self.db:
             QMessageBox.critical(
                 iface.mainWindow(), plugin_name,
-                'There is no connection to the PostGIS database!',
+                tr('There is no connection to the PostGIS database!'),
                 QMessageBox.Ok)
             return
         self._open_db_manager()

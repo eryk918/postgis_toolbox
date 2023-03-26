@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtCore import QEvent, QObject
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog
 
 from ...utils import repair_dialog, fill_item, \
     get_all_tables_from_schema, make_query, \
     get_schema_name_list, unpack_nested_lists, create_progress_bar, Qt, os, \
-    QApplication, get_active_db_info, plugin_name
+    QApplication, get_active_db_info, tr
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'db_manager_menu.ui'))
@@ -33,7 +32,7 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         self.disconnect_btn.clicked.connect(self.dbManager.disconnect_db)
         get_active_db_info(self.dbManager.db, self.active_db_label)
         self.disconnect_btn.setEnabled(
-            True if 'Not connected.' not in self.active_db_label.text()
+            True if tr('Not connected.') not in self.active_db_label.text()
             else False)
         self.add_conn_btn.clicked.connect(self.dbManager.add_connection)
         self.edit_conn_btn.clicked.connect(self.dbManager.edit_connection)

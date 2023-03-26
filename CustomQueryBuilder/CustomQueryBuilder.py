@@ -118,8 +118,8 @@ class CustomQueryBuilder(QueryBuilderDlg):
         if selected_text in self.coltables:
             response = QMessageBox.question(
                 self,
-                "Table already used",
-                f"Do you want to add table {selected_text} again?",
+                tr("Table already used"),
+                tr(f"Do you want to add table {selected_text} again?"),
                 QMessageBox.Yes | QMessageBox.No
             )
             if response == QMessageBox.No:
@@ -145,12 +145,8 @@ class CustomQueryBuilder(QueryBuilderDlg):
     def show_tables(self) -> None:
         self.update_table_list()
         self.ui.tables.clear()
-        if QSettings().value('locale/userLocale')[0:2] == 'pl':
-            self.ui.tables.insertItems(
-                0, [QApplication.translate("DBManager", 'Tabele')])
-        else:
-            self.ui.tables.insertItems(
-                0, [QApplication.translate("DBManager", 'Tables')])
+        self.ui.tables.insertItems(
+            0, [QApplication.translate("DBManager", 'Tables')])
         self.ui.tables.insertItems(
             1, [f'"{table.schema().name}"."{table.name}"' for table in
                 self.tables])
@@ -358,36 +354,14 @@ class CustomDbSqlWindow(DlgSqlWindow):
         self.btnCreateTable.clicked.connect(self.create_table)
         if self._createViewAvailable:
             self.btnCreateView.clicked.connect(self.create_view)
-        _translate = QtCore.QCoreApplication.translate
-        if QSettings().value('locale/userLocale')[0:2] == 'pl':
-            self.btnCreateTable.setText(
-                QApplication.translate("DBManager", "Utwórz tabelę"))
-            self.label_2.setText(
-                QApplication.translate("DbManagerDlgSqlWindow", "Nazwa"))
-            self.presetDelete.setText(
-                QApplication.translate("DbManagerDlgSqlWindow", "Usuń"))
-            if self.allowMultiColumnPk:
-                self.uniqueColumnCheck.setText(
-                    QApplication.translate(
-                        "DBManager", "Kolumny z unikalnymi wartościami"))
-            else:
-                self.uniqueColumnCheck.setText(
-                    QApplication.translate(
-                        "DBManager", "Kolumna z unikalnymi wartościami"))
 
     def loadAsLayerToggled(self, checked) -> None:
         self.loadAsLayerGroup.setChecked(checked)
         self.loadAsLayerWidget.setVisible(checked)
 
     def create_table(self):
-        if QSettings().value('locale/userLocale')[0:2] == 'pl':
-            table_name, response = QInputDialog.getText(
-                None, QApplication.translate(
-                    "DBManager", "Stwórz tabelę na podstawie zapytania."),
-                QApplication.translate("DBManager", "Nazwa tabeli"))
-        else:
-            table_name, response = QInputDialog.getText(
-                None, self.tr("Table name"), self.tr("Table name"))
+        table_name, response = QInputDialog.getText(
+            None, self.tr("Table name"), self.tr("Table name"))
         if response:
             try:
                 self.db.connector.create_table(table_name,
@@ -396,14 +370,8 @@ class CustomDbSqlWindow(DlgSqlWindow):
                 DlgDbError.showError(e, self)
 
     def create_view(self):
-        if QSettings().value('locale/userLocale')[0:2] == 'pl':
-            view_name, response = QInputDialog.getText(
-                None, QApplication.translate(
-                    "DBManager", "Stwórz widok na podstawie zapytania."),
-                QApplication.translate("DBManager", "Nazwa widoku"))
-        else:
-            view_name, response = QInputDialog.getText(
-                None, self.tr("View name"), self.tr("View name"))
+        view_name, response = QInputDialog.getText(
+            None, self.tr("View name"), self.tr("View name"))
         if response:
             try:
                 self.db.connector.createSpatialView(

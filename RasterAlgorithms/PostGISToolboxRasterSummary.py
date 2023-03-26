@@ -93,20 +93,20 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
                                 SELECT ST_UNION("rast", {band_numb}) AS rast_union 
                                 FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}")
                             SELECT (stats).*
-                            FROM (SELECT ST_SummaryStats(rast_union, {band_numb}) AS stats FROM union_raster) AS foo;'''))
+                            FROM (SELECT ST_SummaryStats(rast_union, {band_numb}) AS stats FROM union_raster);'''))
             if result_statistics:
                 file_handle, path_to_temp_file = tempfile.mkstemp(
                     suffix='_statistics_tmp.html')
                 os.close(file_handle)
                 _, sum_count, mean, stddev, min_value, max_value = result_statistics
-                html = f'''<p>Analizowany plik: baza danych - {self.db.databaseName()} 
-                            schemat - {uri_dict.get('SCHEMA')} tabela - {uri_dict.get('TABLE')}<p>
-                        <p>Wartość minimalna: {min_value}<p>
-                        <p>Wartość maksymalna: {max_value}<p>
-                        <p>Zakres: {max_value - min_value}<p>
-                        <p>Suma: {sum_count}<p>
-                        <p>Wartość średnia: {mean}<p>
-                        <p>Odchylenie standardowe: {stddev}<p>'''
+                html = f'''<p>{tr('File analyzed')}: {tr('database')} - {self.db.databaseName()} 
+                            {tr('schema')} - {uri_dict.get('SCHEMA')} {tr('table')} - {uri_dict.get('TABLE')}<p>
+                        <p>{tr('Minimum value')}: {min_value}<p>
+                        <p>{tr('Maximum value')}: {max_value}<p>
+                        <p>{tr('Range')}: {max_value - min_value}<p>
+                        <p>{tr('Sum')}: {sum_count}<p>
+                        <p>{tr('Average value')}: {mean}<p>
+                        <p>{tr('Standard deviation')}: {stddev}<p>'''
                 html_file = open(path_to_temp_file, 'w')
                 html_file.write(html)
                 html_file.close()

@@ -205,7 +205,7 @@ class PostGISToolboxVectorNearestNeighbor(QgsProcessingAlgorithm):
                 condition += f'{geom_part_b} <-> {geom_part_a} >= ' \
                              f'{min_distance} AND'
             else:
-                condition += f'ST_Within({geom_part_b}, {geom_part_a}) OR'
+                condition += f'ST_Within({geom_part_b}, {geom_part_a}) OR '
             condition += f'{geom_part_b} <-> {geom_part_a} <= {max_distance}'
 
             query = f'''
@@ -220,6 +220,7 @@ class PostGISToolboxVectorNearestNeighbor(QgsProcessingAlgorithm):
                        ) g2
                 );
             '''
+            print(query)
             make_query(self.db, query)
             create_vector_geom_index(self.db, out_table, 'geom')
             if feedback.isCanceled():

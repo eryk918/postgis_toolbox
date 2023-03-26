@@ -11,7 +11,7 @@
     <message>
         <location filename="../postgis_toolbox.py" line="66"/>
         <source>&amp;{plugin_name}</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../postgis_toolbox.py" line="82"/>
@@ -44,7 +44,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox_provider.py" line="70"/>
+        <location filename="../postgis_toolbox_provider.py" line="72"/>
         <source>PostGIS Spatial Functions</source>
         <translation></translation>
     </message>
@@ -61,17 +61,17 @@
     <message>
         <location filename="../utils.py" line="58"/>
         <source>Processing layers</source>
-        <translation>WARSTWY WYNIKOWE PROCESSINGU</translation>
+        <translation>WARSTWY_WYNIKOWE_PROCESSINGU</translation>
     </message>
     <message>
         <location filename="../utils.py" line="59"/>
         <source>IMPORTED RASTERS</source>
-        <translation>ZAIMPORTOWANE WARSTWY RASTROWE</translation>
+        <translation>ZAIMPORTOWANE_WARSTWY_RASTROWE</translation>
     </message>
     <message>
         <location filename="../utils.py" line="60"/>
         <source>IMPORTED VECTORS</source>
-        <translation>ZAIMPORTOWANE WARSTWY WEKTOROWE</translation>
+        <translation>ZAIMPORTOWANE_WARSTWY_WEKTOROWE</translation>
     </message>
     <message>
         <location filename="../utils.py" line="123"/>
@@ -84,12 +84,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../utils.py" line="558"/>
+        <location filename="../utils.py" line="561"/>
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="225"/>
+        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="220"/>
         <source>PostGIS Toolbox - Query editor</source>
         <translation>PostGIS Toolbox - Edytor zapytań</translation>
     </message>
@@ -116,335 +116,409 @@
     <message>
         <location filename="../DBManager/DBManager.py" line="193"/>
         <source>Already disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Już rozłączono.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="207"/>
         <source>PostGIS extension was detected, version is: {&apos;, &apos;.join(simple_pg_ver)}</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozszerzenie PostGIS zostało wykryte, wersja to: {&apos;, &apos;.join(simple_pg_ver)}</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="227"/>
         <source>No PostGIS extension was detected in the selected database!</source>
-        <translation type="unfinished"></translation>
+        <translation>W wybranej bazie danych nie wykryto rozszerzenia PostGIS!</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="221"/>
         <source>PostGIS version check failed!
 Connect to correct PostgreSQL server and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się sprawdzić wersji PostGIS!
+Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="249"/>
         <source>Enter a name for the new schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Podaj nazwę nowego schematu</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="280"/>
         <source>Schema name...</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa schematu...</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="257"/>
         <source>Enter a name for the new database</source>
-        <translation type="unfinished"></translation>
+        <translation>Podaj nazwę dla nowej bazy danych</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="288"/>
         <source>Database name...</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa bazy danych...</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="280"/>
         <source>Enter a name for schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Podaj nazwę schematu</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="288"/>
         <source>Enter a name for database</source>
-        <translation type="unfinished"></translation>
+        <translation>Podaj nazwę bazy danych</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="350"/>
         <source>Successfully added &quot;{db_name}&quot; and set as active database.</source>
-        <translation type="unfinished"></translation>
+        <translation>Udało się dodać &quot;{db_name}&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="358"/>
         <source>An error occurred while adding a database!</source>
-        <translation type="unfinished"></translation>
+        <translation>Wystąpił błąd podczas dodawania bazy danych!</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="367"/>
         <source>Successfully added &quot;{schema_name}&quot; and set as active schema.</source>
-        <translation type="unfinished"></translation>
+        <translation>Udało się dodać &quot;{schema_name}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="374"/>
         <source>An error occurred while adding a schema!</source>
-        <translation type="unfinished"></translation>
+        <translation>Podczas dodawania schematu wystąpił błąd!</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="382"/>
         <source>Successfully renamed &quot;{self.old_name}&quot; to &quot;{db_name}&quot; and set as active database.</source>
-        <translation type="unfinished"></translation>
+        <translation>Udało się zmienić nazwę &quot;{self.old_name}&quot; na &quot;{db_name}&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="390"/>
         <source>An error occurred while renaming the database!</source>
-        <translation type="unfinished"></translation>
+        <translation>Podczas zmiany nazwy bazy danych wystąpił błąd!</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="399"/>
         <source>Successfully renamed &quot;{self.old_name}&quot; to &quot;{schema_name}&quot; and set as active schema.</source>
-        <translation type="unfinished"></translation>
+        <translation>Udało się zmienić nazwę &quot;{self.old_name}&quot; na &quot;{schema_name}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="407"/>
         <source>An error occurred while renaming the schema!</source>
-        <translation type="unfinished"></translation>
+        <translation>Podczas zmiany nazwy schematu wystąpił błąd!</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="415"/>
         <source>Successfully removed &quot;{self.old_name}&quot; database.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pomyślnie usunięto bazę danych &quot;{self.old_name}&quot;.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="424"/>
         <source>An error occurred while removing the database!</source>
-        <translation type="unfinished"></translation>
+        <translation>Podczas usuwania bazy danych wystąpił błąd!</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="433"/>
         <source>Successfully removed &quot;{self.old_name}&quot; schema.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pomyślnie usunięto schemat &quot;{self.old_name}&quot;.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="439"/>
         <source>An error occurred while removing the schema!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DBManager/db_utils/db_utils.py" line="36"/>
-        <source>disable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DBManager/db_utils/db_utils.py" line="37"/>
-        <source>allow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DBManager/db_utils/db_utils.py" line="38"/>
-        <source>prefer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DBManager/db_utils/db_utils.py" line="39"/>
-        <source>require</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DBManager/db_utils/db_utils.py" line="40"/>
-        <source>verify-ca</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DBManager/db_utils/db_utils.py" line="41"/>
-        <source>verity-full</source>
-        <translation type="unfinished"></translation>
+        <translation>Podczas usuwania schematu wystąpił błąd!</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/db_manager_add.py" line="33"/>
         <source>Invalid name entered!
 Try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wprowadzono nieprawidłową nazwę!
+Spróbuj ponownie.</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/db_manager_add.py" line="38"/>
         <source>The name entered is already in use!
 Try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wprowadzona nazwa jest już używana!
+Spróbuj ponownie.</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.py" line="33"/>
         <source>Connection name is required!</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa połączenia jest wymagana!</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.py" line="95"/>
         <source>Connection to {self.conn_name_lineEdit.text()} was successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>Połączenie z {self.conn_name_lineEdit.text()} zakończyło się sukcesem.</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.py" line="100"/>
         <source>Connection failed - consult message log for details.</source>
-        <translation type="unfinished"></translation>
+        <translation>Połączenie nie powiodło się - sprawdź szczegóły w dzienniku komunikatów.</translation>
     </message>
     <message>
         <location filename="../ImportVector/ImportVector.py" line="106"/>
         <source>An error occurred while importing the raster.</source>
-        <translation type="unfinished"></translation>
+        <translation>Podczas importu rastra wystąpił błąd.</translation>
     </message>
     <message>
         <location filename="../ImportVector/ImportVector.py" line="111"/>
         <source>The import was aborted by the user.</source>
-        <translation type="unfinished"></translation>
+        <translation>Import został przerwany przez użytkownika.</translation>
     </message>
     <message>
-        <location filename="../ImportRaster/ImportRaster.py" line="182"/>
+        <location filename="../ImportRaster/ImportRaster.py" line="184"/>
         <source>The raster import has been completed successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Import rastra został zakończony pomyślnie.</translation>
     </message>
     <message>
         <location filename="../ImportRaster/UI/import_raster_ui.py" line="77"/>
         <source>The file size exceeds the maximum size allowed for an untiled raster.
 The tiling option has been forced.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozmiar pliku przekracza maksymalny rozmiar dozwolony dla niepokaflowanego rastra.
+Opcja kafelkowania została wymuszona.</translation>
     </message>
     <message>
         <location filename="../ImportRaster/UI/import_raster_ui.py" line="130"/>
         <source>Import raster into PostGIS database</source>
-        <translation type="unfinished"></translation>
+        <translation>Import danych rastrowych do bazy danych PostGIS</translation>
     </message>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.py" line="165"/>
         <source>Setup correct parameters!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustaw prawidłowe parametry!</translation>
     </message>
     <message>
         <location filename="../ImportVector/ImportVector.py" line="116"/>
         <source>The vector import has been completed successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Import wektora został zakończony pomyślnie.</translation>
     </message>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.py" line="106"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd</translation>
     </message>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.py" line="106"/>
         <source>The selected file is not a vector format file!</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybrany plik nie jest plikiem w formacie wektorowym!</translation>
     </message>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.py" line="129"/>
         <source>Import vector into PostGIS database</source>
-        <translation type="unfinished"></translation>
+        <translation>Importuj dane wektorowe do bazy danych PostGIS</translation>
     </message>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.py" line="165"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Ostrzeżenie</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorClip.py" line="52"/>
         <source>Layer to be clipped</source>
-        <translation type="unfinished"></translation>
+        <translation>Warstwa, która ma być przycięta</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="92"/>
         <source>Force output as singlepart</source>
-        <translation type="unfinished"></translation>
+        <translation>Wymuś wyjście jako jednoczęściowe</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="52"/>
         <source>Output schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Schemat wyjściowy</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="59"/>
         <source>Output table name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa tabeli wyjściowej</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="95"/>
         <source>Overwrite table if exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Nadpisz tabelę jeżeli istnieje</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="100"/>
         <source>Add result layer to the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj warstwę wynikową do projektu</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorClip.py" line="206"/>
         <source>Clip</source>
-        <translation type="unfinished"></translation>
+        <translation>Przytnij</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="52"/>
         <source>Layer to be subtracted</source>
-        <translation type="unfinished"></translation>
+        <translation>Warstwa do odjęcia</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="212"/>
         <source>Difference</source>
-        <translation type="unfinished"></translation>
+        <translation>Różnica</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="43"/>
         <source>Input layers</source>
-        <translation type="unfinished"></translation>
+        <translation>Warstwy wejściowe</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="208"/>
         <source>Merge</source>
-        <translation type="unfinished"></translation>
+        <translation>Połącz</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="48"/>
         <source>Input layer:</source>
-        <translation type="unfinished"></translation>
+        <translation>Warstwa wejściowa:</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="55"/>
         <source>Neighbor layer: [point layer]</source>
-        <translation type="unfinished"></translation>
+        <translation>Warstwa sąsiednia: [point layer]</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="62"/>
         <source>Minimum distance:</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimalna odległość:</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="72"/>
         <source>Maximum distance:</source>
-        <translation type="unfinished"></translation>
+        <translation>Maksymalna odległość:</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="82"/>
         <source>Output schema:</source>
-        <translation type="unfinished"></translation>
+        <translation>Schemat wyjściowy:</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="89"/>
         <source>Output table name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa tabeli wyjściowej:</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="251"/>
         <source>Nearest Neighbor</source>
-        <translation type="unfinished"></translation>
+        <translation>Najbliższy sąsiad</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/vec_alg_utils.py" line="128"/>
+        <location filename="../VectorAlgorithms/vec_alg_utils.py" line="140"/>
         <source>No active connection to the database was found.
 Use DB Manager and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie znaleziono aktywnego połączenia z bazą danych.
+Użyj DB Manager i spróbuj ponownie.</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="34"/>
+        <source>Band number</source>
+        <translation>Numer kanału</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="67"/>
+        <source>Output path</source>
+        <translation>Ścieżka wyjściowa</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="126"/>
+        <source>There was a problem with opening a file.</source>
+        <translation>Wystąpił problem z otwarciem pliku.</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="136"/>
+        <source>Raster summary</source>
+        <translation>Statystyki rastra</translation>
+    </message>
+    <message>
+        <location filename="../postgis_toolbox.py" line="183"/>
+        <source>There is no connection to the PostGIS database!</source>
+        <translation>Nie ma połączenia z bazą danych PostGIS!</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/db_utils/db_utils.py" line="36"/>
+        <source>disable</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../DBManager/db_utils/db_utils.py" line="37"/>
+        <source>allow</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../DBManager/db_utils/db_utils.py" line="38"/>
+        <source>prefer</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../DBManager/db_utils/db_utils.py" line="39"/>
+        <source>require</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../DBManager/db_utils/db_utils.py" line="40"/>
+        <source>verify-ca</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../DBManager/db_utils/db_utils.py" line="41"/>
+        <source>verity-full</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="104"/>
+        <source>Trying to connect...</source>
+        <translation>Próba połączenia...</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="116"/>
+        <source>Failed to connect.</source>
+        <translation>Nie udało się połączyć.</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="141"/>
+        <source>Successfully selected &quot;{db_name}&quot; as active database.</source>
+        <translation>Wybrano &quot;{db_name}&quot; jako aktywną bazę danych.</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="158"/>
+        <source>Selection failed - db user permission error.</source>
+        <translation>Wybór nie powiódł się - błąd uprawnień użytkownika bazy danych.</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="164"/>
+        <source>Selection failed - connect to correct PostgreSQL server or no databases detected in server.</source>
+        <translation>Wybór nie powiódł się - połącz się z właściwym serwerem PostgreSQL lub nie wykryto żadnych baz danych na serwerze.</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/UI/db_manager_menu.py" line="35"/>
+        <source>Not connected.</source>
+        <translation>Nie podłączony.</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="321"/>
+        <source>Deletion of the &quot;{self.old_name}&quot; schema is irreversible!
+Do you want to continue?</source>
+        <translation>Usunięcie schematu &quot;{self.old_name}&quot; jest nieodwracalne!
+Czy chcesz kontynuować?</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="329"/>
+        <source>Deletion of the &quot;{self.old_name}&quot; database is irreversible!
+Do you want to continue?</source>
+        <translation>Usunięcie bazy danych &quot;{self.old_name}&quot; jest nieodwracalne!
+Czy chcesz kontynuować?</translation>
     </message>
 </context>
 <context>
     <name>CustomDbSqlWindow</name>
     <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="390"/>
+        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="385"/>
         <source>Table name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa tabeli</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="406"/>
+        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="401"/>
         <source>View name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa widoku</translation>
     </message>
 </context>
 <context>
@@ -452,325 +526,220 @@ Use DB Manager and try again.</source>
     <message>
         <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="277"/>
         <source>PostGIS Toolbox - SQL Query Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>PostGIS Toolbox - Konstruktor zapytań SQL</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="281"/>
         <source>SELECT</source>
-        <translation type="unfinished"></translation>
+        <translation>SELECT</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="283"/>
         <source>FROM</source>
-        <translation type="unfinished"></translation>
+        <translation>FROM</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="285"/>
         <source>&amp;Reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="289"/>
-        <source>Tabele</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="296"/>
-        <source>Kolumny</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="298"/>
-        <source>Agregujące</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="300"/>
-        <source>Przestrzenne (geometryczne)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="303"/>
-        <source>Matematyczne</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="305"/>
-        <source>Tekstowe</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="307"/>
-        <source>Operatory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="309"/>
-        <source>Dane</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="312"/>
-        <source>Pierwsze 10 wartości</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Reset</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="314"/>
-        <source>Wartości kolumn</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="356"/>
         <source>Table (with spatial index)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela (z indeksem przestrzennym)</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="320"/>
-        <source>Tabela (docelowa)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="322"/>
-        <source>Użyj indeksu przestrzennego</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="325"/>
-        <source>Indeks przestrzenny</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="330"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="288"/>
         <source>Show system tables</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż tabele systemowe</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="332"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="290"/>
         <source>Tables</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabele</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="349"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="307"/>
         <source>Columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="336"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="294"/>
         <source>Aggregates</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje agregujące</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="338"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="296"/>
         <source>Functions</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje przestrzenne PostGIS</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="340"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="298"/>
         <source>Math</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje matematyczne</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="342"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="300"/>
         <source>Strings functions</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje ciągów znaków</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="344"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="302"/>
         <source>Operators</source>
-        <translation type="unfinished"></translation>
+        <translation>Operatory</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="346"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="304"/>
         <source>Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="351"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="309"/>
         <source>Only 10 first values</source>
-        <translation type="unfinished"></translation>
+        <translation>Tylko 10 pierwszych wartości</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="353"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="311"/>
         <source>Columns values</source>
-        <translation type="unfinished"></translation>
+        <translation>Wartości kolumn</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="359"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="317"/>
         <source>Table (Target)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela (Target)</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="361"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="319"/>
         <source>Use spatial index</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastosowanie indeksu przestrzennego</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="363"/>
+        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="321"/>
         <source>Spatial index</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks przestrzenny</translation>
     </message>
 </context>
 <context>
     <name>DBManager</name>
     <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="150"/>
-        <source>Tabele</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="153"/>
+        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="148"/>
         <source>Tables</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabele</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="190"/>
+        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="185"/>
         <source>&amp;Databases</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Bazy danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="420"/>
         <source>Providers</source>
-        <translation type="unfinished"></translation>
+        <translation>Dostawcy</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="433"/>
         <source>&amp;Database</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Bazy danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="435"/>
         <source>&amp;Schema</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Schematy</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="437"/>
         <source>&amp;Table</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tabele</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="263"/>
+        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="258"/>
         <source>&amp;Default</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Domyślne</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="391"/>
         <source>Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="393"/>
         <source>Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="395"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Podgląd</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="456"/>
         <source>&amp;Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Odśwież</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="458"/>
         <source>&amp;SQL Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Okno SQL</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="461"/>
         <source>&amp;Exit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Wyjdź</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="475"/>
         <source>&amp;Import Layer/File…</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Importuj warstwę/plik...</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="478"/>
         <source>&amp;Export to File…</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Eksportuj do pliku...</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="196"/>
         <source>No database selected or you are not connected to it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano bazy danych lub nie masz z nią połączenia.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="206"/>
         <source>Query ({0})</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapytanie ({0})</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="354"/>
+        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="349"/>
         <source>Create a table</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="364"/>
-        <source>Utwórz tabelę</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="371"/>
-        <source>Kolumny z unikalnymi wartościami</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="375"/>
-        <source>Kolumna z unikalnymi wartościami</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="385"/>
-        <source>Stwórz tabelę na podstawie zapytania.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="385"/>
-        <source>Nazwa tabeli</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="401"/>
-        <source>Stwórz widok na podstawie zapytania.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="401"/>
-        <source>Nazwa widoku</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz tabelę</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="175"/>
         <source>Select the table you want export to file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz tabelę, którą chcesz wyeksportować do pliku.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="181"/>
         <source>Select a vector or a tabular layer you want export.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz warstwę wektorową lub tabelaryczną, którą chcesz wyeksportować.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="216"/>
         <source>Layer ({0})</source>
-        <translation type="unfinished"></translation>
+        <translation>Warstwa ({0})</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="223"/>
         <source>Query</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapytanie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="384"/>
         <source>DB Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Menedżer baz danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager.py" line="445"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Domyślnie</translation>
     </message>
 </context>
 <context>
@@ -778,47 +747,47 @@ Use DB Manager and try again.</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_manager_plugin.py" line="45"/>
         <source>DB Manager…</source>
-        <translation type="unfinished"></translation>
+        <translation>Menedżer baz danych...</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="521"/>
         <source>DB Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Menedżer baz danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/layer_preview.py" line="104"/>
         <source>Unable to find a valid unique field</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie można znaleźć prawidłowego unikalnego pola</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/table_viewer.py" line="44"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiuj</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/data_model.py" line="179"/>
         <source>Executing SQL</source>
-        <translation type="unfinished"></translation>
+        <translation>Wykonywanie SQL</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="218"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="189"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="320"/>
         <source>Column(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/info_model.py" line="40"/>
         <source>Server version: </source>
-        <translation type="unfinished"></translation>
+        <translation>Wersja serwera: </translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="33"/>
@@ -828,7 +797,7 @@ Use DB Manager and try again.</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="34"/>
         <source>User:</source>
-        <translation type="unfinished"></translation>
+        <translation>Użytkownik:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/spatialite/info_model.py" line="55"/>
@@ -879,7 +848,7 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/info_model.py" line="172"/>
         <source>User has privileges:</source>
-        <translation type="unfinished"></translation>
+        <translation>Użytkownik posiada uprawnienia:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/info_model.py" line="173"/>
@@ -909,7 +878,7 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/info_model.py" line="161"/>
         <source>Schema details</source>
-        <translation type="unfinished"></translation>
+        <translation>Właściwości schematu</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/info_model.py" line="169"/>
@@ -924,22 +893,22 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="58"/>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>Widok</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="58"/>
         <source>Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/info_model.py" line="198"/>
         <source>Rows:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiesze:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="89"/>
         <source>Unknown (&lt;a href=&quot;action:rows/count&quot;&gt;find out&lt;/a&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieznany (&lt;a href=&quot;action:rows/count&quot;&gt;zobacz&lt;/a&gt;)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="162"/>
@@ -979,12 +948,12 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="458"/>
         <source>Triggers</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyzwalacze</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/info_model.py" line="353"/>
         <source>View definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyświetl definicję</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="573"/>
@@ -1004,12 +973,12 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="595"/>
         <source>Undefined</source>
-        <translation type="unfinished"></translation>
+        <translation>Undefined</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="598"/>
         <source>Spatial ref:</source>
-        <translation type="unfinished"></translation>
+        <translation>Odniesienie przestrzenne:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="617"/>
@@ -1058,7 +1027,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/plugin.py" line="230"/>
         <source>&amp;Re-connect</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Połącz ponownie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/plugin.py" line="232"/>
@@ -1073,7 +1042,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/plugin.py" line="242"/>
         <source>&amp;Schema</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Schemat</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="366"/>
@@ -1093,7 +1062,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/__init__.py" line="36"/>
         <source>&amp;Table</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tabela</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/plugin.py" line="255"/>
@@ -1138,7 +1107,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="436"/>
         <source>Select an empty schema for deletion.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz pusty schemat do usunięcia.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="440"/>
@@ -1148,7 +1117,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="480"/>
         <source>Select a table to edit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz tabelę do edycji.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="485"/>
@@ -1158,7 +1127,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="499"/>
         <source>Select a table/view for deletion.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz tabelę/widok do usunięcia.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="503"/>
@@ -1168,7 +1137,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="518"/>
         <source>Select a table to empty it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz tabelę, aby ją opróżnić.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="521"/>
@@ -1178,7 +1147,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="546"/>
         <source>Select a table/view.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz tabelę/widok.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="976"/>
@@ -1188,7 +1157,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="979"/>
         <source>Table triggers</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyzwalacze tabeli</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="997"/>
@@ -1198,7 +1167,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1001"/>
         <source>Table trigger</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyzwalacz tabeli</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1106"/>
@@ -1208,7 +1177,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1110"/>
         <source>Spatial Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks przestrzenny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1198"/>
@@ -1233,7 +1202,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/plugin.py" line="608"/>
         <source>Unique</source>
-        <translation type="unfinished"></translation>
+        <translation>Unikalny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1311"/>
@@ -1243,7 +1212,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/plugin.py" line="610"/>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieznany</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/__init__.py" line="29"/>
@@ -1273,7 +1242,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="54"/>
         <source>SQLite list tables cache:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pamięć podręczna listy tabel SQLite:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="69"/>
@@ -1288,7 +1257,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="67"/>
         <source>Rows (estimation):</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiersze (oszacowanie):</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="89"/>
@@ -1338,12 +1307,12 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="320"/>
         <source>Status</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="292"/>
         <source>Validated</source>
-        <translation type="unfinished"></translation>
+        <translation>Zatwierdzone</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="292"/>
@@ -1388,7 +1357,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="320"/>
         <source>Uniqueness</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyjątkowość</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="320"/>
@@ -1408,7 +1377,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="199"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Tak</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="199"/>
@@ -1453,12 +1422,12 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="501"/>
         <source>Staleness:</source>
-        <translation type="unfinished"></translation>
+        <translation>Stałość:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="504"/>
         <source>Stale since:</source>
-        <translation type="unfinished"></translation>
+        <translation>Stale od:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="507"/>
@@ -1468,7 +1437,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="510"/>
         <source>Use no index:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie używaj indeksu:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/info_model.py" line="577"/>
@@ -1483,7 +1452,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/plugin.py" line="351"/>
         <source>Table Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks tabeli</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="58"/>
@@ -1508,7 +1477,7 @@ Query:
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="136"/>
         <source>Scripts:</source>
-        <translation type="unfinished"></translation>
+        <translation>Skrypty:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="143"/>
@@ -1535,7 +1504,7 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/info_model.py" line="238"/>
         <source>Rules</source>
-        <translation type="unfinished"></translation>
+        <translation>Zasady</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/__init__.py" line="35"/>
@@ -1545,7 +1514,7 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/vlayers/info_model.py" line="41"/>
         <source>SQLite version:</source>
-        <translation type="unfinished"></translation>
+        <translation>Wersja SQLite:</translation>
     </message>
 </context>
 <context>
@@ -1553,17 +1522,17 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_model.py" line="313"/>
         <source>Databases</source>
-        <translation type="unfinished"></translation>
+        <translation>Bazy danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_model.py" line="613"/>
         <source>Invalid layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieprawidłowa warstwa</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_model.py" line="613"/>
         <source>Unable to load the layer {0}</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie można załadować warstwy {0}</translation>
     </message>
 </context>
 <context>
@@ -1571,42 +1540,42 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_tree.py" line="126"/>
         <source>Rename…</source>
-        <translation type="unfinished">Zmień nazwę</translation>
+        <translation>Zmień nazwę...</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_tree.py" line="127"/>
         <source>Delete…</source>
-        <translation type="unfinished">Usuń</translation>
+        <translation>Usuń...</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_tree.py" line="131"/>
         <source>Add to Canvas</source>
-        <translation type="unfinished">Dodaj do mapy</translation>
+        <translation>Dodaj do mapy</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_tree.py" line="136"/>
         <source>Re-connect</source>
-        <translation type="unfinished">Połącz ponownie</translation>
+        <translation>Połącz ponownie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_tree.py" line="137"/>
         <source>Remove</source>
-        <translation type="unfinished">Usuń</translation>
+        <translation>Usuń</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_tree.py" line="140"/>
         <source>New Connection…</source>
-        <translation type="unfinished">Nowe połączenie</translation>
+        <translation>Nowe połączenie...</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_tree.py" line="165"/>
         <source>%1 is an invalid layer - not loaded</source>
-        <translation type="unfinished">%1 jest nieprawidłową warstwą - nie wczytano.</translation>
+        <translation>%1 jest nieprawidłową warstwą - nie wczytano</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_tree.py" line="167"/>
         <source>%1 is an invalid layer and cannot be loaded. Please check the &lt;a href=&quot;#messageLog&quot;&gt;message log&lt;/a&gt; for further info.</source>
-        <translation type="unfinished">%1 jest nieprawidłową warstwą i nie może zostać wczytana. Sprawdź &lt;a href=&quot;#messageLog&quot;&gt;log&lt;/a&gt; po więcej informacji.</translation>
+        <translation>%1 jest nieprawidłową warstwą i nie może zostać wczytana. Sprawdź &lt;a href=&quot;#messageLog&quot;&gt;log&lt;/a&gt; po więcej informacji.</translation>
     </message>
 </context>
 <context>
@@ -1614,27 +1583,27 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgAddGeometryColumn.py" line="84"/>
         <source>Add geometry column</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj kolumnę geometrii</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgAddGeometryColumn.py" line="85"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgAddGeometryColumn.py" line="86"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgAddGeometryColumn.py" line="87"/>
         <source>Dimensions</source>
-        <translation type="unfinished"></translation>
+        <translation>Wymiary</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgAddGeometryColumn.py" line="88"/>
         <source>SRID</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1642,22 +1611,22 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateConstraint.py" line="50"/>
         <source>Add constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj ograniczenie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateConstraint.py" line="51"/>
         <source>Column</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumna</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateConstraint.py" line="52"/>
         <source>Primary key</source>
-        <translation type="unfinished"></translation>
+        <translation>Klucz podstawowy</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateConstraint.py" line="53"/>
         <source>Unique</source>
-        <translation type="unfinished"></translation>
+        <translation>Unikalny</translation>
     </message>
 </context>
 <context>
@@ -1665,17 +1634,17 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateIndex.py" line="47"/>
         <source>Create index</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz indeks</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateIndex.py" line="48"/>
         <source>Column</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumna</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateIndex.py" line="49"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa</translation>
     </message>
 </context>
 <context>
@@ -1683,62 +1652,62 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="154"/>
         <source>Create Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz tabelę</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="155"/>
         <source>Schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Schemat</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="163"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="157"/>
         <source>Add field</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj pole</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="158"/>
         <source>Delete field</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń pole</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="159"/>
         <source>Up</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="160"/>
         <source>Down</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="161"/>
         <source>Primary key</source>
-        <translation type="unfinished"></translation>
+        <translation>Klucz podstawowy</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="162"/>
         <source>Create geometry column</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj kolumnę geometrii</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="164"/>
         <source>Dimensions</source>
-        <translation type="unfinished"></translation>
+        <translation>Wymiary</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="165"/>
         <source>SRID</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCreateTable.py" line="166"/>
         <source>Create spatial index</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz indeks przestrzenny</translation>
     </message>
 </context>
 <context>
@@ -1746,22 +1715,22 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgDbError.py" line="82"/>
         <source>Database Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd bazy danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgDbError.py" line="83"/>
         <source>An error occurred</source>
-        <translation type="unfinished"></translation>
+        <translation>Wystąpił błąd</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgDbError.py" line="84"/>
         <source>An error occurred when executing a query</source>
-        <translation type="unfinished"></translation>
+        <translation>Wystąpił błąd podczas wykonywania zapytania</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgDbError.py" line="85"/>
         <source>Query</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapytanie</translation>
     </message>
 </context>
 <context>
@@ -1769,47 +1738,47 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="104"/>
         <source>Export to vector file</source>
-        <translation type="unfinished"></translation>
+        <translation>Eksportuj do pliku wektorowego</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="105"/>
         <source>Save as</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz jako</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="106"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcje</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="107"/>
         <source>Replace destination file (if exists)</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastąp plik docelowy (jeśli istnieje)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="108"/>
         <source>Source SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>Źrodłówy SRID</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="109"/>
         <source>Target SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>Docelowy SRID</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="110"/>
         <source>Encoding</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodowanie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="111"/>
         <source>…</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgExportVector.py" line="112"/>
         <source>Format</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1817,42 +1786,42 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgFieldProperties.py" line="84"/>
         <source>Field properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Właściwości pola</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgFieldProperties.py" line="85"/>
         <source>Can be NULL</source>
-        <translation type="unfinished"></translation>
+        <translation>Może być NULL</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgFieldProperties.py" line="86"/>
         <source>Default value expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyrażenie wartości domyślnej</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgFieldProperties.py" line="87"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgFieldProperties.py" line="88"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgFieldProperties.py" line="91"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Properly quoted PostgreSQL expression (e.g. &lt;code&gt;4&lt;/code&gt;, &lt;code&gt;&apos;text&apos;&lt;/code&gt; or  &lt;code&gt;nextval(&apos;foo_id_seq&apos;)&lt;/code&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Prawidłowo cytowane wyrażenie PostgreSQL (e.g. &lt;code&gt;4&lt;/code&gt;, &lt;code&gt;&apos;text&apos;&lt;/code&gt; or  &lt;code&gt;nextval(&apos;foo_id_seq&apos;)&lt;/code&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgFieldProperties.py" line="90"/>
         <source>Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Długość</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgFieldProperties.py" line="92"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarz</translation>
     </message>
 </context>
 <context>
@@ -1860,92 +1829,92 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="191"/>
         <source>Import vector layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Import vector layer</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="192"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Wejście</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="193"/>
         <source>…</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="194"/>
         <source>Import only selected features</source>
-        <translation type="unfinished"></translation>
+        <translation>Importuj tylko wybrane obiekty</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="195"/>
         <source>Output table</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela wyjściowa</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="196"/>
         <source>Schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Schemat</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="197"/>
         <source>Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="198"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcje</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="199"/>
         <source>Replace destination table (if exists)</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastąp tabelę docelową (jeśli istnieje)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="200"/>
         <source>Primary key</source>
-        <translation type="unfinished"></translation>
+        <translation>Klucz podstawowy</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="201"/>
         <source>Geometry column</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumna geometryczna</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="202"/>
         <source>Encoding</source>
-        <translation type="unfinished"></translation>
+        <translation>Kodowanie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="203"/>
         <source>Do not promote to multi-part</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie promuj do geometrii wieloczęściowej</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="204"/>
         <source>Create spatial index</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz indeks przestrzenny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="205"/>
         <source>Convert field names to lowercase</source>
-        <translation type="unfinished"></translation>
+        <translation>Konwertuj nazwy pól na małe litery</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="206"/>
         <source>Target SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>Docelowy SRID</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="207"/>
         <source>Source SRID</source>
-        <translation type="unfinished"></translation>
+        <translation>Źrodłówy SRID</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgImportVector.py" line="208"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarz</translation>
     </message>
 </context>
 <context>
@@ -1953,284 +1922,271 @@ This table is essential for many GIS applications for enumeration of tables.</so
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="203"/>
         <source>SQL Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Okno SQL</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="204"/>
         <source>Retrieve
 columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Odnaleźć
+kolumny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="206"/>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaktualizuj</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="207"/>
         <source>Set filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustaw filtr</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="208"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Avoid selecting feature by id. Sometimes - especially when running expensive queries/views - fetching the data sequentially instead of fetching features by id can be much quicker.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unikaj wybierania według identyfikatora obiektu. Czasami – szczególnie w przypadku uruchamiania rozbudowanych zapytań/widoków – pobieranie danych sekwencyjnie zamiast pobierania obiektów według identyfikatora może być znacznie szybsze.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="209"/>
         <source>Avoid selecting by feature id</source>
-        <translation type="unfinished"></translation>
+        <translation>Unikaj wybierania według identyfikatora obiektu</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="210"/>
         <source>Saved query</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisane zapytanie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="211"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="212"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="213"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="214"/>
         <source>Execute query (Ctrl+R)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wykonaj zapytanie (Ctrl+R)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="215"/>
         <source>Execute</source>
-        <translation type="unfinished"></translation>
+        <translation>Wykonaj</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="216"/>
         <source>Ctrl+R</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="217"/>
         <source>&amp;Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Wyczyść</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="218"/>
         <source>Layer name (prefix)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa warstwy (przedrostek)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="219"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="220"/>
         <source>Vector</source>
-        <translation type="unfinished"></translation>
+        <translation>Wektor</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="221"/>
         <source>Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Raster</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="222"/>
         <source>Column(s) with
 unique values</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny z unikalnymi wartościami</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlLayerWindow.py" line="224"/>
         <source>Geometry column</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumna geometryczna</translation>
     </message>
 </context>
 <context>
     <name>DbManagerDlgSqlWindow</name>
     <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="366"/>
-        <source>Nazwa</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/CustomQueryBuilder.py" line="368"/>
-        <source>Usuń</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="10"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="282"/>
         <source>SQL Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Okno SQL</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="12"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="283"/>
         <source>Saved query</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisane zapytanie</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="13"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="284"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="14"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="285"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="286"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="16"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="287"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Load SQL file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Załaduj plik SQL&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="18"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="288"/>
         <source>Load File</source>
-        <translation type="unfinished"></translation>
+        <translation>Wczytaj plik</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="20"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="289"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the query as SQL file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zapisz zapytanie jako plik SQL&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="22"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="290"/>
         <source>Save As File</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz jako plik</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="25"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="292"/>
         <source>Query</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapytanie</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="27"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="294"/>
         <source>Rows affected</source>
-        <translation type="unfinished"></translation>
+        <translation>Dotknięte wiersze</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="29"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="296"/>
         <source>Duration (secs)</source>
-        <translation type="unfinished"></translation>
+        <translation>Czas trwania (sek.)</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="30"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="297"/>
         <source>Execute query (Ctrl+R)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wykonaj zapytanie (Ctrl+R)</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="32"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="298"/>
         <source>Execute</source>
-        <translation type="unfinished"></translation>
+        <translation>Wykonaj</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="33"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="299"/>
         <source>Ctrl+R</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="35"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="300"/>
         <source>Create a view</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz widok</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="37"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="301"/>
         <source>&amp;Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Wyczyść</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="38"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="302"/>
         <source>Query History</source>
-        <translation type="unfinished"></translation>
+        <translation>Historia zapytań</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="40"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="303"/>
         <source>Load as new layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Wczytaj jako nową warstwę</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="42"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="304"/>
         <source>Retrieve 
 columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Odnaleźć
+kolumny</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="45"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="306"/>
         <source>Set filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Ustaw filtr</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="47"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="307"/>
         <source>Load</source>
-        <translation type="unfinished"></translation>
+        <translation>Wczytaj</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="48"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="308"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Avoid selecting feature by id. Sometimes - especially when running expensive queries/views - fetching the data sequentially instead of fetching features by id can be much quicker.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unikaj wybierania według identyfikatora obiektu. Czasami – szczególnie w przypadku uruchamiania rozbudowanych zapytań/widoków – pobieranie danych sekwencyjnie zamiast pobierania obiektów według identyfikatora może być znacznie szybsze.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="50"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="309"/>
         <source>Avoid selecting by feature id</source>
-        <translation type="unfinished"></translation>
+        <translation>Unikaj wybierania według identyfikatora obiektu</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="52"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="310"/>
         <source>Layer name (prefix)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa warstwy (przedrostek)</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="54"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="311"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="55"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="312"/>
         <source>Vector</source>
-        <translation type="unfinished"></translation>
+        <translation>Wektor</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="56"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="313"/>
         <source>Raster</source>
-        <translation type="unfinished"></translation>
+        <translation>Raster</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="57"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="314"/>
         <source>Column(s) with 
 unique values</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny z unikalnymi wartościami</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="60"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="316"/>
         <source>Geometry column</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumna geometryczna</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="62"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="317"/>
         <source>Cancel query (ESC)</source>
-        <translation type="unfinished"></translation>
+        <translation>Anuluj zapytanie (ESC)</translation>
     </message>
     <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="64"/>
+        <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgSqlWindow.py" line="318"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomMainSQLWindowDialog.py" line="15"/>
-        <source>Delete2222</source>
-        <translation type="unfinished"></translation>
+        <translation>Anuluj</translation>
     </message>
 </context>
 <context>
@@ -2238,102 +2194,102 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="151"/>
         <source>Table properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Właściwości tabeli</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="152"/>
         <source>Table columns:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny tabeli:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="153"/>
         <source>Add column</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj kolumnę</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="154"/>
         <source>Add geometry column</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj kolumnę geometrii</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="155"/>
         <source>Edit column</source>
-        <translation type="unfinished"></translation>
+        <translation>Edytuj kolumnę</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="156"/>
         <source>Delete column</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń kolumnę</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="157"/>
         <source>Columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="158"/>
         <source>Primary, foreign keys, unique and check constraints:</source>
-        <translation type="unfinished"></translation>
+        <translation>Klucze podstawowe, klucze obce, ograniczenia unikalne i sprawdzające:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="159"/>
         <source>Add primary key / unique</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj klucz główny / unikalny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="160"/>
         <source>Delete constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń ograniczenie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="161"/>
         <source>Constraints</source>
-        <translation type="unfinished"></translation>
+        <translation>Ograniczenia</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="162"/>
         <source>Indexes defined for this table:</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeksy zdefiniowane dla tej tabeli:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="163"/>
         <source>Add index</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj indeks</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="164"/>
         <source>Add spatial index</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj indeks przestrzenny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="165"/>
         <source>Delete index</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń indeks</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="166"/>
         <source>Indexes</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeksy</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="167"/>
         <source>Comment defined for this table:</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarz zdefiniowany dla tej tabeli:</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="168"/>
         <source>Add comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj komentarz</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="169"/>
         <source>Delete comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń komentarz</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgTableProperties.py" line="170"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarz</translation>
     </message>
 </context>
 <context>
@@ -2341,92 +2297,87 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="208"/>
         <source>SQL Query Builder</source>
-        <translation type="unfinished"></translation>
+        <translation>Konstruktor zapytań SQL</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="220"/>
         <source>Columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="212"/>
         <source>Tables</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabele</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="211"/>
         <source>Show system tables</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokaż tabele systemowe</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="214"/>
         <source>Aggregates</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje agregujące</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="215"/>
         <source>Functions</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje przestrzenne PostGIS</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="216"/>
         <source>Math</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje matematyczne</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="217"/>
         <source>Strings functions</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje ciągów znaków</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="218"/>
         <source>Operators</source>
-        <translation type="unfinished"></translation>
+        <translation>Operatory</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="219"/>
         <source>Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dane</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="221"/>
         <source>Only 10 first values</source>
-        <translation type="unfinished"></translation>
+        <translation>Tylko 10 pierwszych wartości</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="222"/>
         <source>Columns&apos; values</source>
-        <translation type="unfinished"></translation>
+        <translation>Wartości kolumn</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="223"/>
         <source>Table (with spatial index)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela (z indeksem przestrzennym)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="224"/>
         <source>Table (Target)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela (Docelowa)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="225"/>
         <source>Use spatial index</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastosowanie indeksu przestrzennego</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="226"/>
         <source>Spatial index</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks przestrzenny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgQueryBuilder.py" line="227"/>
         <source>&amp;Reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CustomQueryBuilder/UI/CustomQueryBuilderDialog.py" line="291"/>
-        <source>Pokaż tabele systemowe</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Reset</translation>
     </message>
 </context>
 <context>
@@ -2434,12 +2385,12 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_add_geometry_column.py" line="50"/>
         <source>DB Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Menedżer baz danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_add_geometry_column.py" line="50"/>
         <source>Field name must not be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa pola nie może być pusta.</translation>
     </message>
 </context>
 <context>
@@ -2447,12 +2398,12 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCancelTaskQuery.py" line="51"/>
         <source>Executing SQL…</source>
-        <translation type="unfinished"></translation>
+        <translation>Wykonywanie SQL...</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/ui/ui_DlgCancelTaskQuery.py" line="52"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Anuluj</translation>
     </message>
 </context>
 <context>
@@ -2460,12 +2411,12 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_index.py" line="60"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_index.py" line="60"/>
         <source>Please enter a name for the index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Proszę podać nazwę dla indeksu.</translation>
     </message>
 </context>
 <context>
@@ -2473,52 +2424,52 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="106"/>
         <source>&amp;Create</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Utwórz</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="326"/>
         <source>DB Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Menedżer baz danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="244"/>
         <source>No field selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano pola.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="227"/>
         <source>Field is already at the top.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pole jest już na szczycie.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="247"/>
         <source>Field is already at the bottom.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pole jest już na dole.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="267"/>
         <source>A valid schema must be selected first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Najpierw należy wybrać prawidłowy schemat.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="272"/>
         <source>A valid table name is required.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wymagana jest poprawna nazwa tabeli.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="277"/>
         <source>At least one field is required.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wymagane jest co najmniej jedno pole.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="284"/>
         <source>A name is required for the geometry column.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa kolumny geometrii jest wymagana.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_create_table.py" line="326"/>
         <source>Table created successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela została pomyślnie utworzona.</translation>
     </message>
 </context>
 <context>
@@ -2526,38 +2477,39 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_export_vector.py" line="85"/>
         <source>Choose where to save the file</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz, gdzie zapisać plik</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_export_vector.py" line="200"/>
         <source>Export to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Eksportuj do pliku</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_export_vector.py" line="130"/>
         <source>Output file name is required</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa pliku wyjściowego jest wymagana</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_export_vector.py" line="137"/>
         <source>Invalid source srid: must be an integer</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieprawidłowy identyfikator SRID: musi być liczbą całkowitą</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_export_vector.py" line="145"/>
         <source>Invalid target srid: must be an integer</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieprawidłowy identyfikator SRID: musi być liczbą całkowitą</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_export_vector.py" line="193"/>
         <source>Error {0}
 {1}</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd {0}
+{1}</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_export_vector.py" line="200"/>
         <source>Export finished.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eksport zakończony.</translation>
     </message>
 </context>
 <context>
@@ -2565,17 +2517,17 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_field_properties.py" line="90"/>
         <source>DB Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Menedżer baz danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_field_properties.py" line="87"/>
         <source>Field name must not be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa pola nie może być pusta.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_field_properties.py" line="90"/>
         <source>Field type must not be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ pola nie może być pusty.</translation>
     </message>
 </context>
 <context>
@@ -2583,43 +2535,44 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_import_vector.py" line="155"/>
         <source>Choose the file to import</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz plik do importu</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_import_vector.py" line="385"/>
         <source>Import to Database</source>
-        <translation type="unfinished"></translation>
+        <translation>Importuj do bazy danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_import_vector.py" line="271"/>
         <source>Input layer missing or not valid.</source>
-        <translation type="unfinished"></translation>
+        <translation>Brak warstwy wejściowej lub jest ona nieprawidłowa.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_import_vector.py" line="275"/>
         <source>Output table name is required.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa tabeli wyjściowej jest wymagana.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_import_vector.py" line="280"/>
         <source>Invalid source srid: must be a valid crs.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieprawidłowy identyfikator SRID: musi to być prawidłowy identyfikator CRS.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_import_vector.py" line="286"/>
         <source>Invalid target srid: must be a valid crs.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieprawidłowy identyfikator SRID: musi to być prawidłowy identyfikator CRS.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_import_vector.py" line="368"/>
         <source>Error {0}
 {1}</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd {0}
+{1}</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_import_vector.py" line="385"/>
         <source>Import was successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>Importowanie powiodło się.</translation>
     </message>
 </context>
 <context>
@@ -2627,32 +2580,32 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_layer_window.py" line="109"/>
         <source>QueryLayer</source>
-        <translation type="unfinished"></translation>
+        <translation>WarstwaZapytania</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_layer_window.py" line="112"/>
         <source>Column(s) with unique values</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny z unikalnymi wartościami</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_layer_window.py" line="114"/>
         <source>Column with unique values</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumna z unikalnymi wartościami</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_layer_window.py" line="286"/>
         <source>{0} rows, {1:.3f} seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} wierszy, {1:.3f} sekund</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_layer_window.py" line="571"/>
         <source>Unsaved Changes?</source>
-        <translation type="unfinished"></translation>
+        <translation>Niezapisane zmiany?</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_layer_window.py" line="571"/>
         <source>There are unsaved changes. Do you want to keep them?</source>
-        <translation type="unfinished"></translation>
+        <translation>Istnieją niezapisane zmiany. Czy chcesz je zatrzymać?</translation>
     </message>
 </context>
 <context>
@@ -2660,87 +2613,87 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="128"/>
         <source>{0} - {1} [{2}]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="131"/>
         <source>QueryLayer</source>
-        <translation type="unfinished"></translation>
+        <translation>WarstwaZapytania</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="134"/>
         <source>Column(s) with unique values</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumny z unikalnymi wartościami</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="136"/>
         <source>Column with unique values</source>
-        <translation type="unfinished"></translation>
+        <translation>Kolumna z unikalnymi wartościami</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="293"/>
         <source>Save SQL Query</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisz zapytanie SQL</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="293"/>
         <source>SQL File (*.sql *.SQL)</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik SQL (*.sql *.SQL)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="312"/>
         <source>Load SQL Query</source>
-        <translation type="unfinished"></translation>
+        <translation>Załaduj zapytanie SQL</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="312"/>
         <source>SQL File (*.sql *.SQL);;All Files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Plik SQL (*.sql *.SQL);;Wszystkie pliki (*)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="383"/>
         <source>Canceling…</source>
-        <translation type="unfinished"></translation>
+        <translation>Anulowanie…</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="394"/>
         <source>{0} rows, {1:.3f} seconds</source>
-        <translation type="unfinished"></translation>
+        <translation>{0} wierszy, {1:.3f} sekund</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="411"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="498"/>
         <source>There was an error creating the SQL layer, please check the logs for further information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Podczas tworzenia warstwy SQL wystąpił błąd. Więcej informacji można znaleźć w dziennikach.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="658"/>
         <source>View Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa widoku</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="658"/>
         <source>View name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa widoku</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="666"/>
         <source>Table name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa tabeli</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="717"/>
         <source>Unsaved Changes?</source>
-        <translation type="unfinished"></translation>
+        <translation>Niezapisane zmiany?</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="717"/>
         <source>There are unsaved changes. Do you want to keep them?</source>
-        <translation type="unfinished"></translation>
+        <translation>Istnieją niezapisane zmiany. Czy chcesz je zatrzymać?</translation>
     </message>
 </context>
 <context>
@@ -2748,87 +2701,87 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="311"/>
         <source>DB Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Menedżer baz danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="122"/>
         <source>No columns were selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano żadnych kolumn.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="182"/>
         <source>Delete Column</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń kolumnę</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="182"/>
         <source>Are you sure you want to delete column &apos;{0}&apos;?</source>
-        <translation type="unfinished"></translation>
+        <translation>Czy na pewno chcesz usunąć kolumnę „{0}”?</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="234"/>
         <source>Delete Constraint</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń ograniczenie</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="234"/>
         <source>Are you sure you want to delete constraint &apos;{0}&apos;?</source>
-        <translation type="unfinished"></translation>
+        <translation>Czy na pewno chcesz usunąć ograniczenie „{0}”?</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="253"/>
         <source>No constraints were selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano żadnych ograniczeń.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="287"/>
         <source>The selected table has no geometry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybrana tabela nie ma geometrii.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="290"/>
         <source>Create Spatial Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń indeks przestrzenny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="290"/>
         <source>Create spatial index for field {0}?</source>
-        <translation type="unfinished"></translation>
+        <translation>Utworzyć indeks przestrzenny dla pola {0}?</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="311"/>
         <source>No indices were selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano żadnych indeksów.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="324"/>
         <source>Delete Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń indeks</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="324"/>
         <source>Are you sure you want to delete index &apos;{0}&apos;?</source>
-        <translation type="unfinished"></translation>
+        <translation>Czy na pewno chcesz usunąć indeks „{0}”?</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="350"/>
         <source>Add comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj komentarz</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="350"/>
         <source>Table successfully commented</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela pomyślnie skomentowana</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="365"/>
         <source>Delete comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń komentarz</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_table_properties.py" line="365"/>
         <source>Comment deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>Komentarz usunięty</translation>
     </message>
 </context>
 <context>
@@ -2836,77 +2789,77 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="111"/>
         <source>Add Change Logging Support to a Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj obsługę rejestrowania zmian do tabeli</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="112"/>
         <source>Table should have a primary key</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela powinna mieć klucz główny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="113"/>
         <source>Schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Schemat</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="114"/>
         <source>Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabela</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="115"/>
         <source>Create a view with current content (&lt;TABLE&gt;_current)</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz widok z aktualną zawartością (&lt;TABLE&gt;_current)</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="116"/>
         <source>New columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Nowe kolumny</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="117"/>
         <source>Primary key</source>
-        <translation type="unfinished"></translation>
+        <translation>Klucz podstawowy</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="118"/>
         <source>id_hist</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="119"/>
         <source>Start time</source>
-        <translation type="unfinished"></translation>
+        <translation>Czas rozpoczęcia</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="120"/>
         <source>time_start</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="121"/>
         <source>End time</source>
-        <translation type="unfinished"></translation>
+        <translation>Czas zakończenia</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="122"/>
         <source>time_end</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="123"/>
         <source>User role</source>
-        <translation type="unfinished"></translation>
+        <translation>Rola użytkownika</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="124"/>
         <source>user_role</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugins/versioning/ui_DlgVersioning.py" line="125"/>
         <source>SQL to be executed</source>
-        <translation type="unfinished"></translation>
+        <translation>SQL do wykonania</translation>
     </message>
 </context>
 <context>
@@ -2914,7 +2867,7 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/gpkg/plugin.py" line="79"/>
         <source>There is no defined database connection &quot;{0}&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie ma zdefiniowanego połączenia z bazą danych &quot;{0}&quot;.</translation>
     </message>
 </context>
 <context>
@@ -2922,17 +2875,17 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/gpkg/plugin.py" line="143"/>
         <source>Run &amp;Vacuum</source>
-        <translation type="unfinished"></translation>
+        <translation>Uruchom &amp;Vacuum</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/gpkg/plugin.py" line="144"/>
         <source>&amp;Database</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Baza danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/gpkg/plugin.py" line="152"/>
         <source>No database selected or you are not connected to it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano żadnej bazy danych lub nie jesteś do niej podłączony.</translation>
     </message>
 </context>
 <context>
@@ -2940,7 +2893,7 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/info_viewer.py" line="100"/>
         <source>DB Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Menedżer baz danych</translation>
     </message>
 </context>
 <context>
@@ -2948,7 +2901,7 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/oracle/plugin.py" line="86"/>
         <source>There is no defined database connection &quot;{0}&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie ma zdefiniowanego połączenia z bazą danych &quot;{0}&quot;.</translation>
     </message>
 </context>
 <context>
@@ -2956,27 +2909,27 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugin.py" line="155"/>
         <source>&amp;Table</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tabela</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugin.py" line="151"/>
         <source>Run &amp;Vacuum Analyze</source>
-        <translation type="unfinished"></translation>
+        <translation>Uruchom analizę &amp;Vacuum</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugin.py" line="154"/>
         <source>Run &amp;Refresh Materialized View</source>
-        <translation type="unfinished"></translation>
+        <translation>Uruchom i &amp;odśwież widok zmaterializowany</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugin.py" line="161"/>
         <source>Select a table for vacuum analyze.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz tabelę do analizy vacuum.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugin.py" line="173"/>
         <source>Select a materialized view for refresh.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz widok zmaterializowany do odświeżenia.</translation>
     </message>
 </context>
 <context>
@@ -2984,12 +2937,12 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugin.py" line="231"/>
         <source>Do you want to {0} rule {1}?</source>
-        <translation type="unfinished"></translation>
+        <translation>Czy chcesz, żeby {0} rządziło {1}?</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugin.py" line="236"/>
         <source>Table rule</source>
-        <translation type="unfinished"></translation>
+        <translation>Reguła tabeli</translation>
     </message>
 </context>
 <context>
@@ -2997,7 +2950,7 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/postgis/plugin.py" line="76"/>
         <source>There is no defined database connection &quot;{0}&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie ma zdefiniowanego połączenia z bazą danych &quot;{0}&quot;.</translation>
     </message>
 </context>
 <context>
@@ -3005,62 +2958,62 @@ unique values</source>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="26"/>
         <source>PostGIS Toolbox - Create a New PostGIS Connection</source>
-        <translation type="unfinished"></translation>
+        <translation>PostGIS Toolbox - Tworzenie nowego połączenia PostGIS</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="41"/>
         <source>Connection Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje o połączeniu</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="49"/>
         <source>SSL &amp;mode</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;tryb SSL</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="59"/>
         <source>5432</source>
-        <translation type="unfinished"></translation>
+        <translation>5432</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="66"/>
         <source>Name of the new connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa nowego połączenia</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="76"/>
         <source>Hos&amp;t</source>
-        <translation type="unfinished"></translation>
+        <translation>Hos&amp;t</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="89"/>
         <source>&amp;Name</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nazwa</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="99"/>
         <source>&amp;Database</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Baza danych</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="112"/>
         <source>Service</source>
-        <translation type="unfinished"></translation>
+        <translation>Usługa</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="125"/>
         <source>Port</source>
-        <translation type="unfinished"></translation>
+        <translation>Port</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="137"/>
         <source>Authentication</source>
-        <translation type="unfinished"></translation>
+        <translation>Uwierzytelnianie</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.ui" line="161"/>
         <source>&amp;Test Connection</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Testuj połączenie</translation>
     </message>
 </context>
 <context>
@@ -3068,17 +3021,17 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/spatialite/plugin.py" line="137"/>
         <source>Run &amp;Vacuum</source>
-        <translation type="unfinished"></translation>
+        <translation>Uruchom &amp;Vacuum</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/spatialite/plugin.py" line="138"/>
         <source>&amp;Database</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Baza danych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/spatialite/plugin.py" line="146"/>
         <source>No database selected or you are not connected to it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie wybrano żadnej bazy danych lub nie jesteś do niej podłączony.</translation>
     </message>
 </context>
 <context>
@@ -3086,7 +3039,7 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/spatialite/plugin.py" line="72"/>
         <source>There is no defined database connection &quot;{0}&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie ma zdefiniowanego połączenia z bazą danych &quot;{0}&quot;.</translation>
     </message>
 </context>
 <context>
@@ -3094,63 +3047,63 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1138"/>
         <source>{layer} is an invalid layer - not loaded</source>
-        <translation type="unfinished"></translation>
+        <translation>{layer} jest nieprawidłową warstwą - nie została załadowana</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1139"/>
         <source>{layer} is an invalid layer and cannot be loaded. Please check the &lt;a href=&quot;#messageLog&quot;&gt;message log&lt;/a&gt; for further info.</source>
-        <translation type="unfinished"></translation>
+        <translation>{layer} jest nieprawidłową warstwą i nie może być załadowana. Proszę sprawdzić &lt;a href=&quot;#messageLog&quot;&gt;message log&lt;/a&gt; aby uzyskać więcej informacji.</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1152"/>
         <source>Add Layer {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Dodaj warstwę {}</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1154"/>
         <source>Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Punkt</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1155"/>
         <source>Line</source>
-        <translation type="unfinished"></translation>
+        <translation>Linia</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1156"/>
         <source>Polygon</source>
-        <translation type="unfinished"></translation>
+        <translation>Poligon</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1157"/>
         <source>Geometry Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ geometrii</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1158"/>
         <source>With Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Z Z</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1159"/>
         <source>With M</source>
-        <translation type="unfinished"></translation>
+        <translation>Z M</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1164"/>
         <source>CRS</source>
-        <translation type="unfinished"></translation>
+        <translation>CRS</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/plugin.py" line="1178"/>
         <source>Load Layer</source>
-        <translation type="unfinished"></translation>
+        <translation>Załaduj warstwę</translation>
     </message>
 </context>
 <context>
     <name>db_dialog</name>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="379"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="391"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
@@ -3172,7 +3125,7 @@ unique values</source>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.ui" line="246"/>
         <source>Active database:</source>
-        <translation>Aktywna baza danych</translation>
+        <translation>Aktywna baza danych:</translation>
     </message>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.ui" line="259"/>
@@ -3275,42 +3228,42 @@ unique values</source>
         <translation>Obiekty bazodanowe</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="178"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="184"/>
         <source>Set as active</source>
         <translation>Ustaw jako aktywny</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="366"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="378"/>
         <source>Add</source>
         <translation>Dodaj</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="353"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="365"/>
         <source>Edit</source>
         <translation>Edytuj</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="250"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="262"/>
         <source>Verify PostGIS</source>
         <translation>Sprawdź PostGIS</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="263"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="275"/>
         <source>Databases</source>
         <translation>Bazy danych</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="299"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="311"/>
         <source>Disconnect</source>
         <translation>Rozłącz</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="317"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="329"/>
         <source>Server connections</source>
         <translation>Ustawienia połączenia z serwerem PostgreSQL</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.ui" line="397"/>
+        <location filename="../DBManager/UI/db_manager_menu.ui" line="409"/>
         <source>Connect</source>
         <translation>Połącz</translation>
     </message>
@@ -3393,7 +3346,7 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/db_plugins/gpkg/plugin.py" line="96"/>
         <source>Choose GeoPackage file</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz plik GeoPackage</translation>
     </message>
 </context>
 <context>
@@ -3401,12 +3354,12 @@ unique values</source>
     <message>
         <location filename="../CustomQueryBuilder/UI/postgishelpdialog.ui" line="44"/>
         <source>PostGIS Toolbox - Spatial functions help</source>
-        <translation type="unfinished"></translation>
+        <translation>PostGIS Toolbox - Pomoc w zakresie funkcji przestrzennych</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/UI/postgishelpdialog.ui" line="99"/>
         <source>PostGIS functions:</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcje PostGIS:</translation>
     </message>
 </context>
 </TS>
