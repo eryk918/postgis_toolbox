@@ -120,16 +120,19 @@ class PostGISToolboxPlugin(object):
         QgsApplication.processingRegistry().addProvider(self.provider)
 
     def _install_translator(self) -> None:
-        locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(
-            self.plugin_dir,
-            'i18n',
-            'pgtoolbox_{}.qm'.format(locale))
-        if os.path.exists(locale_path):
-            translator = QTranslator()
-            translator.load(locale_path)
+        locale = 'en'
+        try:
+            loc = str(QSettings().value('locale/userLocale'))
+            if len(locale) > 1:
+                locale = loc[:2]
+        except Exception:
+            return
+        trans_path = os.path.join(self.plugin_dir, 'i18n', f'{locale}.qm')
+        if os.path.exists(trans_path):
+            self.translator = QTranslator()
+            self.translator.load(trans_path)
             if qVersion() > '4.3.3':
-                QCoreApplication.installTranslator(translator)
+                QCoreApplication.installTranslator(self.translator)
 
     def _add_action(
             self, icon_path=None, text=None, callback=None,

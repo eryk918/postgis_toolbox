@@ -3,6 +3,7 @@ import functools
 import os
 from functools import partial
 
+from qgis.PyQt import QtCore
 from qgis.PyQt.QtCore import QAbstractItemModel, pyqtSignal, QModelIndex, Qt, \
     QSize, QSettings
 from qgis.PyQt.QtGui import QIcon, QKeySequence
@@ -24,8 +25,8 @@ from .db_manager.dlg_sql_window import DlgSqlWindow
 from .db_manager.info_viewer import InfoViewer
 from .db_manager.layer_preview import LayerPreview
 from .db_manager.table_viewer import TableViewer
-from ..CustomQueryBuilder.UI.CustomQueryBuilderDialog import \
-    CustomQueryBuilderDialog
+from ..CustomQueryBuilder.UI.CustomQueryBuilderDialog import CustomQueryBuilderDialog
+
 from ..utils import tr
 
 
@@ -355,10 +356,24 @@ class CustomDbSqlWindow(DlgSqlWindow):
         self.btnCreateTable.setObjectName("btnCreateTable")
         self.buttonLayout.insertWidget(3, self.btnCreateTable)
         self.btnCreateTable.clicked.connect(self.create_table)
-
+        if self._createViewAvailable:
+            self.btnCreateView.clicked.connect(self.create_view)
+        _translate = QtCore.QCoreApplication.translate
         if QSettings().value('locale/userLocale')[0:2] == 'pl':
             self.btnCreateTable.setText(
                 QApplication.translate("DBManager", "Utwórz tabelę"))
+            self.label_2.setText(
+                QApplication.translate("DbManagerDlgSqlWindow", "Nazwa"))
+            self.presetDelete.setText(
+                QApplication.translate("DbManagerDlgSqlWindow", "Usuń"))
+            if self.allowMultiColumnPk:
+                self.uniqueColumnCheck.setText(
+                    QApplication.translate(
+                        "DBManager", "Kolumny z unikalnymi wartościami"))
+            else:
+                self.uniqueColumnCheck.setText(
+                    QApplication.translate(
+                        "DBManager", "Kolumna z unikalnymi wartościami"))
 
     def loadAsLayerToggled(self, checked) -> None:
         self.loadAsLayerGroup.setChecked(checked)
@@ -377,6 +392,22 @@ class CustomDbSqlWindow(DlgSqlWindow):
             try:
                 self.db.connector.create_table(table_name,
                                                self._getExecutableSqlQuery())
+            except BaseError as e:
+                DlgDbError.showError(e, self)
+
+    def create_view(self):
+        if QSettings().value('locale/userLocale')[0:2] == 'pl':
+            view_name, response = QInputDialog.getText(
+                None, QApplication.translate(
+                    "DBManager", "Stwórz widok na podstawie zapytania."),
+                QApplication.translate("DBManager", "Nazwa widoku"))
+        else:
+            view_name, response = QInputDialog.getText(
+                None, self.tr("View name"), self.tr("View name"))
+        if response:
+            try:
+                self.db.connector.createSpatialView(
+                    view_name, self._getExecutableSqlQuery())
             except BaseError as e:
                 DlgDbError.showError(e, self)
 
