@@ -6,6 +6,7 @@ from os.path import join, isfile
 from typing import List
 
 import processing
+from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.QtCore import QByteArray
 from qgis.core import QgsCoordinateReferenceSystem, QgsTask, QgsRasterLayer, \
     Qgis
@@ -61,6 +62,7 @@ class RasterImporter(QgsTask):
             selection_dialog.setCrs(crs)
             if selection_dialog.exec():
                 srid = selection_dialog.crs().postgisSrid()
+            QApplication.processEvents()
         del raster_layer
         self.last_progress_value = \
             change_alg_progress(self, self.last_progress_value, 2)

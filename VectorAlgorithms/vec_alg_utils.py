@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Dict
 
 import psycopg2
 from PyQt5.QtWidgets import QMessageBox
@@ -17,6 +17,18 @@ def get_pg_table_name_from_uri(uri: str) -> str:
         return regexp.groups()[0] + '.' + regexp.groups()[1]
     return re.compile(' table="([^"]*)"').search(uri).groups()[0] \
         if regexp else 'NOT PG LAYER'
+
+
+def get_pg_table_name_from_raster_uri(uri: str) -> Dict[str, str]:
+    uri = uri.strip('"')
+    result_dict = {}
+    regexp_table = re.compile(' table=\'([^"]*)\'').search(uri)
+    if regexp_table:
+        result_dict['TABLE'] = regexp_table.groups()[0]
+    regexp_schema = re.compile('schema=\'([^\']*)\'').search(uri)
+    if regexp_schema:
+        result_dict['SCHEMA'] = regexp_schema.groups()[0]
+    return result_dict
 
 
 def get_pg_name(layer):

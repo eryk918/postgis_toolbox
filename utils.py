@@ -273,14 +273,17 @@ def open_other_files(filepath: str) -> None:
         subprocess.call(('xdg-open', filepath))
 
 
-def get_all_rasters_from_project() -> Dict[str, str]:
+def get_all_rasters_from_project(only_postgis: bool = False) -> Dict[str, str]:
     rasters_dict = {}
     all_layers = root.findLayers()
     for layer in all_layers:
         predict_layer = layer.layer()
         if not predict_layer:
             continue
-        if predict_layer.isValid() and \
+        if only_postgis and predict_layer.isValid() and predict_layer.type() == QgsMapLayerType.RasterLayer \
+                and predict_layer.dataProvider().name() == 'postgresraster':
+            rasters_dict[predict_layer.name()] = predict_layer
+        elif not only_postgis and predict_layer.isValid() and \
                 predict_layer.type() == QgsMapLayerType.RasterLayer and \
                 predict_layer.dataProvider().name() == 'gdal':
             rasters_dict[predict_layer.name()] = predict_layer.source()
