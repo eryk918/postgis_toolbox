@@ -206,8 +206,6 @@ class DlgSqlWindow(QWidget, Ui_Dialog):
 
         self._createViewAvailable = self.db.connector.hasCreateSpatialViewSupport()
         self.btnCreateView.setVisible(self._createViewAvailable)
-        if self._createViewAvailable:
-            self.btnCreateView.clicked.connect(self.createView)
 
         self.queryBuilderFirst = True
         self.queryBuilderBtn.setIcon(QIcon(":/db_manager/icons/sql.gif"))

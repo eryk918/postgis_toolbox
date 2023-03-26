@@ -51,8 +51,8 @@ conn_key_string = '/PostgreSQL/connections/'
 test_query = 'SELECT version();'
 
 
-def tr(string):
-    return QCoreApplication.translate(plugin_name, string)
+def tr(text: str):
+    return QCoreApplication.translate('@default', text)
 
 
 PROCESSING_LAYERS_GROUP = tr('Processing layers')
