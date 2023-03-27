@@ -13,7 +13,7 @@ from qgis.core import (QgsProcessingAlgorithm,
 from qgis.utils import iface
 
 from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
-    get_pg_table_name_from_raster_uri
+    get_pg_table_name_from_raster_uri, get_pg_table_name_from_uri
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     get_schema_name_list, plugin_name, get_all_rasters_from_project, \
     unpack_nested_lists
@@ -71,7 +71,7 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
         if not self.input_layers:
             QMessageBox.critical(
                 iface.mainWindow(), plugin_name,
-                'No PostGIS layers in the active project!',
+                tr('No PostGIS layers in the active project!'),
                 QMessageBox.Ok)
             return {}
         elif not check_db_connection(self, 'schemas_list'):
@@ -81,7 +81,16 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
         uri_dict = get_pg_table_name_from_raster_uri(
             input_layer.dataProvider().dataSourceUri())
         if not uri_dict.get('TABLE'):
+            schema_name, table_name = get_pg_table_name_from_uri(
+                input_layer.dataProvider().dataSourceUri()).split('.')
+            if schema_name and table_name:
+                uri_dict = {
+                    'TABLE': table_name,
+                    'SCHEMA': schema_name
+                }
+        if not uri_dict.get('TABLE'):
             return {}
+
         file_output = self.parameterAsFileOutput(parameters, self.SAVE, context)
         result_path = ''
         if feedback.isCanceled():
@@ -93,20 +102,29 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
                                 SELECT ST_UNION("rast", {band_numb}) AS rast_union 
                                 FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}")
                             SELECT (stats).*
-                            FROM (SELECT ST_SummaryStats(rast_union, {band_numb}) AS stats FROM union_raster);'''))
+                            FROM (SELECT ST_SummaryStats(rast_union, {band_numb}) AS stats FROM union_raster) AS foo;'''))
             if result_statistics:
                 file_handle, path_to_temp_file = tempfile.mkstemp(
                     suffix='_statistics_tmp.html')
                 os.close(file_handle)
                 _, sum_count, mean, stddev, min_value, max_value = result_statistics
-                html = f'''<p>{tr('File analyzed')}: {tr('database')} - {self.db.databaseName()} 
-                            {tr('schema')} - {uri_dict.get('SCHEMA')} {tr('table')} - {uri_dict.get('TABLE')}<p>
-                        <p>{tr('Minimum value')}: {min_value}<p>
-                        <p>{tr('Maximum value')}: {max_value}<p>
-                        <p>{tr('Range')}: {max_value - min_value}<p>
-                        <p>{tr('Sum')}: {sum_count}<p>
-                        <p>{tr('Average value')}: {mean}<p>
-                        <p>{tr('Standard deviation')}: {stddev}<p>'''
+
+                file_analyzed, database, schema, table, minimum_value, \
+                maximum_value, range_value, sum_value, average_value, \
+                standard_deviation = \
+                    tr('File analyzed'), tr('database'), tr('schema'), \
+                    tr('table'), tr('Minimum value'), tr('Maximum value'), \
+                    tr('Range'), tr('Sum'), tr('Mean value'), \
+                    tr('Standard deviation')
+
+                html = f'''<h3><b>{file_analyzed}</b>: {database} <i>"{self.db.databaseName()}"</i>, 
+                            {schema} <i>"{uri_dict.get('SCHEMA')}"</i>, {table} <i>"{uri_dict.get('TABLE')}"</i></h3>
+                        <p>{minimum_value}: {min_value},</p>
+                        <p>{maximum_value}: {max_value},</p>
+                        <p>{range_value}: {max_value - min_value},</p>
+                        <p>{sum_value}: {sum_count},</p>
+                        <p>{average_value}: {mean},</p>
+                        <p>{standard_deviation}: {stddev}.</p>'''
                 html_file = open(path_to_temp_file, 'w')
                 html_file.write(html)
                 html_file.close()
@@ -139,7 +157,7 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
         return tr(self.groupId())
 
     def groupId(self):
-        return 'Raster'
+        return tr('Raster')
 
     def createInstance(self):
         return PostGISToolboxRasterSummary()

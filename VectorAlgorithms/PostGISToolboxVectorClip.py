@@ -83,7 +83,7 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
         if not self.input_layers:
             QMessageBox.critical(
                 iface.mainWindow(), plugin_name,
-                'No PostGIS layers in the active project!',
+                tr('No PostGIS layers in the active project!'),
                 QMessageBox.Ok)
             return {}
         elif not check_db_connection(self, 'schemas_list'):
@@ -209,7 +209,7 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
         return tr(self.groupId())
 
     def groupId(self):
-        return 'Vector'
+        return tr('Vector')
 
     def createInstance(self):
         return PostGISToolboxVectorClip()

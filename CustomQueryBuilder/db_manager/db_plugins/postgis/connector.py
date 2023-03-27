@@ -1015,16 +1015,16 @@ class PostGisDBConnector(DBConnector):
 
         self._commit()
 
-    def createView(self, view, query):
-        sql = u"CREATE VIEW %s AS %s" % (self.quoteId(view), query)
-        self._execute_and_commit(sql)
-
-    def create_table(self, view, query):
+    def createView(self, schema: str, view: str, query: str):
         self._execute_and_commit(
-            f"CREATE TABLE {self.quoteId(view)} AS ({query})")
+            f"CREATE VIEW {self.quoteId(schema)}.{self.quoteId(view)} AS {query}")
 
-    def createSpatialView(self, view, query):
-        self.createView(view, query)
+    def create_table(self, schema: str, table: str, query: str):
+        self._execute_and_commit(
+            f"CREATE TABLE {self.quoteId(schema)}.{self.quoteId(table)} AS ({query})")
+
+    def createSpatialView(self, schema: str, view: str, query: str):
+        self.createView(schema, view, query)
 
     def deleteView(self, view, isMaterialized=False):
         sql = u"DROP %s VIEW %s" % ('MATERIALIZED' if isMaterialized else '', self.quoteId(view))

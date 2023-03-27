@@ -2,6 +2,7 @@
 import functools
 import os
 from functools import partial
+from typing import Tuple, Optional
 
 from qgis.PyQt import QtCore
 from qgis.PyQt.QtCore import QAbstractItemModel, pyqtSignal, QModelIndex, Qt, \
@@ -9,7 +10,8 @@ from qgis.PyQt.QtCore import QAbstractItemModel, pyqtSignal, QModelIndex, Qt, \
 from qgis.PyQt.QtGui import QIcon, QKeySequence
 from qgis.PyQt.QtWidgets import QTreeView, QApplication, QToolBar, QMenu, \
     QStatusBar, QDockWidget, QSizePolicy, QSpacerItem, QGridLayout, QTabBar, \
-    QTabWidget, QMenuBar, QDialog, QMessageBox, QPushButton, QInputDialog
+    QTabWidget, QMenuBar, QDialog, QMessageBox, QPushButton, QInputDialog, \
+    QComboBox, QLineEdit, QVBoxLayout, QLabel
 from qgis.core import QgsVectorLayer, QgsDataSourceUri, QgsApplication, Qgis
 from qgis.gui import QgsMessageBar, QgisInterface
 
@@ -27,7 +29,7 @@ from .db_manager.layer_preview import LayerPreview
 from .db_manager.table_viewer import TableViewer
 from ..CustomQueryBuilder.UI.CustomQueryBuilderDialog import CustomQueryBuilderDialog
 
-from ..utils import tr
+from ..utils import tr, get_schema_name_list, get_main_plugin_class, plugin_dir
 
 
 class CustomQueryBuilder(QueryBuilderDlg):
@@ -359,23 +361,53 @@ class CustomDbSqlWindow(DlgSqlWindow):
         self.loadAsLayerGroup.setChecked(checked)
         self.loadAsLayerWidget.setVisible(checked)
 
-    def create_table(self):
-        table_name, response = QInputDialog.getText(
-            None, self.tr("Table name"), self.tr("Table name"))
-        if response:
+    def _create_add_object_window(
+            self, dialog_name: str) -> Tuple[Optional[str], Optional[str]]:
+        main_db = get_main_plugin_class().db
+        dlg = QDialog(None)
+        dlg.setWindowTitle(dialog_name)
+        dlg.setMaximumSize(350, 105)
+        dlg.setMinimumSize(320, 105)
+        dlg.setWindowIcon(
+            QIcon(os.path.join(plugin_dir, 'icons', 'query_editor.png')))
+        layout = QGridLayout()
+        schema_combo = QComboBox(dlg)
+        schema_list, _ = get_schema_name_list(main_db, main_db.databaseName())
+        schema_combo.addItems(schema_list)
+        name_line = QLineEdit(dlg)
+        accept_button = QPushButton(self.tr('Accept'), dlg)
+        accept_button.clicked.connect(dlg.accept)
+        cancel_button = QPushButton(self.tr('Cancel'), dlg)
+        cancel_button.clicked.connect(dlg.reject)
+        layout.addWidget(QLabel(f"{tr('Schema name')}:"), 0, 0)
+        layout.addWidget(schema_combo, 0, 1)
+        layout.addWidget(QLabel(f"{dialog_name}:"), 1, 0)
+        layout.addWidget(name_line, 1, 1)
+        btn_layout = QGridLayout()
+        btn_layout.addWidget(accept_button, 0, 0)
+        btn_layout.addWidget(cancel_button, 0, 1)
+        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addItem(btn_layout, 2, 0, 1, 2)
+        dlg.setLayout(layout)
+        res = dlg.exec()
+        return (schema_combo.currentText(), name_line.text()) if res == 1 \
+            else (None, None)
+
+    def create_table(self) -> None:
+        schema, table = self._create_add_object_window(self.tr("Table name"))
+        if schema and table:
             try:
-                self.db.connector.create_table(table_name,
-                                               self._getExecutableSqlQuery())
+                self.db.connector.create_table(
+                    schema, table, self._getExecutableSqlQuery())
             except BaseError as e:
                 DlgDbError.showError(e, self)
 
-    def create_view(self):
-        view_name, response = QInputDialog.getText(
-            None, self.tr("View name"), self.tr("View name"))
-        if response:
+    def create_view(self) -> None:
+        schema, table = self._create_add_object_window(self.tr("View name"))
+        if schema and table:
             try:
                 self.db.connector.createSpatialView(
-                    view_name, self._getExecutableSqlQuery())
+                    schema, table, self._getExecutableSqlQuery())
             except BaseError as e:
                 DlgDbError.showError(e, self)
 

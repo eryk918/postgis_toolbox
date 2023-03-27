@@ -106,7 +106,7 @@ class PostGISToolboxVectorNearestNeighbor(QgsProcessingAlgorithm):
         if not hasattr(self, 'input_layers') or not self.input_layers:
             QMessageBox.critical(
                 iface.mainWindow(), plugin_name,
-                'No PostGIS layers in the active project!',
+                tr('No PostGIS layers in the active project!'),
                 QMessageBox.Ok)
             return {}
         elif not check_db_connection(self, 'schemas_list'):
@@ -220,7 +220,6 @@ class PostGISToolboxVectorNearestNeighbor(QgsProcessingAlgorithm):
                        ) g2
                 );
             '''
-            print(query)
             make_query(self.db, query)
             create_vector_geom_index(self.db, out_table, 'geom')
             if feedback.isCanceled():
@@ -255,7 +254,7 @@ class PostGISToolboxVectorNearestNeighbor(QgsProcessingAlgorithm):
         return tr(self.groupId())
 
     def groupId(self):
-        return 'Vector'
+        return tr('Vector')
 
     def createInstance(self):
         return PostGISToolboxVectorNearestNeighbor()

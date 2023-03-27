@@ -57,6 +57,7 @@ from qgis.core import (
 )
 from qgis.utils import OverrideCursor
 
+from ...utils import tr
 from .db_plugins.plugin import BaseError
 from .db_plugins.postgis.plugin import PGDatabase
 from .dlg_db_error import DlgDbError
@@ -128,12 +129,12 @@ class DlgSqlWindow(QWidget, Ui_Dialog):
         self.setWindowTitle(
             self.tr(u"{0} - {1} [{2}]").format(self.windowTitle(), self.connectionName, self.dbType))
 
-        self.defaultLayerName = self.tr('QueryLayer')
+        self.defaultLayerName = tr('QueryLayer')
 
         if self.allowMultiColumnPk:
-            self.uniqueColumnCheck.setText(self.tr("Column(s) with unique values"))
+            self.uniqueColumnCheck.setText(tr("Column(s) with unique values"))
         else:
-            self.uniqueColumnCheck.setText(self.tr("Column with unique values"))
+            self.uniqueColumnCheck.setText(tr("Column with unique values"))
 
         self.editSql.setFocus()
         self.editSql.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -391,7 +392,7 @@ class DlgSqlWindow(QWidget, Ui_Dialog):
                 model = self.modelAsync.model
                 self.showError(None)
                 self.viewResult.setModel(model)
-                self.lblResult.setText(self.tr("{0} rows, {1:.3f} seconds").format(model.affectedRows(), model.secs()))
+                self.lblResult.setText(tr("{0} rows, {1:.3f} seconds").format(model.affectedRows(), model.secs()))
                 cols = self.viewResult.model().columnNames()
                 quotedCols = [
                     self.db.connector.quoteId(col)
@@ -408,7 +409,7 @@ class DlgSqlWindow(QWidget, Ui_Dialog):
                 self.uniqueModel.clear()
                 self.geomCombo.clear()
 
-            self.btnCancel.setText(self.tr("Cancel"))
+            self.btnCancel.setText(tr("Cancel"))
 
     def executeSql(self):
         sql = self._getExecutableSqlQuery()

@@ -80,7 +80,7 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         if not self.input_raster_layers:
             QMessageBox.critical(
                 iface.mainWindow(), plugin_name,
-                'No PostGIS layers in the active project!',
+                tr('No PostGIS layers in the active project!'),
                 QMessageBox.Ok)
             return {}
         elif not check_db_connection(self, 'schemas_list'):
@@ -169,7 +169,7 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         return tr(self.groupId())
 
     def groupId(self):
-        return 'Raster'
+        return tr('Raster')
 
     def createInstance(self):
         return PostGISToolboxRasterClip()

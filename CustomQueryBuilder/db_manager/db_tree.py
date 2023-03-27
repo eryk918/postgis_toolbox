@@ -128,13 +128,13 @@ class DBTree(QTreeView):
 
             if isinstance(item, Table) and item.canBeAddedToCanvas():
                 menu.addSeparator()
-                menu.addAction(self.tr("Add to Canvas"), self.addLayer)
+                menu.addAction(QCoreApplication.translate("DBTree", "Add to Canvas"), self.addLayer)
                 item.addExtraContextMenuEntries(menu)
 
         elif isinstance(item, DBPlugin):
             if item.database() is not None:
-                menu.addAction(self.tr("Re-connect"), self.reconnect)
-            menu.addAction(self.tr("Remove"), self.delete)
+                menu.addAction(QCoreApplication.translate("DBTree", "Re-connect"), self.reconnect)
+            menu.addAction(QCoreApplication.translate("DBTree", "Remove"), self.delete)
 
         elif not index.parent().isValid() and item.typeName() in ("spatialite", "gpkg"):
             menu.addAction(QCoreApplication.translate("DBTree", "New Connection…"), self.newConnection)
@@ -163,8 +163,8 @@ class DBTree(QTreeView):
             layers = QgsProject.instance().addMapLayers([layer])
             if len(layers) != 1:
                 QgsMessageLog.logMessage(
-                    self.tr("%1 is an invalid layer - not loaded").replace("%1", layer.publicSource()))
-                msgLabel = QLabel(self.tr(
+                    QCoreApplication.translate("DBTree", "%1 is an invalid layer - not loaded").replace("%1", layer.publicSource()))
+                msgLabel = QLabel(QCoreApplication.translate("DBTree", 
                     "%1 is an invalid layer and cannot be loaded. Please check the <a href=\"#messageLog\">message log</a> for further info.").replace(
                     "%1", layer.publicSource()), self.mainWindow.infoBar)
                 msgLabel.setWordWrap(True)

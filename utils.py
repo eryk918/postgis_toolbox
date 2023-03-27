@@ -415,26 +415,27 @@ def get_schema_name_list(db: QSqlDatabase, db_name: str = '',
 
 def get_active_db_info(db: QSqlDatabase or None, label: QLabel,
                        simple: bool = False) -> bool:
+    active_db_str = tr("Active database:")
     if db and db.isOpen() and db.isValid():
         db_hostname = db.hostName()
         db_port = db.port()
         db_database_name = db.databaseName()
         if simple:
             label.setText(
-                f'{tr("Active database:")} {db_hostname}:{db_port}, '
+                f'{active_db_str} {db_hostname}:{db_port}, '
                 f'{db_database_name}')
         else:
             label.setText(
-                f'{tr("Active database:")} <span style=" font-size:9pt; '
+                f'{active_db_str} <span style=" font-size:9pt; '
                 f'font-weight:600; color:#32CD32;">{db_hostname}:{db_port}, '
                 f'{db_database_name}</span>')
         return True
     else:
         if simple:
-            label.setText(f'{tr("Active database:")} {tr("Not connected.")}')
+            label.setText(f'{active_db_str} {tr("Not connected.")}')
         else:
             label.setText(
-                f'{tr("Active database:")} <span style=" font-size:9pt; '
+                f'{active_db_str} <span style=" font-size:9pt; '
                 f'font-weight:600; color:#aa0000;">{tr("Not connected.")}</span>')
         return False
 

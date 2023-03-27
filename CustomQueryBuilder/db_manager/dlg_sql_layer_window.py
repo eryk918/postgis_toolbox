@@ -52,6 +52,7 @@ from qgis.core import (
 )
 from qgis.utils import OverrideCursor
 
+from ...utils import tr
 from .db_plugins import createDbPlugin
 from .db_plugins.plugin import BaseError
 from .db_plugins.postgis.plugin import PGDatabase
@@ -283,7 +284,7 @@ class DlgSqlLayerWindow(QWidget, Ui_Dialog):
                 # set the new model
                 model = self.db.sqlResultModel(sql, self)
                 self.viewResult.setModel(model)
-                self.lblResult.setText(self.tr("{0} rows, {1:.3f} seconds").format(model.affectedRows(), model.secs()))
+                self.lblResult.setText(tr("{0} rows, {1:.3f} seconds").format(model.affectedRows(), model.secs()))
                 cols = self.viewResult.model().columnNames()
                 for col in cols:
                     quotedCols.append(self.db.connector.quoteId(col))

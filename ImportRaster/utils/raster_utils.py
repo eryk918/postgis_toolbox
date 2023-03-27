@@ -50,7 +50,7 @@ def create_raster_overviews(db: QSqlDatabase, schema_name: str,
             base_class.last_progress_value = \
                 change_alg_progress(base_class, base_class.last_progress_value,
                                     percent_amount / len(levels))
-        return True
+    return True
 
 
 def make_sql_create_gist(table: str, gist_table: str,

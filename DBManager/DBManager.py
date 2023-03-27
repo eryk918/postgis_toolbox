@@ -68,7 +68,7 @@ class DBManager:
 
     def edit_connection(self) -> None:
         question = QMessageBox.question(
-            self.dlg, f"PostGIS Toolbox - {tr('Edit connection')}",
+            self.dlg, tr(f"PostGIS Toolbox - Edit connection"),
             tr('Do you want to overwrite selected connection?'),
             QMessageBox.Ok | QMessageBox.Cancel)
         if question == QMessageBox.Ok:
@@ -88,7 +88,7 @@ class DBManager:
 
     def delete_connection(self) -> None:
         question = QMessageBox.question(
-            self.dlg, f"PostGIS Toolbox - {tr('Delete connection')}",
+            self.dlg, tr(f"PostGIS Toolbox - Delete connection"),
             tr('Should this connection be deleted?'),
             QMessageBox.Ok | QMessageBox.Cancel)
         if question == QMessageBox.Ok:
@@ -137,11 +137,12 @@ class DBManager:
                 self.db.setDatabaseName(db_name)
                 self.db.open()
                 if universal_db_check(self.db):
+                    selected_db_str = \
+                        tr('Successfully selected "{0}" as active database.')
                     if not silent:
                         QMessageBox.information(
                             self.dlg, plugin_name,
-                            tr(f'Successfully selected "{db_name}" '
-                            f'as active database.'),
+                            tr('Successfully selected "{0}" as active database.').format(db_name),
                             QMessageBox.Ok)
                     if self.main.added_processing_connection:
                         self.main.added_processing_connection = \
@@ -202,10 +203,10 @@ class DBManager:
             extended_pg_ver = unpack_nested_lists(make_query(
                 self.db, get_postgis_version_extended_query))
             if simple_pg_ver and extended_pg_ver:
+                postgis_str = tr(f"PostGIS extension was detected, version is:")
                 info_box = QMessageBox()
                 info_box.setIcon(QMessageBox.Information)
-                info_box.setText(tr(f"PostGIS extension was detected, "
-                                    f"version is: {', '.join(simple_pg_ver)}"))
+                info_box.setText(f"{postgis_str} {', '.join(simple_pg_ver)}")
                 info_box.setWindowTitle(plugin_name)
                 info_box.setWindowIcon(main_plugin_icon)
                 info_box.setDetailedText(extended_pg_ver[0])
@@ -398,8 +399,7 @@ class DBManager:
         if schema_name in self.get_schema_list(self.db.databaseName()):
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr(
-                    f'Successfully renamed "{self.old_name}" to "{schema_name}" '
+                tr(f'Successfully renamed "{self.old_name}" to "{schema_name}" '
                     f'and set as active schema.'),
                 QMessageBox.Ok)
             self.connect_server()

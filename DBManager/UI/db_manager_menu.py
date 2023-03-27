@@ -56,7 +56,10 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         table.clear()
         model = table.model()
         progress_bar = create_progress_bar(
-            0, txt='Loading server structure...', title='Fetching DB Info')
+            0,
+            txt=tr('Loading server structure...'),
+            title=tr('Fetching DB Info')
+        )
         progress_bar.open()
         db_dict = {}
         db_list = unpack_nested_lists(make_query(
@@ -77,6 +80,6 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
             db_dict[db_name] = schema_dict
             QApplication.processEvents()
         fill_item(table.invisibleRootItem(), db_dict)
-        model.setHeaderData(0, 1, 'Databases')
+        model.setHeaderData(0, 1, tr('Databases'))
         progress_bar.close()
         return db_dict
