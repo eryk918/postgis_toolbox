@@ -34,6 +34,7 @@ import os
 
 from qgis.core import QgsProcessingProvider
 
+from .RasterAlgorithms.PostGISToolboxRasterClip import PostGISToolboxRasterClip
 from .RasterAlgorithms.PostGISToolboxRasterSummary import PostGISToolboxRasterSummary
 from .VectorAlgorithms.PostGISToolboxVectorClip import PostGISToolboxVectorClip
 from .VectorAlgorithms.PostGISToolboxVectorDifference import \
@@ -62,6 +63,7 @@ class PostGISToolboxProvider(QgsProcessingProvider):
         self.addAlgorithm(PostGISToolboxVectorMerge())
         self.addAlgorithm(PostGISToolboxVectorNearestNeighbor())
         self.addAlgorithm(PostGISToolboxRasterSummary())
+        self.addAlgorithm(PostGISToolboxRasterClip())
 
     def id(self):
         return plugin_dir_name
