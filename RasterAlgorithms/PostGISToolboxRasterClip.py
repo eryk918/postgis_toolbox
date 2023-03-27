@@ -10,7 +10,8 @@ from qgis.utils import iface
 
 from ..ImportRaster.utils.raster_utils import make_sql_create_gist, make_sql_addrastercolumn
 from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
-    get_pg_table_name_from_raster_uri, check_table_exists_in_schema
+    get_pg_table_name_from_raster_uri, check_table_exists_in_schema, \
+    get_pg_table_name_from_uri
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
     get_all_vectors_from_project, remove_unsupported_chars, plugin_name, get_all_rasters_from_project, \
@@ -91,8 +92,18 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         raster_layer = self.input_raster_layers_dict[raster_layer_name]
         uri_dict = get_pg_table_name_from_raster_uri(
             raster_layer.dataProvider().dataSourceUri())
+
+        if not uri_dict.get('TABLE'):
+            schema_name, table_name = get_pg_table_name_from_uri(
+                raster_layer.dataProvider().dataSourceUri()).split('.')
+            if schema_name and table_name:
+                uri_dict = {
+                    'TABLE': table_name,
+                    'SCHEMA': schema_name
+                }
         if not uri_dict.get('TABLE'):
             return {}
+
         mask_layer = self.all_layers_dict[
             self.all_layers_list[self.parameterAsEnum(
                 parameters, self.INPUT_CLIP, context)]]
