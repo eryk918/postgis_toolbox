@@ -4,8 +4,11 @@ from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterBoolean,
                        QgsProcessingParameterString, QgsRectangle,
-                       QgsProcessingParameterEnum, QgsVectorLayer, QgsFeatureRequest,
-                       QgsCoordinateTransformContext, QgsGeometry)
+                       QgsProcessingParameterEnum, QgsVectorLayer,
+                       QgsFeatureRequest,
+                       QgsCoordinateTransformContext, QgsGeometry,
+                       QgsProcessingParameterCoordinateOperation,
+                       QgsProcessingParameterCrs)
 from qgis.utils import iface
 
 from ..ImportRaster.utils.raster_utils import make_sql_create_gist, make_sql_addrastercolumn
@@ -18,12 +21,10 @@ from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     create_postgis_raster_layer, add_rasters_to_project
 
 
-class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
+class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
-    INPUT_CLIP = 'INPUT_CLIP'
-    FIELDS_INPUT = 'FIELDS_INPUT'
-    FIELDS_CLIP = 'FIELDS_CLIP'
+    OUTPUTCRS = 'OUTPUTCRS'
     DEST_TABLE = 'DEST_TABLE'
     DEST_SCHEMA = 'DEST_SCHEMA'
     LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
@@ -50,12 +51,9 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
             allowMultiple=False,
             defaultValue=self.input_raster_layers[0]))
 
-        self.addParameter(QgsProcessingParameterEnum(
-            self.INPUT_CLIP,
-            tr('Mask layer'),
-            options=self.all_layers_list,
-            allowMultiple=False,
-            defaultValue=self.all_layers_list[0]))
+        self.addParameter(QgsProcessingParameterCrs(
+            self.OUTPUTCRS,
+            tr('Output layer CRS')))
 
         self.addParameter(QgsProcessingParameterEnum(
             self.DEST_SCHEMA,
@@ -64,7 +62,7 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
             allowMultiple=False))
 
         self.addParameter(QgsProcessingParameterString(
-            self.DEST_TABLE, tr('Output table name'), 'clip'))
+            self.DEST_TABLE, tr('Output table name'), 'reprojected_layer'))
 
         self.addParameter(QgsProcessingParameterBoolean(
             self.OVERWRITE,
@@ -85,7 +83,7 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
             return {}
         elif not check_db_connection(self, 'schemas_list'):
             return {}
-        geom_list = []
+
         raster_layer_name = self.input_raster_layers[self.parameterAsEnum(
                 parameters, self.INPUT, context)]
         raster_layer = self.input_raster_layers_dict[raster_layer_name]
@@ -103,34 +101,15 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         if not uri_dict.get('TABLE'):
             return {}
 
-        mask_layer = self.all_layers_dict[
-            self.all_layers_list[self.parameterAsEnum(
-                parameters, self.INPUT_CLIP, context)]]
-        if isinstance(mask_layer, QgsVectorLayer):
-            req = QgsFeatureRequest()
-            req.setDestinationCrs(raster_layer.crs(), QgsCoordinateTransformContext())
-            for feature in mask_layer.getFeatures(req):
-                if not geom_list:
-                    geom_list.append(feature.geometry())
-                else:
-                    geom_list[0] = geom_list[0].combine(feature.geometry())
-        else:
-            extent = mask_layer.extent()
-            if isinstance(extent, QgsRectangle):
-                geom_list.append(QgsGeometry.fromRect(extent))
-        if not geom_list:
-            return {}
-
         q_add_to_project = self.parameterAsBool(
             parameters, self.LOAD_TO_PROJECT, context)
         q_overwrite = self.parameterAsBool(parameters, self.OVERWRITE, context)
-        schema_enum = self.parameterAsEnum(
-            parameters, self.DEST_SCHEMA, context)
+        schema_enum = self.parameterAsEnum(parameters, self.DEST_SCHEMA, context)
+        output_crs = self.parameterAsGeometryCrs(parameters, self.OUTPUTCRS, context)
         out_schema = self.schemas_list[schema_enum]
         out_table = remove_unsupported_chars(
             self.parameterAsString(parameters, self.DEST_TABLE, context))
-
-        if feedback.isCanceled():
+        if feedback.isCanceled() or not output_crs:
             return {}
 
         if self.db.isOpen() and self.db.isValid() \
@@ -144,10 +123,11 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db, f''' CREATE TABLE "{out_schema}"."{out_table}" AS (
-                SELECT "rid", ST_CLIP("rast", ST_GeomFromText('{geom_list[0].asWkt()}', {raster_layer.crs().postgisSrid()})) AS "rast"
-                FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
-                WHERE ST_Intersects("rast", ST_GeomFromText('{geom_list[0].asWkt()}', {raster_layer.crs().postgisSrid()})));''')
+            make_query(self.db, f''' 
+                CREATE TABLE "{out_schema}"."{out_table}" AS (
+                    SELECT "rid", ST_Transform("rast", {output_crs.postgisSrid()}) AS "rast"
+                    FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
+                );''')
 
             make_query(self.db, make_sql_create_gist(out_table, out_table), out_schema)
             make_query(self.db, make_sql_addrastercolumn(out_table, out_schema))
@@ -170,10 +150,10 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return tr('Raster clip')
+        return tr('Raster reproject')
 
     def displayName(self):
-        return tr('Raster clip')
+        return tr('Raster reproject')
 
     def group(self):
         return tr(self.groupId())
@@ -182,4 +162,4 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         return tr('Raster')
 
     def createInstance(self):
-        return PostGISToolboxRasterClip()
+        return PostGISToolboxRasterReproject()
