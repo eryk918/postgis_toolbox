@@ -34,6 +34,8 @@ import os
 
 from qgis.core import QgsProcessingProvider
 
+from .VectorAlgorithms.PostGISToolboxVectorGeneratePoints import PostGISToolboxVectorGeneratePoints
+from .VectorAlgorithms.PostGISToolboxVectorIntersect import PostGISToolboxVectorIntersects
 from .RasterAlgorithms.PostGISToolboxRasterClip import PostGISToolboxRasterClip
 from .RasterAlgorithms.PostGISToolboxRasterSummary import PostGISToolboxRasterSummary
 from .RasterAlgorithms.PostGISToolboxRasterTile import PostGISToolboxRasterTile
@@ -62,6 +64,8 @@ class PostGISToolboxProvider(QgsProcessingProvider):
     def loadAlgorithms(self):
         self.addAlgorithm(PostGISToolboxVectorClip())
         self.addAlgorithm(PostGISToolboxVectorDifference())
+        self.addAlgorithm(PostGISToolboxVectorIntersects())
+        self.addAlgorithm(PostGISToolboxVectorGeneratePoints())
         self.addAlgorithm(PostGISToolboxVectorMerge())
         self.addAlgorithm(PostGISToolboxVectorNearestNeighbor())
         self.addAlgorithm(PostGISToolboxRasterSummary())

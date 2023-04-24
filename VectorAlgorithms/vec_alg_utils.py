@@ -100,7 +100,7 @@ def get_table_columns(db: QSqlDatabase, schema: str, table: str,
 
 
 def create_vector_geom_index(
-        db: QSqlDatabase, table: str, geom_col: str) -> List[str]:
+        db: QSqlDatabase, table: str, geom_col: str, schema: str = '') -> List[str]:
     if not geom_col:
         geom_col = 'geom'
     if db.isOpen() and db.isValid() and make_query(db, test_query):
@@ -108,7 +108,7 @@ def create_vector_geom_index(
             make_query(
                 db,
                 f'''
-                    CREATE INDEX "idx_{table}" ON "{table}" 
+                    CREATE INDEX "idx_{table}" ON {f'"{schema}".' if schema else ''}"{table}" 
                     USING GIST("{geom_col}");
                 '''
             )
