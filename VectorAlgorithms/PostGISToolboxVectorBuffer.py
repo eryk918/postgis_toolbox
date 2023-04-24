@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from plugins.processing.gui.wrappers import WidgetWrapper
-from qgis.PyQt.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QComboBox, QCheckBox,\
-    QLabel
-from qgis.core import (QgsProcessingAlgorithm,
-                       QgsProcessingParameterBoolean,
-                       QgsProcessingParameterString, QgsDataSourceUri,
-                       QgsProcessingParameterEnum)
-from qgis.utils import iface
+from qgis.PyQt.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QComboBox, \
+    QCheckBox, QLabel
+from qgis.core import QgsProcessingAlgorithm, QgsProcessingParameterBoolean, \
+    QgsProcessingParameterString, QgsDataSourceUri,QgsProcessingParameterEnum, \
+    QgsProcessingParameterNumber
 from qgis.gui import QgsCheckableComboBox
+from qgis.utils import iface
 
 from .vec_alg_utils import get_pg_table_name_from_uri, \
-    create_vector_geom_index, \
-    check_table_exists_in_schema, check_db_connection, get_table_columns, \
-    get_table_geom_columns
+    create_vector_geom_index, check_table_exists_in_schema, \
+    check_db_connection, get_table_columns, get_table_geom_columns
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     add_vectors_to_project, create_postgis_vector_layer, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
@@ -30,43 +28,40 @@ class CustomWidgetLayout(WidgetWrapper):
         editor = QWidget()
         layout = QVBoxLayout()
         self.input_layers_combo = QComboBox()
-        self.mask_layers_combo = QComboBox()
         self.input_layer_checkbox = QCheckBox(tr('Only selected features'))
-        self.mask_layer_checkbox = QCheckBox(tr('Only selected features'))
         self.input_layers_columns_combo = QgsCheckableComboBox()
         self.input_layers_combo.currentTextChanged.connect(
-            lambda text: self.get_columns_for_lyr(text, self.input_layers_columns_combo))
+            lambda text: self.get_columns_for_lyr(text,
+                                                  self.input_layers_columns_combo))
         self.input_layers_combo.addItems(self.input_layers)
-        self.mask_layers_combo.addItems(self.input_layers)
         layout.addWidget(self.input_layers_combo)
         layout.addWidget(self.input_layer_checkbox)
-        layout.addWidget(QLabel(tr('Mask layer')))
-        layout.addWidget(self.mask_layers_combo)
-        layout.addWidget(self.mask_layer_checkbox)
         layout.addWidget(QLabel(tr('Choose columns from input layer')))
         layout.addWidget(self.input_layers_columns_combo)
         layout.setContentsMargins(0, 0, 0, 0)
         editor.setLayout(layout)
         return editor
 
-    def get_columns_for_lyr(self, combo_text: str, target_combo: QgsCheckableComboBox) -> None:
+    def get_columns_for_lyr(self, combo_text: str,
+                            target_combo: QgsCheckableComboBox) -> None:
         lyr = self.input_layers_dict.get(combo_text)
-        schema, table = get_pg_table_name_from_uri(lyr.dataProvider().dataSourceUri()).split('.')
-        col_list = get_table_columns(self.db, schema, table, get_table_geom_columns(self.db, schema, table))
+        schema, table = get_pg_table_name_from_uri(
+            lyr.dataProvider().dataSourceUri()).split('.')
+        col_list = get_table_columns(self.db, schema, table,
+                                     get_table_geom_columns(self.db, schema,
+                                                            table))
         target_combo.clear()
         target_combo.addItems(col_list)
 
     def value(self):
-        return self.input_layers_combo.currentText(), self.mask_layers_combo.currentText(),\
-               self.input_layer_checkbox.isChecked(), self.mask_layer_checkbox.isChecked(),\
-               self.input_layers_columns_combo.checkedItems()
+        return self.input_layers_combo.currentText(), self.input_layer_checkbox.isChecked(), self.input_layers_columns_combo.checkedItems()
 
 
-class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
+class PostGISToolboxVectorBuffer(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
     CUSTOM_WIDGET = 'CUSTOM_WIDGET'
-    INPUT_MASK_SELECT = 'INPUT_MASK_SELECT'
+    BUFFER_SIZE = 'BUFFER_SIZE'
     DEST_TABLE = 'DEST_TABLE'
     DEST_SCHEMA = 'DEST_SCHEMA'
     SINGLE = 'SINGLE'
@@ -87,12 +82,21 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
         self.db = get_main_plugin_class().db
         self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
 
-        param = QgsProcessingParameterString(self.CUSTOM_WIDGET, tr('Input layer'))
+        param = QgsProcessingParameterString(self.CUSTOM_WIDGET,
+                                             tr('Input layer'))
         param.setMetadata({
             'widget_wrapper': {
                 'class': CustomWidgetLayout}})
         self.addParameter(param)
 
+        self.addParameter(QgsProcessingParameterNumber(
+            name=self.BUFFER_SIZE,
+            description=tr('Buffer size'),
+            type=QgsProcessingParameterNumber.Double,
+            defaultValue=10,
+            minValue=0,
+            maxValue=99999)
+        )
         self.addParameter(QgsProcessingParameterEnum(
             self.DEST_SCHEMA,
             tr("Output schema"),
@@ -101,7 +105,7 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
             defaultValue=default_layer))
 
         self.addParameter(QgsProcessingParameterString(
-            self.DEST_TABLE, tr('Output table name'), 'intersect'))
+            self.DEST_TABLE, tr('Output table name'), 'buffer'))
 
         self.addParameter(QgsProcessingParameterBoolean(
             self.OVERWRITE,
@@ -122,33 +126,28 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
             return {}
         elif not check_db_connection(self, 'schemas_list'):
             return {}
-        input_lyr_name, mask_lyr_name, input_selected,\
-        input_mask_selected, input_columns = parameters.get(self.CUSTOM_WIDGET)
+        input_lyr_name, input_selected, input_columns = parameters.get(
+            self.CUSTOM_WIDGET)
         input_vector_layer = self.input_layers_dict.get(input_lyr_name)
-        mask_vector_layer = self.input_layers_dict.get(mask_lyr_name)
         input_layer_info_dict = {
             'schema_name': get_pg_table_name_from_uri(
-                input_vector_layer.dataProvider().dataSourceUri()).split('.')[0],
+                input_vector_layer.dataProvider().dataSourceUri()).split('.')[
+                0],
             'table_name': get_pg_table_name_from_uri(
-                input_vector_layer.dataProvider().dataSourceUri()).split('.')[1],
+                input_vector_layer.dataProvider().dataSourceUri()).split('.')[
+                1],
             'srid': input_vector_layer.crs().postgisSrid(),
             'uri': QgsDataSourceUri(input_vector_layer.source()), }
-        mask_layer_info_dict = {
-            'schema_name': get_pg_table_name_from_uri(
-                mask_vector_layer.dataProvider().dataSourceUri()).split('.')[0],
-            'table_name': get_pg_table_name_from_uri(
-                mask_vector_layer.dataProvider().dataSourceUri()).split('.')[1],
-            'srid': mask_vector_layer.crs().postgisSrid(),
-            'uri': QgsDataSourceUri(mask_vector_layer.source()), }
         q_add_to_project = self.parameterAsBool(
             parameters, self.LOAD_TO_PROJECT, context)
         q_overwrite = self.parameterAsBool(parameters, self.OVERWRITE, context)
         schema_enum = self.parameterAsEnum(
             parameters, self.DEST_SCHEMA, context)
+        buffer_size = self.parameterAsDouble(
+            parameters, self.BUFFER_SIZE, context)
         out_schema = self.schemas_list[schema_enum]
         out_table = remove_unsupported_chars(
             self.parameterAsString(parameters, self.DEST_TABLE, context))
-
         if not input_columns:
             input_columns = get_table_columns(
                 self.db,
@@ -160,7 +159,6 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
                     input_layer_info_dict['table_name']
                 )
             )
-
         if feedback.isCanceled():
             return {}
 
@@ -175,18 +173,16 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db,
-                       f'''CREATE TABLE "{out_schema}"."{out_table}" AS 
-                            SELECT {', '.join(f'"input_table"."{elem}"' for elem in input_columns)},
-                             ST_Intersection(input_table."{input_layer_info_dict['uri'].geometryColumn()}",
-                                    mask_table."{mask_layer_info_dict['uri'].geometryColumn()}") AS "geom"
-                            FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}" 
-                                AS input_table
-                            JOIN "{mask_layer_info_dict['schema_name']}"."{mask_layer_info_dict['table_name']}" 
-                                AS mask_table
-                            ON ST_Intersects(input_table."{input_layer_info_dict['uri'].geometryColumn()}",
-                             mask_table."{mask_layer_info_dict['uri'].geometryColumn()}");''')
-            create_vector_geom_index(self.db, out_table, 'geom', schema=out_schema)
+            make_query(self.db, f'''
+                CREATE TABLE "{out_schema}"."{out_table}" AS ( 
+                    SELECT {', '.join(f'"input_table"."{elem}"' for elem in input_columns)},
+                     ST_Buffer(input_table."{input_layer_info_dict['uri'].geometryColumn()}",
+                            {buffer_size}) AS "geom"
+                    FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}" 
+                        AS input_table
+                );''')
+            create_vector_geom_index(self.db, out_table, 'geom',
+                                     schema=out_schema)
             if feedback.isCanceled():
                 return {}
 
@@ -194,7 +190,7 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
             self.db,
             out_schema,
             out_table,
-            layer_name=f'{tr("Intersection")} {input_vector_layer.name()}',
+            layer_name=f'{tr("Buffer")} {input_vector_layer.name()}',
             geom_col='geom'
         )
         if feedback.isCanceled():
@@ -210,10 +206,10 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return 'intersects'
+        return 'buffer'
 
     def displayName(self):
-        return tr('Intersection')
+        return tr('Buffer')
 
     def group(self):
         return tr(self.groupId())
@@ -222,4 +218,4 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
         return tr('Vector')
 
     def createInstance(self):
-        return PostGISToolboxVectorIntersects()
+        return PostGISToolboxVectorBuffer()
