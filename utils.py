@@ -168,7 +168,7 @@ def add_layer_into_map(layer, group_name, parent_name=None, position=0):
     else:
         group = root.findGroup(group_name)
     if not group:
-        project.addMapLayer(layer)
+        project.addMapLayer(layer, False)
         return
     QApplication.processEvents()
     project.addMapLayer(layer, False)
@@ -198,6 +198,9 @@ def add_rasters_to_project(group_name: str,
 def create_postgis_raster_layer(db: QSqlDatabase, schema_name: str,
                                 table_name: str, raster_name: str,
                                 rast_column: str = 'rast') -> QgsRasterLayer:
+    if "     ||  " in raster_name:
+        raster_name = raster_name.split('     ||  ')[0]
+
     uri_config = {
         'dbname': db.databaseName(),
         'host': db.hostName(),
@@ -280,13 +283,15 @@ def get_all_rasters_from_project(only_postgis: bool = False) -> Dict[str, str]:
         predict_layer = layer.layer()
         if not predict_layer:
             continue
-        if only_postgis and predict_layer.isValid() and predict_layer.type() == QgsMapLayerType.RasterLayer \
+        if only_postgis and predict_layer.isValid() and \
+                predict_layer.type() == QgsMapLayerType.RasterLayer \
                 and predict_layer.dataProvider().name() == 'postgresraster':
-            rasters_dict[predict_layer.name()] = predict_layer
+            uri = predict_layer.dataProvider().uri()
+            rasters_dict[f'{predict_layer.name()}     ||  {uri.schema()}.{uri.table()}'] = predict_layer
         elif not only_postgis and predict_layer.isValid() and \
                 predict_layer.type() == QgsMapLayerType.RasterLayer and \
                 predict_layer.dataProvider().name() == 'gdal':
-            rasters_dict[predict_layer.name()] = predict_layer.source()
+            rasters_dict[f'{predict_layer.name()}     ||  {predict_layer.id()}'] = predict_layer.source()
     return rasters_dict
 
 

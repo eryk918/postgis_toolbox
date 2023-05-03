@@ -68,7 +68,7 @@ class PostGISToolboxPlugin(object):
         self.toolbar = self.iface.addToolBar(plugin_name)
         self.toolbar.setObjectName(plugin_name)
         self.db_manager_plugin = FilteredDBManagerPlugin(self.iface)
-        # self._create_test_db()
+        self._create_test_db()
 
     def _create_test_db(self):
         self.db = create_pg_connecton(

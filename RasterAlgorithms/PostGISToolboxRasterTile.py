@@ -17,7 +17,7 @@ from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
     get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
     get_all_rasters_from_project, \
-    create_postgis_raster_layer, add_rasters_to_project
+    create_postgis_raster_layer, add_rasters_to_project, plugin_dir_name
 
 
 class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
@@ -45,6 +45,7 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
             return
         self.db = get_main_plugin_class().db
         self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
+        default_schema = self.schemas_list[0] if self.schemas_list else None
 
         self.addParameter(QgsProcessingParameterEnum(
             self.INPUT,
@@ -65,7 +66,8 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
             self.DEST_SCHEMA,
             tr("Output schema"),
             options=self.schemas_list,
-            allowMultiple=False))
+            allowMultiple=False,
+            defaultValue=default_schema))
 
         self.addParameter(QgsProcessingParameterString(
             self.DEST_TABLE, tr('Output table name'), 'tiled_raster'))
@@ -147,10 +149,10 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
 
             make_query(self.db, f'''    
                 WITH all_raster AS (
-                    SELECT ST_UNION(rast) AS merged
+                    SELECT ST_UNION("rast") AS merged
                     FROM "{uri_dict['SCHEMA']}"."{uri_dict['TABLE']}"
                 )
-                INSERT INTO "{out_schema}"."{out_table}" (rast)
+                INSERT INTO "{out_schema}"."{out_table}" ("rast")
                 SELECT ST_Tile(merged, {size_x}, {size_y}) AS rast
                 FROM all_raster;
             ''')
@@ -162,6 +164,8 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
             if q_overview:
                 create_raster_overviews(self.db, out_schema, out_table)
             if feedback.isCanceled():
+                make_query(self.db, f'DROP TABLE IF EXISTS '
+                                    f'"{out_schema}"."{out_table}";')
                 return {}
 
         out_layer = create_postgis_raster_layer(
@@ -182,7 +186,7 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return tr('Raster tiles')
+        return 'raster_tiles'
 
     def displayName(self):
         return tr('Raster tiles')

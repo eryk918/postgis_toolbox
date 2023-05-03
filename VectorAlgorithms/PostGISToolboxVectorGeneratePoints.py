@@ -14,7 +14,8 @@ from .vec_alg_utils import get_pg_table_name_from_uri, \
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     add_vectors_to_project, create_postgis_vector_layer, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
-    get_all_vectors_from_project, remove_unsupported_chars, plugin_name
+    get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
+    plugin_dir_name
 
 
 class PostGISToolboxVectorGeneratePoints(QgsProcessingAlgorithm):
@@ -42,6 +43,7 @@ class PostGISToolboxVectorGeneratePoints(QgsProcessingAlgorithm):
 
         self.db = get_main_plugin_class().db
         self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
+        default_schema = self.schemas_list[0] if self.schemas_list else None
 
         self.addParameter(QgsProcessingParameterEnum(
             self.INPUT,
@@ -64,7 +66,7 @@ class PostGISToolboxVectorGeneratePoints(QgsProcessingAlgorithm):
             tr("Output schema"),
             options=self.schemas_list,
             allowMultiple=False,
-            defaultValue=default_layer))
+            defaultValue=default_schema))
 
         self.addParameter(QgsProcessingParameterString(
             self.DEST_TABLE, tr('Output table name'), 'points'))
@@ -153,7 +155,7 @@ class PostGISToolboxVectorGeneratePoints(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return 'generate points'
+        return 'vector_generate_points'
 
     def displayName(self):
         return tr('Generate points')

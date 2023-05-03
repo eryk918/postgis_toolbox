@@ -1,5 +1,5 @@
 from qgis.PyQt.QtCore import QSettings
-from qgis._core import QgsDataSourceUri
+from qgis.core import QgsDataSourceUri
 
 from ...utils import make_query, QSqlDatabase, make_queries, tr
 
@@ -8,7 +8,7 @@ get_postgis_version_extended_query = 'SELECT PostGIS_Full_Version();'
 
 create_schema_query = 'CREATE SCHEMA IF NOT EXISTS "{name}";'
 alter_schema_query = 'ALTER SCHEMA "{old_name}" RENAME TO "{name}";'
-drop_schema_query = 'DROP SCHEMA IF EXISTS "{name}";'
+drop_schema_query = 'DROP SCHEMA IF EXISTS "{name}" CASCADE;'
 create_db_query = 'CREATE DATABASE "{name}";'
 alter_db_query = 'ALTER DATABASE "{old_name}" RENAME TO "{name}";'
 drop_db_query = 'DROP DATABASE IF EXISTS "{name}";'

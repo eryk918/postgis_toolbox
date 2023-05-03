@@ -16,7 +16,7 @@ from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
     get_pg_table_name_from_raster_uri, get_pg_table_name_from_uri
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     get_schema_name_list, plugin_name, get_all_rasters_from_project, \
-    unpack_nested_lists
+    unpack_nested_lists, plugin_dir_name
 
 
 class CustomComboSpinBox(WidgetWrapper):
@@ -148,7 +148,7 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
         return {'OUTPUT': result_path}
 
     def name(self):
-        return tr('Raster summary')
+        return 'raster_summary'
 
     def displayName(self):
         return tr('Raster summary')

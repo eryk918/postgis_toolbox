@@ -3,12 +3,13 @@
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterBoolean,
-                       QgsProcessingParameterString, QgsRectangle,
-                       QgsProcessingParameterEnum, QgsVectorLayer, QgsFeatureRequest,
-                       QgsCoordinateTransformContext, QgsGeometry)
+                       QgsProcessingParameterString,
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterNumber)
 from qgis.utils import iface
 
-from ..ImportRaster.utils.raster_utils import make_sql_create_gist, make_sql_addrastercolumn
+from ..ImportRaster.utils.raster_utils import make_sql_create_gist, \
+    make_sql_addrastercolumn, create_raster_overviews
 from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
     get_pg_table_name_from_raster_uri, check_table_exists_in_schema, \
     get_pg_table_name_from_uri
@@ -19,24 +20,27 @@ from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     create_postgis_raster_layer, add_rasters_to_project, plugin_dir_name
 
 
-class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
+class PostGISToolboxRasterResample(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
-    INPUT_CLIP = 'INPUT_CLIP'
-    FIELDS_INPUT = 'FIELDS_INPUT'
-    FIELDS_CLIP = 'FIELDS_CLIP'
+    ALG_NAME = 'ALG_NAME'
+    MAX_ERR = 'MAX_ERR'
     DEST_TABLE = 'DEST_TABLE'
     DEST_SCHEMA = 'DEST_SCHEMA'
     LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
     OVERWRITE = 'OVERWRITE'
+    OVERVIEWS = 'OVERVIEWS'
     KEEP = 'KEEP'
     OPTIONS = 'OPTIONS'
 
     def initAlgorithm(self, config=None):
+        self.alg_names_list = ['NearestNeighbor', 'Bilinear', 'Cubic',
+                               'CubicSpline', 'Lanczos']
         self.input_raster_layers_dict = get_all_rasters_from_project(True)
         self.input_raster_layers = list(self.input_raster_layers_dict.keys()) \
             if self.input_raster_layers_dict else []
-        self.all_layers_dict = {**self.input_raster_layers_dict, **get_all_vectors_from_project(True)}
+        self.all_layers_dict = {**self.input_raster_layers_dict,
+                                **get_all_vectors_from_project(True)}
         self.all_layers_list = list(self.all_layers_dict.keys()) \
             if self.all_layers_dict else []
         if not get_main_plugin_class().db or not self.input_raster_layers_dict:
@@ -53,11 +57,20 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
             defaultValue=self.input_raster_layers[0]))
 
         self.addParameter(QgsProcessingParameterEnum(
-            self.INPUT_CLIP,
-            tr('Mask layer'),
-            options=self.all_layers_list,
-            allowMultiple=False,
-            defaultValue=self.all_layers_list[0]))
+            self.ALG_NAME,
+            tr("Resampling algorithm"),
+            options=self.alg_names_list,
+            defaultValue=self.alg_names_list[0],
+            allowMultiple=False))
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.MAX_ERR,
+            tr("Maximum percentage error"),
+            type=QgsProcessingParameterNumber.Double,
+            defaultValue=0.125,
+            minValue=0,
+            maxValue=100
+        ))
 
         self.addParameter(QgsProcessingParameterEnum(
             self.DEST_SCHEMA,
@@ -67,7 +80,12 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
             defaultValue=default_schema))
 
         self.addParameter(QgsProcessingParameterString(
-            self.DEST_TABLE, tr('Output table name'), 'clip'))
+            self.DEST_TABLE, tr('Output table name'), 'resampled_raster'))
+
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.OVERVIEWS,
+            tr('Create raster overviews'),
+            True))
 
         self.addParameter(QgsProcessingParameterBoolean(
             self.OVERWRITE,
@@ -88,9 +106,9 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
             return {}
         elif not check_db_connection(self, 'schemas_list'):
             return {}
-        geom_list = []
+
         raster_layer_name = self.input_raster_layers[self.parameterAsEnum(
-                parameters, self.INPUT, context)]
+            parameters, self.INPUT, context)]
         raster_layer = self.input_raster_layers_dict[raster_layer_name]
         uri_dict = get_pg_table_name_from_raster_uri(
             raster_layer.dataProvider().dataSourceUri())
@@ -106,33 +124,19 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         if not uri_dict.get('TABLE'):
             return {}
 
-        mask_layer = self.all_layers_dict[
-            self.all_layers_list[self.parameterAsEnum(
-                parameters, self.INPUT_CLIP, context)]]
-        if isinstance(mask_layer, QgsVectorLayer):
-            req = QgsFeatureRequest()
-            req.setDestinationCrs(raster_layer.crs(), QgsCoordinateTransformContext())
-            for feature in mask_layer.getFeatures(req):
-                if not geom_list:
-                    geom_list.append(feature.geometry())
-                else:
-                    geom_list[0] = geom_list[0].combine(feature.geometry())
-        else:
-            extent = mask_layer.extent()
-            if isinstance(extent, QgsRectangle):
-                geom_list.append(QgsGeometry.fromRect(extent))
-        if not geom_list:
-            return {}
-
         q_add_to_project = self.parameterAsBool(
             parameters, self.LOAD_TO_PROJECT, context)
         q_overwrite = self.parameterAsBool(parameters, self.OVERWRITE, context)
+        q_overview = self.parameterAsBool(parameters, self.OVERVIEWS, context)
         schema_enum = self.parameterAsEnum(
             parameters, self.DEST_SCHEMA, context)
+        resampling_algorithm = self.parameterAsString(
+            parameters, self.ALG_NAME, context)
+        resampling_error = self.parameterAsDouble(
+            parameters, self.MAX_ERR, context)
         out_schema = self.schemas_list[schema_enum]
         out_table = remove_unsupported_chars(
             self.parameterAsString(parameters, self.DEST_TABLE, context))
-
         if feedback.isCanceled():
             return {}
 
@@ -147,24 +151,35 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db, f''' CREATE TABLE "{out_schema}"."{out_table}" AS (
-                SELECT "rid", ST_CLIP("rast", ST_GeomFromText('{geom_list[0].asWkt()}', {raster_layer.crs().postgisSrid()})) AS "rast"
-                FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
-                WHERE ST_Intersects("rast", ST_GeomFromText('{geom_list[0].asWkt()}', {raster_layer.crs().postgisSrid()})));''')
 
-            make_query(self.db, make_sql_create_gist(out_table, out_table), out_schema)
-            make_query(self.db, make_sql_addrastercolumn(out_table, out_schema))
+            make_query(self.db, f''' 
+                CREATE TABLE "{out_schema}"."{out_table}" AS (
+                    SELECT "rid", ST_Resample("rast", "rast", 
+                        '{resampling_algorithm}', {resampling_error}) AS "rast"
+                    FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
+                );''')
+
+            make_query(self.db, make_sql_create_gist(out_table, out_table),
+                       out_schema)
+            make_query(self.db,
+                       make_sql_addrastercolumn(out_table, out_schema))
+            if q_overview:
+                create_raster_overviews(self.db, out_schema, out_table)
             if feedback.isCanceled():
+                make_query(self.db, f'DROP TABLE IF EXISTS '
+                                    f'"{out_schema}"."{out_table}";')
                 return {}
+
         out_layer = create_postgis_raster_layer(
-                        self.db, out_schema, out_table, raster_layer_name
-                    )
+            self.db, out_schema, out_table, raster_layer_name
+        )
 
         if feedback.isCanceled():
             return {}
 
         if q_add_to_project:
-            add_rasters_to_project(PROCESSING_LAYERS_GROUP, [out_layer], postgis_raster=True)
+            add_rasters_to_project(PROCESSING_LAYERS_GROUP, [out_layer],
+                                   postgis_raster=True)
 
         return {
             self.OUTPUT: out_layer,
@@ -173,10 +188,10 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return 'raster_clip'
+        return 'raster_resample'
 
     def displayName(self):
-        return tr('Raster clip')
+        return tr('Raster resample')
 
     def group(self):
         return tr(self.groupId())
@@ -185,4 +200,4 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         return tr('Raster')
 
     def createInstance(self):
-        return PostGISToolboxRasterClip()
+        return PostGISToolboxRasterResample()

@@ -17,7 +17,8 @@ from .vec_alg_utils import get_pg_table_name_from_uri, \
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     add_vectors_to_project, create_postgis_vector_layer, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
-    get_all_vectors_from_project, remove_unsupported_chars, plugin_name
+    get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
+    plugin_dir_name
 
 
 class CustomWidgetLayout(WidgetWrapper):
@@ -79,13 +80,13 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
         self.input_layers_dict = get_all_vectors_from_project(True)
         self.input_layers = list(self.input_layers_dict.keys()) \
             if self.input_layers_dict else []
-        default_layer = self.input_layers[0] if self.input_layers else None
 
         if not get_main_plugin_class().db or not self.input_layers_dict:
             return
 
         self.db = get_main_plugin_class().db
         self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
+        default_schema = self.schemas_list[0] if self.schemas_list else None
 
         param = QgsProcessingParameterString(self.CUSTOM_WIDGET, tr('Input layer'))
         param.setMetadata({
@@ -98,7 +99,7 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
             tr("Output schema"),
             options=self.schemas_list,
             allowMultiple=False,
-            defaultValue=default_layer))
+            defaultValue=default_schema))
 
         self.addParameter(QgsProcessingParameterString(
             self.DEST_TABLE, tr('Output table name'), 'intersect'))
@@ -210,7 +211,7 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return 'intersects'
+        return 'vector_intersect'
 
     def displayName(self):
         return tr('Intersection')

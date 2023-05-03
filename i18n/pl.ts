@@ -44,12 +44,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox_provider.py" line="72"/>
+        <location filename="../postgis_toolbox_provider.py" line="88"/>
         <source>PostGIS Spatial Functions</source>
         <translation>Funkcje przestrzenne PostGIS</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="45"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="91"/>
         <source>Input layer</source>
         <translation>Warstwa wejściowa</translation>
     </message>
@@ -270,14 +270,14 @@ Spróbuj ponownie.</translation>
         <translation>Import rastra został zakończony pomyślnie.</translation>
     </message>
     <message>
-        <location filename="../ImportRaster/UI/import_raster_ui.py" line="77"/>
+        <location filename="../ImportRaster/UI/import_raster_ui.py" line="84"/>
         <source>The file size exceeds the maximum size allowed for an untiled raster.
 The tiling option has been forced.</source>
         <translation>Rozmiar pliku przekracza maksymalny rozmiar dozwolony dla niepokaflowanego rastra.
 Opcja kafelkowania została wymuszona.</translation>
     </message>
     <message>
-        <location filename="../ImportRaster/UI/import_raster_ui.py" line="130"/>
+        <location filename="../ImportRaster/UI/import_raster_ui.py" line="137"/>
         <source>Import raster into PostGIS database</source>
         <translation>Import danych rastrowych do bazy danych PostGIS</translation>
     </message>
@@ -312,92 +312,92 @@ Opcja kafelkowania została wymuszona.</translation>
         <translation>Ostrzeżenie</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorClip.py" line="52"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorClip.py" line="54"/>
         <source>Layer to be clipped</source>
         <translation>Warstwa, która ma być przycięta</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="92"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="94"/>
         <source>Force output as singlepart</source>
         <translation>Wymuś wyjście jako jednoczęściowe</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="52"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="84"/>
         <source>Output schema</source>
         <translation>Schemat wyjściowy</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="59"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="60"/>
         <source>Output table name</source>
         <translation>Nazwa tabeli wyjściowej</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="95"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="97"/>
         <source>Overwrite table if exists</source>
         <translation>Nadpisz tabelę jeżeli istnieje</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="100"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="102"/>
         <source>Add result layer to the project</source>
         <translation>Dodaj warstwę wynikową do projektu</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorClip.py" line="206"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorClip.py" line="208"/>
         <source>Clip</source>
         <translation>Przytnij</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="52"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="54"/>
         <source>Layer to be subtracted</source>
         <translation>Warstwa do odjęcia</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="212"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="214"/>
         <source>Difference</source>
         <translation>Różnica</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="43"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="44"/>
         <source>Input layers</source>
         <translation>Warstwy wejściowe</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="208"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="209"/>
         <source>Merge</source>
         <translation>Połącz</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="48"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="50"/>
         <source>Input layer:</source>
         <translation>Warstwa wejściowa:</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="55"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="57"/>
         <source>Neighbor layer: [point layer]</source>
         <translation>Warstwa sąsiednia: [point layer]</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="62"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="64"/>
         <source>Minimum distance:</source>
         <translation>Minimalna odległość:</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="72"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="74"/>
         <source>Maximum distance:</source>
         <translation>Maksymalna odległość:</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="82"/>
         <source>Output schema:</source>
-        <translation>Schemat wyjściowy:</translation>
+        <translation type="obsolete">Schemat wyjściowy:</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="89"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="91"/>
         <source>Output table name:</source>
         <translation>Nazwa tabeli wyjściowej:</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="251"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="253"/>
         <source>Nearest Neighbor</source>
         <translation>Najbliższy sąsiad</translation>
     </message>
@@ -518,7 +518,7 @@ Czy chcesz kontynuować?</translation>
         <translation>Czy chcesz ponownie dodać tabelę {selected_text}?</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="107"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="109"/>
         <source>No PostGIS layers in the active project!</source>
         <translation>Brak warstw PostGIS w aktywnym projekcie!</translation>
     </message>
@@ -613,17 +613,17 @@ Czy chcesz kontynuować?</translation>
         <translation>&amp;Wyjdź</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterClip.py" line="46"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="50"/>
         <source>Input raster layer</source>
         <translation>Wprowadź warstwę rastrową</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterClip.py" line="53"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="44"/>
         <source>Mask layer</source>
         <translation>Warstwa maski</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterClip.py" line="166"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterClip.py" line="179"/>
         <source>Raster clip</source>
         <translation>Przycięcie rastra</translation>
     </message>
@@ -683,7 +683,7 @@ Czy chcesz kontynuować?</translation>
         <translation>PostGIS Toolbox - Usuń połączenie</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="418"/>
+        <location filename="../utils.py" line="423"/>
         <source>Active database:</source>
         <translation>Aktywna baza danych:</translation>
     </message>
@@ -698,12 +698,12 @@ Czy chcesz kontynuować?</translation>
         <translation>Wybrano &quot;{0}&quot; jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="160"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="198"/>
         <source>Raster</source>
         <translation>Dane rastrowe</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="257"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="259"/>
         <source>Vector</source>
         <translation>Dane wektorowe</translation>
     </message>
@@ -756,6 +756,96 @@ Czy chcesz kontynuować?</translation>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="118"/>
         <source>Standard deviation</source>
         <translation>Odchylenie standardowe</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="75"/>
+        <source>Create raster overviews</source>
+        <translation>Utwórz tabele przeglądowe (piramidy)</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterMerge.py" line="181"/>
+        <source>Merge raster tiles</source>
+        <translation>Złącz kafle rastra</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="56"/>
+        <source>Output layer CRS</source>
+        <translation>Wyjściowy układ odniesienia</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="159"/>
+        <source>Raster reproject</source>
+        <translation>Zmień układ odniesienia rastra</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="59"/>
+        <source>Resampling algorithm</source>
+        <translation>Algorytm resamplingu</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="66"/>
+        <source>Maximum percentage error</source>
+        <translation>Maksymalny procent błędu</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="194"/>
+        <source>Raster resample</source>
+        <translation>Resampling rastra</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="57"/>
+        <source>Tile size X</source>
+        <translation>Szerokość kafla</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="61"/>
+        <source>Tile size Y</source>
+        <translation>Wysokość kafla</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="192"/>
+        <source>Raster tiles</source>
+        <translation>Kaflowanie rastra</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="36"/>
+        <source>Only selected features</source>
+        <translation>Tylko zaznaczone obiekty</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="47"/>
+        <source>Choose columns from input layer</source>
+        <translation>Wybierz kolumny z warstwy wejściowej</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorBuffer.py" line="93"/>
+        <source>Buffer size</source>
+        <translation>Rozmiar bufora</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorBuffer.py" line="213"/>
+        <source>Buffer</source>
+        <translation>Bufor</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorDissolve.py" line="195"/>
+        <source>Dissolve</source>
+        <translation>Uprość</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneratePoints.py" line="55"/>
+        <source>Number of points</source>
+        <translation>Ilość punktów</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneratePoints.py" line="161"/>
+        <source>Generate points</source>
+        <translation>Wygeneruj punkty</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="217"/>
+        <source>Intersection</source>
+        <translation>Przecięcie</translation>
     </message>
 </context>
 <context>

@@ -17,8 +17,9 @@ from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
     get_pg_table_name_from_uri
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
-    get_all_vectors_from_project, remove_unsupported_chars, plugin_name, get_all_rasters_from_project, \
-    create_postgis_raster_layer, add_rasters_to_project
+    get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
+    get_all_rasters_from_project, \
+    create_postgis_raster_layer, add_rasters_to_project, plugin_dir_name
 
 
 class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
@@ -43,6 +44,7 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
             return
         self.db = get_main_plugin_class().db
         self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
+        default_schema = self.schemas_list[0] if self.schemas_list else None
 
         self.addParameter(QgsProcessingParameterEnum(
             self.INPUT,
@@ -59,7 +61,8 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
             self.DEST_SCHEMA,
             tr("Output schema"),
             options=self.schemas_list,
-            allowMultiple=False))
+            allowMultiple=False,
+            defaultValue=default_schema))
 
         self.addParameter(QgsProcessingParameterString(
             self.DEST_TABLE, tr('Output table name'), 'reprojected_layer'))
@@ -150,7 +153,7 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return tr('Raster reproject')
+        return 'raster_reproject'
 
     def displayName(self):
         return tr('Raster reproject')

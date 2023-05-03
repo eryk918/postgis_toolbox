@@ -41,6 +41,8 @@ from .VectorAlgorithms.PostGISToolboxVectorBuffer import PostGISToolboxVectorBuf
 from .RasterAlgorithms.PostGISToolboxRasterClip import PostGISToolboxRasterClip
 from .RasterAlgorithms.PostGISToolboxRasterSummary import PostGISToolboxRasterSummary
 from .RasterAlgorithms.PostGISToolboxRasterTile import PostGISToolboxRasterTile
+from .RasterAlgorithms.PostGISToolboxRasterMerge import PostGISToolboxRasterMerge
+from .RasterAlgorithms.PostGISToolboxRasterResample import PostGISToolboxRasterResample
 from .RasterAlgorithms.PostGISToolboxRasterReproject import PostGISToolboxRasterReproject
 from .VectorAlgorithms.PostGISToolboxVectorClip import PostGISToolboxVectorClip
 from .VectorAlgorithms.PostGISToolboxVectorDifference import \
@@ -73,6 +75,8 @@ class PostGISToolboxProvider(QgsProcessingProvider):
         self.addAlgorithm(PostGISToolboxVectorMerge())
         self.addAlgorithm(PostGISToolboxVectorNearestNeighbor())
         self.addAlgorithm(PostGISToolboxRasterSummary())
+        self.addAlgorithm(PostGISToolboxRasterMerge())
+        self.addAlgorithm(PostGISToolboxRasterResample())
         self.addAlgorithm(PostGISToolboxRasterTile())
         self.addAlgorithm(PostGISToolboxRasterClip())
         self.addAlgorithm(PostGISToolboxRasterReproject())
