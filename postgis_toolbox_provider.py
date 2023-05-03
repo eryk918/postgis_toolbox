@@ -34,6 +34,7 @@ import os
 
 from qgis.core import QgsProcessingProvider
 
+from .VectorAlgorithms.PostGISToolboxVectorGeneraterPolygonByPoints import PostGISToolboxVectorGeneratePolygonFromPoints
 from .VectorAlgorithms.PostGISToolboxVectorDissolve import PostGISToolboxVectorDissolve
 from .VectorAlgorithms.PostGISToolboxVectorGeneratePoints import PostGISToolboxVectorGeneratePoints
 from .VectorAlgorithms.PostGISToolboxVectorIntersect import PostGISToolboxVectorIntersects
@@ -70,6 +71,7 @@ class PostGISToolboxProvider(QgsProcessingProvider):
         self.addAlgorithm(PostGISToolboxVectorDifference())
         self.addAlgorithm(PostGISToolboxVectorIntersects())
         self.addAlgorithm(PostGISToolboxVectorGeneratePoints())
+        self.addAlgorithm(PostGISToolboxVectorGeneratePolygonFromPoints())
         self.addAlgorithm(PostGISToolboxVectorDissolve())
         self.addAlgorithm(PostGISToolboxVectorBuffer())
         self.addAlgorithm(PostGISToolboxVectorMerge())
