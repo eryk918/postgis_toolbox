@@ -261,6 +261,7 @@ class DBManager:
                     tr('Database name...')
                 )
                 add_dialog.run_dialog(self.save_database, self.get_db_list())
+        self.disconnect_db(True)
 
     def edit_db_object(self) -> None:
         db = self.dummydb if universal_db_check(self.dummydb) else self.db
@@ -299,6 +300,7 @@ class DBManager:
                     QMessageBox.Yes, QMessageBox.No)
                 if response == QMessageBox.Yes:
                     add_dialog.run_dialog(self.rename_database, db_list)
+        self.disconnect_db(True)
 
     def remove_db_object(self) -> None:
         if hasattr(self.main, 'db') and self.main.db:
@@ -352,8 +354,7 @@ class DBManager:
         if db_name in self.get_db_list():
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr('Successfully added "%s" and set as '
-                   'active database.') % db_name,
+                tr('Successfully added "%s".') % db_name,
                 QMessageBox.Ok)
             self.connect_server()
             self.select_operative_database(True, db_name)
@@ -369,8 +370,7 @@ class DBManager:
         if schema_name in self.get_schema_list(self.db.databaseName()):
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr('Successfully added "%s" and set '
-                   'as active schema.') % schema_name,
+                tr('Successfully added "%s".') % schema_name,
                 QMessageBox.Ok)
             self.connect_server()
         else:
@@ -384,8 +384,7 @@ class DBManager:
         if db_name in self.get_db_list():
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr('Successfully renamed "{0}" to "{1}" and '
-                   'set as active database.').format(self.old_name, db_name),
+                tr('Successfully renamed "{0}" to "{1}".').format(self.old_name, db_name),
                 QMessageBox.Ok)
             self.connect_server()
             self.select_operative_database(True, db_name)
@@ -401,8 +400,7 @@ class DBManager:
         if schema_name in self.get_schema_list(self.db.databaseName()):
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr('Successfully renamed "{0}" to "{1}" and '
-                   'set as active schema.').format(self.old_name, schema_name),
+                tr('Successfully renamed "{0}" to "{1}".').format(self.old_name, schema_name),
                 QMessageBox.Ok)
             self.connect_server()
         else:

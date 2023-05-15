@@ -141,7 +141,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation>Podaj nazwę nowego schematu</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="282"/>
+        <location filename="../DBManager/DBManager.py" line="283"/>
         <source>Schema name...</source>
         <translation>Nazwa schematu...</translation>
     </message>
@@ -151,17 +151,17 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation>Podaj nazwę dla nowej bazy danych</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="290"/>
+        <location filename="../DBManager/DBManager.py" line="291"/>
         <source>Database name...</source>
         <translation>Nazwa bazy danych...</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="282"/>
+        <location filename="../DBManager/DBManager.py" line="283"/>
         <source>Enter a name for schema</source>
         <translation>Podaj nazwę schematu</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="290"/>
+        <location filename="../DBManager/DBManager.py" line="291"/>
         <source>Enter a name for database</source>
         <translation>Podaj nazwę bazy danych</translation>
     </message>
@@ -171,7 +171,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się dodać &quot;{db_name}&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="360"/>
+        <location filename="../DBManager/DBManager.py" line="362"/>
         <source>An error occurred while adding a database!</source>
         <translation>Wystąpił błąd podczas dodawania bazy danych!</translation>
     </message>
@@ -181,7 +181,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się dodać &quot;{schema_name}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="376"/>
+        <location filename="../DBManager/DBManager.py" line="377"/>
         <source>An error occurred while adding a schema!</source>
         <translation>Podczas dodawania schematu wystąpił błąd!</translation>
     </message>
@@ -201,7 +201,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się zmienić nazwę &quot;{self.old_name}&quot; na &quot;{schema_name}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="408"/>
+        <location filename="../DBManager/DBManager.py" line="407"/>
         <source>An error occurred while renaming the schema!</source>
         <translation>Podczas zmiany nazwy schematu wystąpił błąd!</translation>
     </message>
@@ -211,7 +211,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Pomyślnie usunięto bazę danych &quot;{self.old_name}&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="425"/>
+        <location filename="../DBManager/DBManager.py" line="424"/>
         <source>An error occurred while removing the database!</source>
         <translation>Podczas usuwania bazy danych wystąpił błąd!</translation>
     </message>
@@ -221,7 +221,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Pomyślnie usunięto schemat &quot;{self.old_name}&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="440"/>
+        <location filename="../DBManager/DBManager.py" line="439"/>
         <source>An error occurred while removing the schema!</source>
         <translation>Podczas usuwania schematu wystąpił błąd!</translation>
     </message>
@@ -429,7 +429,7 @@ Użyj DB Manager i spróbuj ponownie.</translation>
         <translation type="obsolete">Statystyki rastra</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="183"/>
+        <location filename="../postgis_toolbox.py" line="196"/>
         <source>There is no connection to the PostGIS database!</source>
         <translation>Nie ma połączenia z bazą danych PostGIS!</translation>
     </message>
@@ -888,21 +888,21 @@ Czy chcesz kontynuować?</translation>
         <translation>Stwórz poligony z punktów</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="295"/>
+        <location filename="../DBManager/DBManager.py" line="296"/>
         <source>Rename database disconnects from her all active users.
 Do you want to continue?</source>
         <translation>Zmiana nazwy bazy danych odłączy od niej wszystkich aktywnych użytkowników.
 Czy chcesz kontynuować?</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="323"/>
+        <location filename="../DBManager/DBManager.py" line="325"/>
         <source>Deletion of the &quot;%s&quot; schema is irreversible!
 Do you want to continue?</source>
         <translation>Usunięcie schematu &quot;%s&quot; jest nieodwracalne!
 Czy chcesz kontynuować?</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="331"/>
+        <location filename="../DBManager/DBManager.py" line="333"/>
         <source>Deletion of the &quot;%s&quot; database is irreversible!
 Do you want to continue?</source>
         <translation>Usunięcie bazy danych &quot;%s&quot; jest nieodwracalne!
@@ -911,32 +911,42 @@ Czy chcesz kontynuować?</translation>
     <message>
         <location filename="../DBManager/DBManager.py" line="352"/>
         <source>Successfully added &quot;%s&quot; and set as active database.</source>
-        <translation>Udało się dodać &quot;%s&quot; i ustawić jako aktywną bazę danych.</translation>
+        <translation type="obsolete">Udało się dodać &quot;%s&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="369"/>
         <source>Successfully added &quot;%s&quot; and set as active schema.</source>
-        <translation>Udało się dodać &quot;%s&quot; i ustawić jako aktywny schemat.</translation>
+        <translation type="obsolete">Udało się dodać &quot;%s&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="384"/>
         <source>Successfully renamed &quot;{0}&quot; to &quot;{1}&quot; and set as active database.</source>
-        <translation>Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot; i ustawić jako aktywną bazę danych.</translation>
+        <translation type="obsolete">Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
         <location filename="../DBManager/DBManager.py" line="401"/>
         <source>Successfully renamed &quot;{0}&quot; to &quot;{1}&quot; and set as active schema.</source>
-        <translation>Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot; i ustawić jako aktywny schemat.</translation>
+        <translation type="obsolete">Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="416"/>
+        <location filename="../DBManager/DBManager.py" line="415"/>
         <source>Successfully removed &quot;%s&quot; database.</source>
         <translation>Pomyślnie usunięto bazę danych &quot;%s&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="434"/>
+        <location filename="../DBManager/DBManager.py" line="433"/>
         <source>Successfully removed &quot;%s&quot; schema.</source>
         <translation>Pomyślnie usunięto schemat &quot;%s&quot;.</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="371"/>
+        <source>Successfully added &quot;%s&quot;.</source>
+        <translation>Pomyślnie dodano &quot;%s&quot;.</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/DBManager.py" line="401"/>
+        <source>Successfully renamed &quot;{0}&quot; to &quot;{1}&quot;.</source>
+        <translation>Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot;.</translation>
     </message>
 </context>
 <context>
