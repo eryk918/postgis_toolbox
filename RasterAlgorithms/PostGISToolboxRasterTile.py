@@ -73,13 +73,13 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
             self.DEST_TABLE, tr('Output table name'), 'tiled_raster'))
 
         self.addParameter(QgsProcessingParameterBoolean(
-            self.OVERVIEWS,
-            tr('Create raster overviews'),
+            self.OVERWRITE,
+            tr('Overwrite table if exists'),
             True))
 
         self.addParameter(QgsProcessingParameterBoolean(
-            self.OVERWRITE,
-            tr('Overwrite table if exists'),
+            self.OVERVIEWS,
+            tr('Create raster overviews'),
             True))
 
         self.addParameter(QgsProcessingParameterBoolean(
@@ -189,7 +189,7 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
         return 'raster_tiles'
 
     def displayName(self):
-        return tr('Raster tiles')
+        return tr('Tiles')
 
     def group(self):
         return tr(self.groupId())

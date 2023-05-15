@@ -63,13 +63,13 @@ class PostGISToolboxRasterMerge(QgsProcessingAlgorithm):
             self.DEST_TABLE, tr('Output table name'), 'merged_raster'))
 
         self.addParameter(QgsProcessingParameterBoolean(
-            self.OVERVIEWS,
-            tr('Create raster overviews'),
+            self.OVERWRITE,
+            tr('Overwrite table if exists'),
             True))
 
         self.addParameter(QgsProcessingParameterBoolean(
-            self.OVERWRITE,
-            tr('Overwrite table if exists'),
+            self.OVERVIEWS,
+            tr('Create raster overviews'),
             True))
 
         self.addParameter(QgsProcessingParameterBoolean(
@@ -178,7 +178,7 @@ class PostGISToolboxRasterMerge(QgsProcessingAlgorithm):
         return 'raster_merge_tiles'
 
     def displayName(self):
-        return tr('Merge raster tiles')
+        return tr('Merge tiles')
 
     def group(self):
         return tr(self.groupId())

@@ -8,7 +8,8 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsCoordinateTransformContext, QgsGeometry)
 from qgis.utils import iface
 
-from ..ImportRaster.utils.raster_utils import make_sql_create_gist, make_sql_addrastercolumn
+from ..ImportRaster.utils.raster_utils import make_sql_create_gist, \
+    make_sql_addrastercolumn, create_raster_overviews
 from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
     get_pg_table_name_from_raster_uri, check_table_exists_in_schema, \
     get_pg_table_name_from_uri
@@ -27,6 +28,7 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
     FIELDS_CLIP = 'FIELDS_CLIP'
     DEST_TABLE = 'DEST_TABLE'
     DEST_SCHEMA = 'DEST_SCHEMA'
+    CREATE_OVERVIEWS = 'CREATE_OVERVIEWS'
     LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
     OVERWRITE = 'OVERWRITE'
     KEEP = 'KEEP'
@@ -72,6 +74,11 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterBoolean(
             self.OVERWRITE,
             tr('Overwrite table if exists'),
+            True))
+
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.CREATE_OVERVIEWS,
+            tr('Create raster overviews'),
             True))
 
         self.addParameter(QgsProcessingParameterBoolean(
@@ -127,6 +134,8 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         q_add_to_project = self.parameterAsBool(
             parameters, self.LOAD_TO_PROJECT, context)
         q_overwrite = self.parameterAsBool(parameters, self.OVERWRITE, context)
+        q_overviews = self.parameterAsBool(parameters, self.CREATE_OVERVIEWS,
+                                           context)
         schema_enum = self.parameterAsEnum(
             parameters, self.DEST_SCHEMA, context)
         out_schema = self.schemas_list[schema_enum]
@@ -156,6 +165,8 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
             make_query(self.db, make_sql_addrastercolumn(out_table, out_schema))
             if feedback.isCanceled():
                 return {}
+            if q_overviews:
+                create_raster_overviews(self.db, out_schema, out_table)
         out_layer = create_postgis_raster_layer(
                         self.db, out_schema, out_table, raster_layer_name
                     )
@@ -176,7 +187,7 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
         return 'raster_clip'
 
     def displayName(self):
-        return tr('Raster clip')
+        return tr('Clip')
 
     def group(self):
         return tr(self.groupId())

@@ -151,7 +151,7 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
         return 'raster_summary'
 
     def displayName(self):
-        return tr('Raster summary')
+        return tr('Summary')
 
     def group(self):
         return tr(self.groupId())

@@ -11,7 +11,8 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterCrs)
 from qgis.utils import iface
 
-from ..ImportRaster.utils.raster_utils import make_sql_create_gist, make_sql_addrastercolumn
+from ..ImportRaster.utils.raster_utils import make_sql_create_gist, \
+    make_sql_addrastercolumn, create_raster_overviews
 from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
     get_pg_table_name_from_raster_uri, check_table_exists_in_schema, \
     get_pg_table_name_from_uri
@@ -29,6 +30,7 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
     DEST_TABLE = 'DEST_TABLE'
     DEST_SCHEMA = 'DEST_SCHEMA'
     LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
+    CREATE_OVERVIEWS = 'CREATE_OVERVIEWS'
     OVERWRITE = 'OVERWRITE'
     KEEP = 'KEEP'
     OPTIONS = 'OPTIONS'
@@ -73,6 +75,11 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
             True))
 
         self.addParameter(QgsProcessingParameterBoolean(
+            self.CREATE_OVERVIEWS,
+            tr('Create raster overviews'),
+            True))
+
+        self.addParameter(QgsProcessingParameterBoolean(
             self.LOAD_TO_PROJECT,
             tr('Add result layer to the project'),
             True))
@@ -107,8 +114,9 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
         q_add_to_project = self.parameterAsBool(
             parameters, self.LOAD_TO_PROJECT, context)
         q_overwrite = self.parameterAsBool(parameters, self.OVERWRITE, context)
+        q_overviews = self.parameterAsBool(parameters, self.CREATE_OVERVIEWS, context)
         schema_enum = self.parameterAsEnum(parameters, self.DEST_SCHEMA, context)
-        output_crs = self.parameterAsGeometryCrs(parameters, self.OUTPUTCRS, context)
+        output_crs = self.parameterAsCrs(parameters, self.OUTPUTCRS, context)
         out_schema = self.schemas_list[schema_enum]
         out_table = remove_unsupported_chars(
             self.parameterAsString(parameters, self.DEST_TABLE, context))
@@ -136,6 +144,10 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
             make_query(self.db, make_sql_addrastercolumn(out_table, out_schema))
             if feedback.isCanceled():
                 return {}
+
+            if q_overviews:
+                create_raster_overviews(self.db, out_schema, out_table)
+
         out_layer = create_postgis_raster_layer(
                         self.db, out_schema, out_table, raster_layer_name
                     )
@@ -156,7 +168,7 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
         return 'raster_reproject'
 
     def displayName(self):
-        return tr('Raster reproject')
+        return tr('Reproject')
 
     def group(self):
         return tr(self.groupId())

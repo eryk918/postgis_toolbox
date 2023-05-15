@@ -12,19 +12,18 @@ from typing import List, Tuple, Any, Dict
 import qgis
 from PyQt5.QtCore import Qt
 from chardet import detect
-from qgis.PyQt.QtCore import QCoreApplication, NULL
+from qgis.PyQt.QtCore import QCoreApplication, NULL, QTimer, \
+    QSortFilterProxyModel, QItemSelectionModel
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtSql import QSqlDatabase
 from qgis.PyQt.QtSql import QSqlQuery
 from qgis.PyQt.QtWidgets import QComboBox, QProgressBar, QTreeWidgetItem, \
     QDialog, QLineEdit, QRadioButton, QToolButton, QCheckBox, QFrame, \
-    QGroupBox, QPlainTextEdit, QDoubleSpinBox, QWidget, QTextEdit, QSpinBox, \
-    QGridLayout, QHBoxLayout, QVBoxLayout
+    QGroupBox, QWidget
 from qgis.PyQt.QtWidgets import QProgressDialog, QPushButton, QMessageBox, \
     QApplication, QLabel
-from qgis._gui import QgsCheckableComboBox
 from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, \
-    QgsProviderRegistry, QgsWkbTypes, QgsAuthMethodConfig
+    QgsWkbTypes, QgsAuthMethodConfig, QgsProviderRegistry, QgsTask
 from qgis.core import QgsProject, QgsVectorLayer, \
     QgsRasterLayer, QgsApplication, QgsMapLayerType
 from qgis.utils import iface
@@ -161,19 +160,23 @@ def change_alg_progress(progress, last_progress_value, value):
     return last_progress_value
 
 
-def add_layer_into_map(layer, group_name, parent_name=None, position=0):
-    root = project.layerTreeRoot()
-    if parent_name and root.findGroup(parent_name):
-        group = root.findGroup(parent_name).findGroup(group_name)
+def add_layer_into_map(layer, group_name, parent_name=None, position=0,
+                       raster: bool = False):
+    if raster:
+        project.addMapLayer(layer)
     else:
-        group = root.findGroup(group_name)
-    if not group:
+        if parent_name and root.findGroup(parent_name):
+            group = root.findGroup(parent_name).findGroup(group_name)
+        else:
+            group = root.findGroup(group_name)
+        if not group:
+            project.addMapLayer(layer)
+            return
+        QApplication.processEvents()
         project.addMapLayer(layer, False)
-        return
+        if group_name:
+            group.insertLayer(position, layer)
     QApplication.processEvents()
-    project.addMapLayer(layer, False)
-    if group_name:
-        group.insertLayer(position, layer)
 
 
 def add_rasters_to_project(group_name: str,
@@ -181,14 +184,11 @@ def add_rasters_to_project(group_name: str,
                            symbology: str = None,
                            postgis_raster: bool = False) -> None:
     QApplication.processEvents()
-    group_import = project.layerTreeRoot().findGroup(group_name)
-    if not group_import:
-        project.layerTreeRoot().addGroup(group_name)
     for raster in list_of_rasters:
         QApplication.processEvents()
         rlayer = raster if postgis_raster \
             else QgsRasterLayer(raster, os.path.basename(raster))
-        add_layer_into_map(rlayer, group_name)
+        add_layer_into_map(rlayer, group_name, raster=True)
         if symbology:
             rlayer.loadNamedStyle(symbology)
             rlayer.triggerRepaint()

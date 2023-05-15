@@ -54,7 +54,7 @@ class PostGISHelpDialog(QDialog, FORM_CLASS):
     def set_address(self) -> None:
         function = self.function_cbbx.currentText()
         address = f'https://postgis.net/docs/{function}.html'
-        tmp = requests.get(address).text
+        tmp = requests.get(address, verify=False).text
         if '404 Not Found' in tmp:
             address = f'https://postgis.net/docs/RT_{function}.html'
         self.webEngineView.setUrl(QUrl(address))

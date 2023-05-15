@@ -44,7 +44,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox_provider.py" line="88"/>
+        <location filename="../postgis_toolbox_provider.py" line="90"/>
         <source>PostGIS Spatial Functions</source>
         <translation>Funkcje przestrzenne PostGIS</translation>
     </message>
@@ -59,27 +59,27 @@
         <translation type="obsolete">Warstwa wyjściowa</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="58"/>
+        <location filename="../utils.py" line="57"/>
         <source>Processing layers</source>
         <translation>WARSTWY_WYNIKOWE_PROCESSINGU</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="59"/>
+        <location filename="../utils.py" line="58"/>
         <source>IMPORTED RASTERS</source>
         <translation>ZAIMPORTOWANE_WARSTWY_RASTROWE</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="60"/>
+        <location filename="../utils.py" line="59"/>
         <source>IMPORTED VECTORS</source>
         <translation>ZAIMPORTOWANE_WARSTWY_WEKTOROWE</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="123"/>
+        <location filename="../utils.py" line="122"/>
         <source>Please wait</source>
         <translation>Proszę czekać</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="123"/>
+        <location filename="../utils.py" line="122"/>
         <source>Data is being processed...</source>
         <translation></translation>
     </message>
@@ -426,7 +426,7 @@ Użyj DB Manager i spróbuj ponownie.</translation>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="154"/>
         <source>Raster summary</source>
-        <translation>Statystyki rastra</translation>
+        <translation type="obsolete">Statystyki rastra</translation>
     </message>
     <message>
         <location filename="../postgis_toolbox.py" line="183"/>
@@ -625,7 +625,7 @@ Czy chcesz kontynuować?</translation>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterClip.py" line="179"/>
         <source>Raster clip</source>
-        <translation>Przycięcie rastra</translation>
+        <translation type="obsolete">Przycięcie rastra</translation>
     </message>
     <message>
         <location filename="../CustomQueryBuilder/db_manager/dlg_sql_window.py" line="132"/>
@@ -758,24 +758,24 @@ Czy chcesz kontynuować?</translation>
         <translation>Odchylenie standardowe</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="75"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="80"/>
         <source>Create raster overviews</source>
         <translation>Utwórz tabele przeglądowe (piramidy)</translation>
     </message>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterMerge.py" line="181"/>
         <source>Merge raster tiles</source>
-        <translation>Złącz kafle rastra</translation>
+        <translation type="obsolete">Złącz kafle rastra</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="56"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="58"/>
         <source>Output layer CRS</source>
         <translation>Wyjściowy układ odniesienia</translation>
     </message>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="159"/>
         <source>Raster reproject</source>
-        <translation>Zmień układ odniesienia rastra</translation>
+        <translation type="obsolete">Zmień układ odniesienia rastra</translation>
     </message>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="59"/>
@@ -790,7 +790,7 @@ Czy chcesz kontynuować?</translation>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="194"/>
         <source>Raster resample</source>
-        <translation>Resampling rastra</translation>
+        <translation type="obsolete">Resampling rastra</translation>
     </message>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="57"/>
@@ -805,7 +805,7 @@ Czy chcesz kontynuować?</translation>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="192"/>
         <source>Raster tiles</source>
-        <translation>Kaflowanie rastra</translation>
+        <translation type="obsolete">Kaflowanie rastra</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="36"/>
@@ -846,6 +846,46 @@ Czy chcesz kontynuować?</translation>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="217"/>
         <source>Intersection</source>
         <translation>Przecięcie</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterMerge.py" line="181"/>
+        <source>Merge tiles</source>
+        <translation>Złącz kafle</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="171"/>
+        <source>Reproject</source>
+        <translation>Zmień układ odniesienia</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="194"/>
+        <source>Resample</source>
+        <translation>Resampling</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="154"/>
+        <source>Summary</source>
+        <translation>Statystyki</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="192"/>
+        <source>Tiles</source>
+        <translation>Stwórz kafle</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="50"/>
+        <source>Input point layer</source>
+        <translation>Wejściowa warstwa punktowa</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="57"/>
+        <source>Allow holes?</source>
+        <translation>Pozwolić na dziury?</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="159"/>
+        <source>Generate polygon from points</source>
+        <translation>Stwórz poligony z punktów</translation>
     </message>
 </context>
 <context>
