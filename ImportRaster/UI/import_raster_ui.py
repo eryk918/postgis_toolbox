@@ -87,6 +87,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
                 tr('The file size exceeds the maximum size allowed for an '
                    'untiled raster.\nThe tiling option has been forced.'),
                 QMessageBox.Ok)
+            self.tiling_groupbox.setChecked(True)
             self.tiling_groupbox.clicked.connect(
                 lambda: self.tiling_groupbox.setChecked(True))
         else:

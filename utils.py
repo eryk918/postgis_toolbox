@@ -54,7 +54,7 @@ def tr(text: str):
     return QCoreApplication.translate('@default', text)
 
 
-PROCESSING_LAYERS_GROUP = tr('Processing layers')
+PROCESSING_LAYERS_GROUP = tr('PROCESSING_LAYERS')
 RASTERS_LAYERS_GROUP = tr("IMPORTED RASTERS")
 VECTORS_LAYERS_GROUP = tr("IMPORTED VECTORS")
 

@@ -61,7 +61,7 @@
     <message>
         <location filename="../utils.py" line="57"/>
         <source>Processing layers</source>
-        <translation>WARSTWY_WYNIKOWE_PROCESSINGU</translation>
+        <translation type="obsolete">WARSTWY_WYNIKOWE_PROCESSINGU</translation>
     </message>
     <message>
         <location filename="../utils.py" line="58"/>
@@ -277,7 +277,7 @@ The tiling option has been forced.</source>
 Opcja kafelkowania została wymuszona.</translation>
     </message>
     <message>
-        <location filename="../ImportRaster/UI/import_raster_ui.py" line="137"/>
+        <location filename="../ImportRaster/UI/import_raster_ui.py" line="138"/>
         <source>Import raster into PostGIS database</source>
         <translation>Import danych rastrowych do bazy danych PostGIS</translation>
     </message>
@@ -947,6 +947,11 @@ Czy chcesz kontynuować?</translation>
         <location filename="../DBManager/DBManager.py" line="401"/>
         <source>Successfully renamed &quot;{0}&quot; to &quot;{1}&quot;.</source>
         <translation>Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot;.</translation>
+    </message>
+    <message>
+        <location filename="../utils.py" line="57"/>
+        <source>PROCESSING_LAYERS</source>
+        <translation>WARSTWY_WYNIKOWE_PROCESSINGU</translation>
     </message>
 </context>
 <context>

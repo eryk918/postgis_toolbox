@@ -36,7 +36,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
     def initAlgorithm(self, config=None):
         self.input_layers_dict = get_all_vectors_from_project(True)
         self.input_layers_dict = {key: value for key, value in self.input_layers_dict.items()
-                                  if value.wkbType() in [QgsWkbTypes.PointGeometry, QgsWkbTypes.MultiPoint]}
+                                  if QgsWkbTypes.geometryDisplayString(QgsWkbTypes.geometryType(value.wkbType())) in ('Point', 'MultiPoint')}
         self.input_layers = list(self.input_layers_dict.keys()) \
             if self.input_layers_dict else []
         default_layer = self.input_layers[0] if self.input_layers else None
