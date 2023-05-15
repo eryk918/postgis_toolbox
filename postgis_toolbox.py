@@ -189,7 +189,15 @@ class PostGISToolboxPlugin(object):
         self._expand_query_sections()
         self.db_manager_plugin.dlg.runSqlWindow()
         sqlwindow = self.db_manager_plugin.dlg.tabs.currentWidget()
-        sqlwindow.queryBuilderBtn.clicked.disconnect()
+        try:
+            sqlwindow.queryBuilderBtn.clicked.disconnect()
+        except AttributeError:
+            self.db_manager_plugin.dlg.close()
+            QMessageBox.critical(
+                iface.mainWindow(), plugin_name,
+                tr('There is no connection to the PostGIS database!'),
+                QMessageBox.Ok)
+            return
         sqlwindow.queryBuilderBtn.clicked.connect(self._display_query_builder)
         self._display_query_builder()
 

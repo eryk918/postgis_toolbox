@@ -142,7 +142,8 @@ class DBManager:
                     if not silent:
                         QMessageBox.information(
                             self.dlg, plugin_name,
-                            tr('Successfully selected "{0}" as active database.').format(db_name),
+                            tr('Successfully selected "{0}" as '
+                               'active database.').format(db_name),
                             QMessageBox.Ok)
                     if self.main.added_processing_connection:
                         self.main.added_processing_connection = \
@@ -165,8 +166,8 @@ class DBManager:
                 QMessageBox.critical(
                     self.dlg, plugin_name,
                     tr('Selection failed - '
-                    'connect to correct PostgreSQL server or '
-                    'no databases detected in server.'),
+                       'connect to correct PostgreSQL server or '
+                       'no databases detected in server.'),
                     QMessageBox.Ok)
         self.dlg.disconnect_btn.setEnabled(
             True if tr('Not connected.') not in self.dlg.active_db_label.text()
@@ -203,7 +204,7 @@ class DBManager:
             extended_pg_ver = unpack_nested_lists(make_query(
                 self.db, get_postgis_version_extended_query))
             if simple_pg_ver and extended_pg_ver:
-                postgis_str = tr(f"PostGIS extension was detected, version is:")
+                postgis_str = tr("PostGIS extension was detected, version is:")
                 info_box = QMessageBox()
                 info_box.setIcon(QMessageBox.Information)
                 info_box.setText(f"{postgis_str} {', '.join(simple_pg_ver)}")
@@ -293,8 +294,8 @@ class DBManager:
                 db_list = self.get_db_list()
                 response = QMessageBox.warning(
                     self.dlg, plugin_name,
-                    'Rename database disconnects from her all active users.\n'
-                    'Do you want to continue?',
+                    tr('Rename database disconnects from her all active users.\n'
+                    'Do you want to continue?'),
                     QMessageBox.Yes, QMessageBox.No)
                 if response == QMessageBox.Yes:
                     add_dialog.run_dialog(self.rename_database, db_list)
@@ -321,19 +322,20 @@ class DBManager:
             if len(db_info_list) == 2:
                 response = QMessageBox.warning(
                     self.dlg, plugin_name,
-                    tr(f'Deletion of the "{self.old_name}" schema is '
-                    f'irreversible!\nDo you want to continue?'),
+                    tr('Deletion of the "%s" schema is irreversible!\n'
+                       'Do you want to continue?') % self.old_name,
                     QMessageBox.Yes, QMessageBox.No)
                 if response == QMessageBox.Yes:
                     self.remove_schema()
             elif len(db_info_list) == 1:
                 response = QMessageBox.warning(
                     self.dlg, plugin_name,
-                    tr(f'Deletion of the "{self.old_name}" database is '
-                    f'irreversible!\nDo you want to continue?'),
+                    tr('Deletion of the "%s" database is irreversible!\n'
+                       'Do you want to continue?') % self.old_name,
                     QMessageBox.Yes, QMessageBox.No)
                 if response == QMessageBox.Yes:
                     self.remove_database()
+            self.disconnect_db(True)
 
     def get_db_list(self) -> List[str]:
         return unpack_nested_lists(make_query(
@@ -350,8 +352,8 @@ class DBManager:
         if db_name in self.get_db_list():
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr(f'Successfully added "{db_name}" '
-                   f'and set as active database.'),
+                tr('Successfully added "%s" and set as '
+                   'active database.') % db_name,
                 QMessageBox.Ok)
             self.connect_server()
             self.select_operative_database(True, db_name)
@@ -367,8 +369,8 @@ class DBManager:
         if schema_name in self.get_schema_list(self.db.databaseName()):
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr(f'Successfully added "{schema_name}" and '
-                   f'set as active schema.'),
+                tr('Successfully added "%s" and set '
+                   'as active schema.') % schema_name,
                 QMessageBox.Ok)
             self.connect_server()
         else:
@@ -382,8 +384,8 @@ class DBManager:
         if db_name in self.get_db_list():
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr(f'Successfully renamed "{self.old_name}" to "{db_name}" '
-                   f'and set as active database.'),
+                tr('Successfully renamed "{0}" to "{1}" and '
+                   'set as active database.').format(self.old_name, db_name),
                 QMessageBox.Ok)
             self.connect_server()
             self.select_operative_database(True, db_name)
@@ -399,8 +401,8 @@ class DBManager:
         if schema_name in self.get_schema_list(self.db.databaseName()):
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr(f'Successfully renamed "{self.old_name}" to "{schema_name}" '
-                    f'and set as active schema.'),
+                tr('Successfully renamed "{0}" to "{1}" and '
+                   'set as active schema.').format(self.old_name, schema_name),
                 QMessageBox.Ok)
             self.connect_server()
         else:
@@ -414,7 +416,7 @@ class DBManager:
         if self.old_name not in self.get_db_list():
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr(f'Successfully removed "{self.old_name}" database.'),
+                tr(f'Successfully removed "%s" database.') % self.old_name,
                 QMessageBox.Ok)
             self.connect_server()
             if hasattr(self, 'db') and self.db and \
@@ -432,7 +434,7 @@ class DBManager:
         if self.old_name not in self.get_schema_list(self.db.databaseName()):
             QMessageBox.information(
                 self.dlg, plugin_name,
-                tr(f'Successfully removed "{self.old_name}" schema.'),
+                tr('Successfully removed "%s" schema.') % self.old_name,
                 QMessageBox.Ok)
             self.connect_server()
         else:
