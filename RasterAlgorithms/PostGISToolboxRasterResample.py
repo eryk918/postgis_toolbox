@@ -25,6 +25,7 @@ class PostGISToolboxRasterResample(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     ALG_NAME = 'ALG_NAME'
     MAX_ERR = 'MAX_ERR'
+    SCALE_VALUE = 'SCALE_VALUE'
     DEST_TABLE = 'DEST_TABLE'
     DEST_SCHEMA = 'DEST_SCHEMA'
     LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
@@ -55,6 +56,15 @@ class PostGISToolboxRasterResample(QgsProcessingAlgorithm):
             options=self.input_raster_layers,
             allowMultiple=False,
             defaultValue=self.input_raster_layers[0]))
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.SCALE_VALUE,
+            tr("Spatial resolution"),
+            type=QgsProcessingParameterNumber.Double,
+            defaultValue=100,
+            minValue=0.0000001,
+            maxValue=99999999
+        ))
 
         self.addParameter(QgsProcessingParameterEnum(
             self.ALG_NAME,
@@ -132,6 +142,8 @@ class PostGISToolboxRasterResample(QgsProcessingAlgorithm):
             parameters, self.DEST_SCHEMA, context)
         resampling_algorithm = self.parameterAsString(
             parameters, self.ALG_NAME, context)
+        scale_value = self.parameterAsDouble(
+            parameters, self.SCALE_VALUE, context)
         resampling_error = self.parameterAsDouble(
             parameters, self.MAX_ERR, context)
         out_schema = self.schemas_list[schema_enum]
@@ -154,7 +166,7 @@ class PostGISToolboxRasterResample(QgsProcessingAlgorithm):
 
             make_query(self.db, f''' 
                 CREATE TABLE "{out_schema}"."{out_table}" AS (
-                    SELECT "rid", ST_Resample("rast", "rast", 
+                    SELECT "rid", ST_Rescale("rast", {scale_value}, 
                         '{resampling_algorithm}', {resampling_error}) AS "rast"
                     FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
                 );''')

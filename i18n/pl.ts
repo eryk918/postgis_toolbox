@@ -778,12 +778,12 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Zmień układ odniesienia rastra</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="59"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="69"/>
         <source>Resampling algorithm</source>
         <translation>Algorytm resamplingu</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="66"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="76"/>
         <source>Maximum percentage error</source>
         <translation>Maksymalny procent błędu</translation>
     </message>
@@ -830,7 +830,7 @@ Czy chcesz kontynuować?</translation>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorDissolve.py" line="195"/>
         <source>Dissolve</source>
-        <translation>Uprość</translation>
+        <translation type="obsolete">Uprość</translation>
     </message>
     <message>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneratePoints.py" line="55"/>
@@ -858,7 +858,7 @@ Czy chcesz kontynuować?</translation>
         <translation>Zmień układ odniesienia</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="194"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="206"/>
         <source>Resample</source>
         <translation>Resampling</translation>
     </message>
@@ -952,6 +952,16 @@ Czy chcesz kontynuować?</translation>
         <location filename="../utils.py" line="57"/>
         <source>PROCESSING_LAYERS</source>
         <translation>WARSTWY_WYNIKOWE_PROCESSINGU</translation>
+    </message>
+    <message>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="60"/>
+        <source>Spatial resolution</source>
+        <translation>Rozdzielczość przestrzenna</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorAggregate.py" line="195"/>
+        <source>Aggregate</source>
+        <translation>Agregacja</translation>
     </message>
 </context>
 <context>

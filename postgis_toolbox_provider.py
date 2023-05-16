@@ -35,7 +35,7 @@ import os
 from qgis.core import QgsProcessingProvider
 
 from .VectorAlgorithms.PostGISToolboxVectorGeneraterPolygonByPoints import PostGISToolboxVectorGeneratePolygonFromPoints
-from .VectorAlgorithms.PostGISToolboxVectorDissolve import PostGISToolboxVectorDissolve
+from .VectorAlgorithms.PostGISToolboxVectorAggregate import PostGISToolboxVectorAggregate
 from .VectorAlgorithms.PostGISToolboxVectorGeneratePoints import PostGISToolboxVectorGeneratePoints
 from .VectorAlgorithms.PostGISToolboxVectorIntersect import PostGISToolboxVectorIntersects
 from .VectorAlgorithms.PostGISToolboxVectorBuffer import PostGISToolboxVectorBuffer
@@ -72,7 +72,7 @@ class PostGISToolboxProvider(QgsProcessingProvider):
         self.addAlgorithm(PostGISToolboxVectorIntersects())
         self.addAlgorithm(PostGISToolboxVectorGeneratePoints())
         self.addAlgorithm(PostGISToolboxVectorGeneratePolygonFromPoints())
-        self.addAlgorithm(PostGISToolboxVectorDissolve())
+        self.addAlgorithm(PostGISToolboxVectorAggregate())
         self.addAlgorithm(PostGISToolboxVectorBuffer())
         self.addAlgorithm(PostGISToolboxVectorMerge())
         self.addAlgorithm(PostGISToolboxVectorNearestNeighbor())

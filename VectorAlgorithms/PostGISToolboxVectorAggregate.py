@@ -52,7 +52,7 @@ class CustomWidgetLayout(WidgetWrapper):
         return self.input_layers_combo.currentText(), self.input_layers_columns_combo.currentText()
 
 
-class PostGISToolboxVectorDissolve(QgsProcessingAlgorithm):
+class PostGISToolboxVectorAggregate(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
     CUSTOM_WIDGET = 'CUSTOM_WIDGET'
@@ -91,7 +91,7 @@ class PostGISToolboxVectorDissolve(QgsProcessingAlgorithm):
             defaultValue=default_schema))
 
         self.addParameter(QgsProcessingParameterString(
-            self.DEST_TABLE, tr('Output table name'), 'dissolve'))
+            self.DEST_TABLE, tr('Output table name'), 'aggregate'))
 
         self.addParameter(QgsProcessingParameterBoolean(
             self.OVERWRITE,
@@ -173,7 +173,7 @@ class PostGISToolboxVectorDissolve(QgsProcessingAlgorithm):
             self.db,
             out_schema,
             out_table,
-            layer_name=f'{tr("Dissolve")} {input_vector_layer.name()}',
+            layer_name=f'{tr("Aggregate")} {input_vector_layer.name()}',
             geom_col='geom'
         )
         if feedback.isCanceled():
@@ -189,10 +189,10 @@ class PostGISToolboxVectorDissolve(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return 'vector_dissolve'
+        return 'vector_aggregate'
 
     def displayName(self):
-        return tr('Dissolve')
+        return tr('Aggregate')
 
     def group(self):
         return tr(self.groupId())
@@ -201,4 +201,4 @@ class PostGISToolboxVectorDissolve(QgsProcessingAlgorithm):
         return tr('Vector')
 
     def createInstance(self):
-        return PostGISToolboxVectorDissolve()
+        return PostGISToolboxVectorAggregate()
