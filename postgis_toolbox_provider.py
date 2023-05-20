@@ -34,6 +34,7 @@ import os
 
 from qgis.core import QgsProcessingProvider
 
+from .VectorAlgorithms.PostGISToolboxVectorMakeValid import PostGISToolboxVectorMakeValid
 from .VectorAlgorithms.PostGISToolboxVectorGeneraterPolygonByPoints import PostGISToolboxVectorGeneratePolygonFromPoints
 from .VectorAlgorithms.PostGISToolboxVectorAggregate import PostGISToolboxVectorAggregate
 from .VectorAlgorithms.PostGISToolboxVectorGeneratePoints import PostGISToolboxVectorGeneratePoints
@@ -70,6 +71,7 @@ class PostGISToolboxProvider(QgsProcessingProvider):
         self.addAlgorithm(PostGISToolboxVectorClip())
         self.addAlgorithm(PostGISToolboxVectorDifference())
         self.addAlgorithm(PostGISToolboxVectorIntersects())
+        self.addAlgorithm(PostGISToolboxVectorMakeValid())
         self.addAlgorithm(PostGISToolboxVectorGeneratePoints())
         self.addAlgorithm(PostGISToolboxVectorGeneratePolygonFromPoints())
         self.addAlgorithm(PostGISToolboxVectorAggregate())
