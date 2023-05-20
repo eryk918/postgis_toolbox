@@ -45,8 +45,7 @@ from .DBManager.DBManager import DBManager
 from .ImportRaster.ImportRaster import ImportRaster
 from .ImportVector.ImportVector import ImportVector
 from .postgis_toolbox_provider import PostGISToolboxProvider
-from .utils import tr, plugin_dir, get_active_db_info, create_pg_connecton, \
-    plugin_name
+from .utils import tr, plugin_dir, get_active_db_info, plugin_name
 
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
@@ -68,14 +67,6 @@ class PostGISToolboxPlugin(object):
         self.toolbar = self.iface.addToolBar(plugin_name)
         self.toolbar.setObjectName(plugin_name)
         self.db_manager_plugin = FilteredDBManagerPlugin(self.iface)
-        self._create_test_db()
-
-    def _create_test_db(self):
-        self.db = create_pg_connecton(
-            {'authcfg': '', 'database': 'UMCS', 'host': 'localhost',
-             'password': '1234', 'port': '5432', 'service': '',
-             'sslmode': 'SslAllow', 'username': 'postgres',
-             'connection_name': 'UMCS'})
 
     def initGui(self):
         self._initProcessing()

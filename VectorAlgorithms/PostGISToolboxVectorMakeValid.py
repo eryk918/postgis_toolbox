@@ -20,15 +20,10 @@ class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
     METHOD = 'METHOD'
-    FIELDS_INPUT = 'FIELDS_INPUT'
-    FIELDS_CLIP = 'FIELDS_CLIP'
     DEST_TABLE = 'DEST_TABLE'
     DEST_SCHEMA = 'DEST_SCHEMA'
-    SINGLE = 'SINGLE'
     LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
     OVERWRITE = 'OVERWRITE'
-    KEEP = 'KEEP'
-    OPTIONS = 'OPTIONS'
 
     def initAlgorithm(self, config=None):
         self.input_layers_dict = get_all_vectors_from_project(True)
@@ -50,7 +45,7 @@ class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
 
         self.addParameter(QgsProcessingParameterEnum(
             self.METHOD,
-            tr('Choose repair method'),
+            tr('Repair method'),
             options=self.repair_methods,
             allowMultiple=False,
             defaultValue=self.repair_methods[0]))
@@ -88,7 +83,8 @@ class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
         input_layer = self.input_layers_dict[
             self.input_layers[self.parameterAsEnum(
                 parameters, self.INPUT, context)]]
-        repair_method = self.repair_methods[self.parameterAsEnum(parameters, self.METHOD, context)]
+        repair_method = self.repair_methods[
+            self.parameterAsEnum(parameters, self.METHOD, context)]
         schema_name, table_name = get_pg_table_name_from_uri(
             input_layer.dataProvider().dataSourceUri()).split('.')
         uri = QgsDataSourceUri(input_layer.source())
@@ -127,17 +123,28 @@ class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
                 if check_table_exists_in_schema(
                         self.db, out_schema, out_table):
                     return {}
+
             if feedback.isCanceled():
                 return {}
-            geom_query = f'''ST_Buffer(input_table."{uri.geometryColumn()}", 0.0000001)''' \
-                if repair_method == 'ST_Buffer' else f'''ST_MakeValid(input_table."{uri.geometryColumn()}")'''
-            make_query(self.db, f'''
-                       CREATE TABLE "{out_schema}"."{out_table}" AS ( 
-                           SELECT {', '.join(f'"input_table"."{elem}"' for elem in input_columns)},
-                            {geom_query} AS "geom"
-                           FROM "{schema_name}"."{table_name}" AS input_table);''')
-            create_vector_geom_index(self.db, out_table, 'geom',
-                                     schema=out_schema)
+
+            geom_query = f'ST_Buffer(ST_Buffer(input_table."{uri.geometryColumn()}", 0.001), -0.001) ' \
+                if repair_method == 'ST_Buffer' \
+                else f'ST_MakeValid(input_table."{uri.geometryColumn()}")'
+
+            make_query(
+                self.db,
+                f'''
+                    CREATE TABLE "{out_schema}"."{out_table}" AS ( 
+                        SELECT {', '.join(f'"input_table"."{elem}"' for elem in input_columns)},
+                         {geom_query} AS "geom"
+                        FROM "{schema_name}"."{table_name}" AS input_table
+                    );
+                '''
+            )
+            create_vector_geom_index(
+                self.db, out_table, 'geom', schema=out_schema
+            )
+
             if feedback.isCanceled():
                 return {}
 
@@ -161,10 +168,10 @@ class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
         }
 
     def name(self):
-        return 'repair_vector'
+        return 'repair_geometry'
 
     def displayName(self):
-        return tr('Repair Vector')
+        return tr('Repair geometry')
 
     def group(self):
         return tr(self.groupId())

@@ -44,12 +44,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox_provider.py" line="90"/>
+        <location filename="../postgis_toolbox_provider.py" line="92"/>
         <source>PostGIS Spatial Functions</source>
         <translation>Funkcje przestrzenne PostGIS</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="91"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="39"/>
         <source>Input layer</source>
         <translation>Warstwa wejściowa</translation>
     </message>
@@ -962,6 +962,26 @@ Czy chcesz kontynuować?</translation>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorAggregate.py" line="195"/>
         <source>Aggregate</source>
         <translation>Agregacja</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="46"/>
+        <source>Choose repair method</source>
+        <translation type="obsolete">Wybierz algorytm naprawy geometrii</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="164"/>
+        <source>Repair Vector</source>
+        <translation type="obsolete">Napraw geometrię</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="174"/>
+        <source>Repair geometry</source>
+        <translation>Napraw geometrię</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="46"/>
+        <source>Repair method</source>
+        <translation>Algorytm naprawy geometrii</translation>
     </message>
 </context>
 <context>
