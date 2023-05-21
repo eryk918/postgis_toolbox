@@ -1,5 +1,5 @@
 # PostGIS Toolbox
-####Plugin for QGIS implementing selected PostGIS functions
+#### Plugin for QGIS implementing selected PostGIS functions
 
 The plugin implements:
 * database and schema management mechanism,
