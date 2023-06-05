@@ -458,8 +458,9 @@ def create_pg_connecton(db_params: dict) -> QSqlDatabase:
         pg_connection.setUserName(conf.config('username', ''))
         pg_connection.setPassword(conf.config('password', ''))
     else:
-        pg_connection.setUserName(db_params['username'])
-        pg_connection.setPassword(db_params['password'])
+        if db_params.get('username') and db_params.get('password'):
+            pg_connection.setUserName(db_params['username'])
+            pg_connection.setPassword(db_params['password'])
     pg_connection.open()
     return pg_connection
 

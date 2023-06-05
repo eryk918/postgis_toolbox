@@ -29,10 +29,17 @@ class NewPGConnectionDialog(QDialog, FORM_CLASS):
             self.fill_dlg_info(conn_name)
 
     def accept(self) -> None:
-        if not self.conn_name_lineEdit.text():
+        required_fields = (
+            self.conn_name_lineEdit.text(),
+            self.host_name_lineEdit.text(),
+            self.port_lineEdit.text(),
+            self.database_lineEdit.text()
+        )
+
+        if not all(required_fields):
             QMessageBox.warning(
                 self, plugin_name,
-                tr('Connection name is required!'),
+                tr('Please fill in the required fields.'),
                 QMessageBox.Ok
             )
             return
@@ -50,8 +57,9 @@ class NewPGConnectionDialog(QDialog, FORM_CLASS):
     def fill_dlg_info(self, conn_name: str) -> None:
         settings_object = QSettings()
         key_string = f"{conn_key_string}{conn_name}"
+        service_data = settings_object.value(f"{key_string}/service")
         self.service_name_lineEdit.setText(
-            settings_object.value(f"{key_string}/service"))
+            service_data if isinstance(service_data, str) else '')
         self.host_name_lineEdit.setText(
             settings_object.value(f"{key_string}/host"))
         self.port_lineEdit.setText(str(settings_object.value(f"{key_string}/port")))
@@ -73,8 +81,9 @@ class NewPGConnectionDialog(QDialog, FORM_CLASS):
             self.settings_widget.setPassword(
                 settings_object.value(f"{key_string}/password"))
             self.settings_widget.setStorePasswordChecked(True)
+        config_id_data = settings_object.value(f"{key_string}/authcfg")
         self.settings_widget.setConfigId(
-            settings_object.value(f"{key_string}/authcfg"))
+            config_id_data if isinstance(config_id_data, str) else '')
         self.conn_name_lineEdit.setText(conn_name)
         self.conn_name_lineEdit.setValidator(
             QRegExpValidator(QRegExp("[^\\/]*")))

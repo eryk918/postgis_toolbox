@@ -5,7 +5,8 @@ import processing
 from qgis.core import QgsTask, Qgis
 
 from .UI.import_vector_ui import ImportVector_UI
-from .utils.vector_utils import none_geometry_types, make_sql_set_geometry_srid
+from .utils.vector_utils import none_geometry_types, \
+    make_sql_set_geometry_srid, check_duplicate_id_column_in_layer
 from ..utils import project, iface, repair_path_for_exec, change_alg_progress, \
     clean_after_analysis, tr, add_vectors_to_project, \
     create_postgis_vector_layer, VECTORS_LAYERS_GROUP, make_query
@@ -79,7 +80,7 @@ class VectorImporter(QgsTask):
             processing.run(
                 "qgis:importintopostgis",
                 {
-                    'INPUT': vector,
+                    'INPUT': check_duplicate_id_column_in_layer(vector),
                     'DATABASE': self.main.db.databaseName(),
                     'SCHEMA': self.destination_schema,
                     'TABLENAME': self.destination_tables[
