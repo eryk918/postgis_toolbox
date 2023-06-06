@@ -3,7 +3,7 @@
 from ...utils import QSqlDatabase, QApplication, make_query, \
     change_alg_progress
 
-raster_extensions = ['tif', 'tiff', 'asc', 'img', 'xyz', 'ascii']
+raster_extensions = ['tif', 'tiff']
 
 max_raster_untiled_size = 104857600
 
