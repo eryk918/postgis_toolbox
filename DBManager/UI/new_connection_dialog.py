@@ -21,7 +21,7 @@ class NewPGConnectionDialog(QDialog, FORM_CLASS):
     def __init__(self, conn_name=None, parent=None):
         super(NewPGConnectionDialog, self).__init__(parent)
         self.setupUi(self)
-        repair_dialog(self)
+        repair_dialog(self, 'manage_dbs.png')
         self.set_up_signals()
         self.setup_default_data()
         self.conn_name = conn_name

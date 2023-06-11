@@ -16,7 +16,7 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         super(DBManagerMenu_UI, self).__init__(parent)
         self.setupUi(self)
         self.dbManager = dbManager
-        repair_dialog(self)
+        repair_dialog(self, 'manage_dbs.png')
         self.setWindowFlags(Qt.Window)
         self.setWindowModality(Qt.NonModal)
 
@@ -58,7 +58,8 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         progress_bar = create_progress_bar(
             0,
             txt=tr('Loading server structure...'),
-            title=tr('Fetching DB Info')
+            title=tr('Fetching DB Info'),
+            parent=self
         )
         progress_bar.open()
         db_dict = {}

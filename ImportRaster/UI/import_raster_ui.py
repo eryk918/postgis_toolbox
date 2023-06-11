@@ -22,7 +22,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
         super(ImportRaster_UI, self).__init__(parent)
         self.setupUi(self)
         self.importRaster = importRaster
-        repair_dialog(self)
+        repair_dialog(self, 'import_raster_layers.png')
 
     def setup_dialog(self) -> None:
         self.manage_rasters()

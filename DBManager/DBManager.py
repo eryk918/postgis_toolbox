@@ -101,7 +101,8 @@ class DBManager:
             delete_item_from_combo(conn_name, self.dlg.connection_cbbx)
 
     def connect_server(self) -> None:
-        progressbar = create_progress_bar(0, txt=tr('Trying to connect...'))
+        progressbar = create_progress_bar(0, txt=tr('Trying to connect...'),
+                                          parent=self.dlg)
         progressbar.open()
         self.fetched_dbs = {}
         current_server = self.dlg.connection_cbbx.currentText()

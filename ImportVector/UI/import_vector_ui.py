@@ -22,7 +22,7 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         super(ImportVector_UI, self).__init__(parent)
         self.setupUi(self)
         self.import_vector = import_vector
-        repair_dialog(self)
+        repair_dialog(self, 'import_vector_layer.png')
 
     def setup_dialog(self) -> None:
         self.manage_vectors()

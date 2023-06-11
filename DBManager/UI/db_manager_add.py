@@ -18,7 +18,7 @@ class DBManagerAdd_UI(QDialog, FORM_CLASS):
         super(DBManagerAdd_UI, self).__init__(parent)
         self.setupUi(self)
         self.dbManager = dbManager
-        repair_dialog(self)
+        repair_dialog(self, icon_file='manage_dbs.png')
 
     def setup_dialog(self, label_text: str, placeholder_text: str) -> None:
         self.object_label.setText(label_text)

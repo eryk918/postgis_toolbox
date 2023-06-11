@@ -106,7 +106,8 @@ def repair_dialog(dlg: QDialog, icon_file: str = None,
                 ''' QLabel, QLineEdit, QRadioButton, QToolButton, 
                 QFrame, QCheckBox, QGroupBox{background-color: 0;}''')
     if icon_file:
-        dlg.setWindowIcon(QIcon(os.path.join(plugin_dir, 'icons', icon_file)))
+        dlg.setWindowIcon(QIcon(
+            os.path.join(plugin_dir, 'icons', icon_file)))
     else:
         dlg.setWindowIcon(main_plugin_icon)
 
@@ -121,11 +122,13 @@ def set_project_setting(parameter, key, value):
 
 def create_progress_bar(max_len, title=tr('Please wait'),
                         txt=tr('Data is being processed...'), start_val=0,
-                        auto_close=True, cancel_btn=None, silent=False):
-    progress_bar = QProgressDialog()
+                        auto_close=True, cancel_btn=None, silent=False,
+                        parent: QWidget = None) -> QProgressDialog:
+    progress_bar = QProgressDialog(parent)
     progress_bar.setFixedWidth(500)
     progress_bar.setWindowTitle(f"{plugin_name} - {title}")
-    progress_bar.setWindowIcon(main_plugin_icon)
+    progress_bar.setWindowIcon(
+        parent.windowIcon() if parent else main_plugin_icon)
     progress_bar.setLabelText(txt)
     progress_bar.setMaximum(max_len)
     progress_bar.setValue(start_val)
@@ -468,6 +471,8 @@ def create_pg_connecton(db_params: dict) -> QSqlDatabase:
 def make_query(db: QSqlDatabase, query: str, schema_name: str = '',
                prepare: Any = None, postgis_raster: bool = False) -> list:
     response = []
+    if not db:
+        return []
     if not db.isOpen():
         db.open()
     query_obj = QSqlQuery(db)
