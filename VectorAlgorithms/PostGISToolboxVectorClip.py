@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import List
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -13,8 +14,7 @@ from .vec_alg_utils import get_pg_table_name_from_uri, \
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     add_vectors_to_project, create_postgis_vector_layer, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
-    get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
-    plugin_dir_name
+    get_all_vectors_from_project, remove_unsupported_chars, plugin_name
 
 
 class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
@@ -157,27 +157,16 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            geom_b_part = f'g2."{geom_col_b}"'
-            if srid_b != srid_a:
-                geom_b_part = f'ST_Transform(g2."{geom_col_b}", {srid_a})'
-            geom_query_part = f'(ST_Multi(ST_Intersection(g1."{geom_col_a}"' \
-                              f', {geom_b_part})))::geometry({out_geom_type}' \
-                              f', {srid_a}) AS geom'
-            if q_single_type:
-                geom_query_part = f'(ST_Intersection(g1."{geom_col_a}", ' \
-                                  f'g2."{geom_col_b}"))::geometry(' \
-                                  f'{out_geom_type}, {srid_a}) AS geom'
 
-            make_query(self.db, f'''
-              CREATE TABLE "{out_schema}"."{out_table}" AS (
-                  SELECT g1."{'", g1."'.join(columns)}", {geom_query_part}
-                  FROM "{schema_name_a}"."{table_name_a}" AS g1, 
-                      "{schema_name_b}"."{table_name_b}" AS g2 
-                  WHERE ST_Contains(g1."{geom_col_a}", {geom_b_part}) IS TRUE OR 
-                      ST_Overlaps(g1."{geom_col_a}", {geom_b_part}) IS TRUE OR 
-                      ST_Contains({geom_b_part}, g1."{geom_col_a}") IS TRUE
-              );
-            ''')
+            make_query(
+                self.db,
+                self.generate_clip_query(
+                    out_table, out_schema, geom_col_a,
+                    geom_col_b, srid_a, srid_b, out_geom_type,
+                    schema_name_a, schema_name_b, table_name_a,
+                    table_name_b, q_single_type, columns
+                )
+            )
             create_vector_geom_index(self.db, out_table, 'geom')
             if feedback.isCanceled():
                 return {}
@@ -200,6 +189,39 @@ class PostGISToolboxVectorClip(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_clip_query(
+            self, out_table: str, out_schema: str, geom_col_a: str,
+            geom_col_b: str, srid_a: int, srid_b: int,
+            out_geom_type: str, schema_name_a: str,
+            schema_name_b: str, table_name_a: str,
+            table_name_b: str, q_single_type: bool,
+            columns: List[str]) -> str:
+
+        geom_b_part = f'g2."{geom_col_b}"'
+        if srid_b != srid_a:
+            geom_b_part = f'ST_Transform(g2."{geom_col_b}", {srid_a})'
+        geom_query_part = \
+            f'(ST_Multi(ST_Intersection(g1."{geom_col_a}"' \
+            f', {geom_b_part})))::geometry({out_geom_type}' \
+            f', {srid_a}) AS geom'
+        if q_single_type:
+            geom_query_part = \
+                f'(ST_Intersection(g1."{geom_col_a}", ' \
+                f'g2."{geom_col_b}"))::geometry(' \
+                f'{out_geom_type}, {srid_a}) AS geom'
+
+        return f'''
+          CREATE TABLE "{out_schema}"."{out_table}" AS (
+              SELECT g1."{'", g1."'.join(columns)}", {geom_query_part}
+              FROM "{schema_name_a}"."{table_name_a}" AS g1, 
+                  "{schema_name_b}"."{table_name_b}" AS g2 
+              WHERE 
+                ST_Contains(g1."{geom_col_a}", {geom_b_part}) IS TRUE OR 
+                ST_Overlaps(g1."{geom_col_a}", {geom_b_part}) IS TRUE OR 
+                ST_Contains({geom_b_part}, g1."{geom_col_a}") IS TRUE
+          );
+        '''
 
     def name(self):
         return 'vector_clip'

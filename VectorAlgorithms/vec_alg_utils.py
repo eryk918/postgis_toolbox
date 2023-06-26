@@ -2,7 +2,7 @@ import re
 from typing import List, Dict
 
 import psycopg2
-from PyQt5.QtWidgets import QMessageBox
+from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.PyQt.QtSql import QSqlDatabase
 from qgis.core import QgsDataSourceUri, QgsCredentials
 

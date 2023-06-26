@@ -11,8 +11,8 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterCrs)
 from qgis.utils import iface
 
-from ..ImportRaster.utils.raster_utils import make_sql_create_gist, \
-    make_sql_addrastercolumn, create_raster_overviews
+from ..ImportRaster.utils.raster_utils import make_sql_create_raster_gist, \
+    make_sql_addr_raster_column, create_raster_overviews
 from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
     get_pg_table_name_from_raster_uri, check_table_exists_in_schema, \
     get_pg_table_name_from_uri
@@ -140,8 +140,8 @@ class PostGISToolboxRasterReproject(QgsProcessingAlgorithm):
                     FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
                 );''')
 
-            make_query(self.db, make_sql_create_gist(out_table, out_table), out_schema)
-            make_query(self.db, make_sql_addrastercolumn(out_table, out_schema))
+            make_query(self.db, make_sql_create_raster_gist(out_table, out_table), out_schema)
+            make_query(self.db, make_sql_addr_raster_column(out_table, out_schema))
             if feedback.isCanceled():
                 return {}
 

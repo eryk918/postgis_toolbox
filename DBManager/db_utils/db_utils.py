@@ -46,8 +46,13 @@ def create_db(db: QSqlDatabase, name: str) -> None:
     make_query(db, create_db_query.format(name=name))
     db.setDatabaseName(name)
     db.open()
-    make_queries(db,
-                 [create_postgis_vector_query, create_postgis_raster_query])
+    make_queries(
+        db,
+        [
+            create_postgis_vector_query,
+            create_postgis_raster_query
+        ]
+    )
 
 
 def create_schema(db: QSqlDatabase, name: str) -> None:

@@ -6,15 +6,16 @@ from os.path import join, isfile
 from typing import List
 
 import processing
-from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.QtCore import QByteArray
+from qgis.PyQt.QtWidgets import QApplication
 from qgis.core import QgsCoordinateReferenceSystem, QgsTask, QgsRasterLayer, \
     Qgis
 from qgis.gui import QgsProjectionSelectionDialog
 
 from .UI.import_raster_ui import ImportRaster_UI
-from .utils.raster_utils import make_sql_create_table, \
-    make_sql_create_gist, create_raster_overviews, make_sql_addrastercolumn, \
+from .utils.raster_utils import make_sql_create_raster_table, \
+    make_sql_create_raster_gist, create_raster_overviews, \
+    make_sql_addr_raster_column, \
     make_sql_insert_raster
 from ..utils import project, iface, repair_path_for_exec, make_queries, \
     make_query, tr, add_rasters_to_project, create_postgis_raster_layer, \
@@ -135,12 +136,19 @@ class RasterImporter(QgsTask):
 
     def raster_insert(self, raster_list: List[str], srid: int,
                       destination_table: str, destination_schema: str) -> bool:
-        make_query(self.main.db,
-                   make_sql_create_table(destination_table),
-                   destination_schema)
-        make_query(self.main.db,
-                   make_sql_create_gist(destination_table, destination_table),
-                   destination_schema)
+        make_query(
+            self.main.db,
+            make_sql_create_raster_table(destination_table),
+            destination_schema
+        )
+        make_query(
+            self.main.db,
+            make_sql_create_raster_gist(
+                destination_table,
+                destination_table
+            ),
+            destination_schema
+        )
 
         query_list = []
         for file_path in raster_list:
@@ -157,15 +165,28 @@ class RasterImporter(QgsTask):
                 )
                 if self.cancel_detection():
                     return False
-                self.last_progress_value = \
-                    change_alg_progress(self, self.last_progress_value,
-                                        32 / len(raster_list))
+                self.last_progress_value = change_alg_progress(
+                    self,
+                    self.last_progress_value,
+                    32 / len(raster_list)
+                )
         make_queries(
-            self.main.db, query_list, destination_schema, True, True, self, 20)
+            self.main.db,
+            query_list,
+            destination_schema,
+            True,
+            True,
+            self,
+            20
+        )
         make_query(
             self.main.db,
-            make_sql_addrastercolumn(destination_table, destination_schema),
-            destination_schema)
+            make_sql_addr_raster_column(
+                destination_table,
+                destination_schema
+            ),
+            destination_schema
+        )
         del query_list
         return True
 

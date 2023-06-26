@@ -9,42 +9,42 @@
         <translation type="obsolete">Połącz ponownie</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="66"/>
+        <location filename="../postgis_toolbox.py" line="64"/>
         <source>&amp;{plugin_name}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="82"/>
+        <location filename="../postgis_toolbox.py" line="72"/>
         <source>Manage databases</source>
-        <translation>Zarządzaj bazami danych</translation>
+        <translation>Menedżer baz danych</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="87"/>
+        <location filename="../postgis_toolbox.py" line="77"/>
         <source>Import vector data</source>
         <translation>Importuj dane wektorowe</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="92"/>
+        <location filename="../postgis_toolbox.py" line="82"/>
         <source>Import raster data</source>
         <translation>Importuj dane rastrowe</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="97"/>
+        <location filename="../postgis_toolbox.py" line="87"/>
         <source>Query editor</source>
         <translation>Edytor zapytań</translation>
     </message>
     <message>
         <location filename="../postgis_toolbox.py" line="102"/>
         <source>Settings</source>
-        <translation>Ustawienia</translation>
+        <translation type="obsolete">Ustawienia</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="112"/>
+        <location filename="../postgis_toolbox.py" line="97"/>
         <source>&amp;PostGIS Toolbox</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox_provider.py" line="92"/>
+        <location filename="../postgis_toolbox_provider.py" line="91"/>
         <source>PostGIS Spatial Functions</source>
         <translation>Funkcje przestrzenne PostGIS</translation>
     </message>
@@ -74,12 +74,12 @@
         <translation>ZAIMPORTOWANE_WARSTWY_WEKTOROWE</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="122"/>
+        <location filename="../utils.py" line="123"/>
         <source>Please wait</source>
         <translation>Proszę czekać</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="122"/>
+        <location filename="../utils.py" line="123"/>
         <source>Data is being processed...</source>
         <translation></translation>
     </message>
@@ -109,12 +109,12 @@
         <translation>Czy należy usunąć to połączenie?</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="189"/>
+        <location filename="../DBManager/DBManager.py" line="190"/>
         <source>Successfully disconnected.</source>
         <translation>Rozłączono.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="195"/>
+        <location filename="../DBManager/DBManager.py" line="196"/>
         <source>Already disconnected.</source>
         <translation>Już rozłączono.</translation>
     </message>
@@ -124,44 +124,44 @@
         <translation type="obsolete">Rozszerzenie PostGIS zostało wykryte, wersja to: {&apos;, &apos;.join(simple_pg_ver)}</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="229"/>
+        <location filename="../DBManager/DBManager.py" line="230"/>
         <source>No PostGIS extension was detected in the selected database!</source>
         <translation>W wybranej bazie danych nie wykryto rozszerzenia PostGIS!</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="223"/>
+        <location filename="../DBManager/DBManager.py" line="224"/>
         <source>PostGIS version check failed!
 Connect to correct PostgreSQL server and try again.</source>
         <translation>Nie udało się sprawdzić wersji PostGIS!
 Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="251"/>
+        <location filename="../DBManager/DBManager.py" line="252"/>
         <source>Enter a name for the new schema</source>
         <translation>Podaj nazwę nowego schematu</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="283"/>
+        <location filename="../DBManager/DBManager.py" line="284"/>
         <source>Schema name...</source>
         <translation>Nazwa schematu...</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="259"/>
+        <location filename="../DBManager/DBManager.py" line="260"/>
         <source>Enter a name for the new database</source>
         <translation>Podaj nazwę dla nowej bazy danych</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="291"/>
+        <location filename="../DBManager/DBManager.py" line="292"/>
         <source>Database name...</source>
         <translation>Nazwa bazy danych...</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="283"/>
+        <location filename="../DBManager/DBManager.py" line="284"/>
         <source>Enter a name for schema</source>
         <translation>Podaj nazwę schematu</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="291"/>
+        <location filename="../DBManager/DBManager.py" line="292"/>
         <source>Enter a name for database</source>
         <translation>Podaj nazwę bazy danych</translation>
     </message>
@@ -171,7 +171,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się dodać &quot;{db_name}&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="362"/>
+        <location filename="../DBManager/DBManager.py" line="363"/>
         <source>An error occurred while adding a database!</source>
         <translation>Wystąpił błąd podczas dodawania bazy danych!</translation>
     </message>
@@ -181,7 +181,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się dodać &quot;{schema_name}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="377"/>
+        <location filename="../DBManager/DBManager.py" line="378"/>
         <source>An error occurred while adding a schema!</source>
         <translation>Podczas dodawania schematu wystąpił błąd!</translation>
     </message>
@@ -191,7 +191,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się zmienić nazwę &quot;{self.old_name}&quot; na &quot;{db_name}&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="392"/>
+        <location filename="../DBManager/DBManager.py" line="393"/>
         <source>An error occurred while renaming the database!</source>
         <translation>Podczas zmiany nazwy bazy danych wystąpił błąd!</translation>
     </message>
@@ -201,7 +201,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się zmienić nazwę &quot;{self.old_name}&quot; na &quot;{schema_name}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="407"/>
+        <location filename="../DBManager/DBManager.py" line="408"/>
         <source>An error occurred while renaming the schema!</source>
         <translation>Podczas zmiany nazwy schematu wystąpił błąd!</translation>
     </message>
@@ -211,7 +211,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Pomyślnie usunięto bazę danych &quot;{self.old_name}&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="424"/>
+        <location filename="../DBManager/DBManager.py" line="425"/>
         <source>An error occurred while removing the database!</source>
         <translation>Podczas usuwania bazy danych wystąpił błąd!</translation>
     </message>
@@ -221,7 +221,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Pomyślnie usunięto schemat &quot;{self.old_name}&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="439"/>
+        <location filename="../DBManager/DBManager.py" line="440"/>
         <source>An error occurred while removing the schema!</source>
         <translation>Podczas usuwania schematu wystąpił błąd!</translation>
     </message>
@@ -242,25 +242,25 @@ Spróbuj ponownie.</translation>
     <message>
         <location filename="../DBManager/UI/new_connection_dialog.py" line="33"/>
         <source>Connection name is required!</source>
-        <translation>Nazwa połączenia jest wymagana!</translation>
+        <translation type="obsolete">Nazwa połączenia jest wymagana!</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/new_connection_dialog.py" line="95"/>
+        <location filename="../DBManager/UI/new_connection_dialog.py" line="104"/>
         <source>Connection to {self.conn_name_lineEdit.text()} was successful.</source>
         <translation>Połączenie z {self.conn_name_lineEdit.text()} zakończyło się sukcesem.</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/new_connection_dialog.py" line="100"/>
+        <location filename="../DBManager/UI/new_connection_dialog.py" line="109"/>
         <source>Connection failed - consult message log for details.</source>
         <translation>Połączenie nie powiodło się - sprawdź szczegóły w dzienniku komunikatów.</translation>
     </message>
     <message>
-        <location filename="../ImportVector/ImportVector.py" line="114"/>
+        <location filename="../ImportVector/ImportVector.py" line="115"/>
         <source>An error occurred while importing the raster.</source>
         <translation>Podczas importu rastra wystąpił błąd.</translation>
     </message>
     <message>
-        <location filename="../ImportVector/ImportVector.py" line="119"/>
+        <location filename="../ImportVector/ImportVector.py" line="120"/>
         <source>The import was aborted by the user.</source>
         <translation>Import został przerwany przez użytkownika.</translation>
     </message>
@@ -287,7 +287,7 @@ Opcja kafelkowania została wymuszona.</translation>
         <translation>Ustaw prawidłowe parametry!</translation>
     </message>
     <message>
-        <location filename="../ImportVector/ImportVector.py" line="124"/>
+        <location filename="../ImportVector/ImportVector.py" line="125"/>
         <source>The vector import has been completed successfully.</source>
         <translation>Import wektora został zakończony pomyślnie.</translation>
     </message>
@@ -429,7 +429,7 @@ Użyj DB Manager i spróbuj ponownie.</translation>
         <translation type="obsolete">Statystyki rastra</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="196"/>
+        <location filename="../postgis_toolbox.py" line="181"/>
         <source>There is no connection to the PostGIS database!</source>
         <translation>Nie ma połączenia z bazą danych PostGIS!</translation>
     </message>
@@ -469,7 +469,7 @@ Użyj DB Manager i spróbuj ponownie.</translation>
         <translation>Próba połączenia...</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="116"/>
+        <location filename="../DBManager/DBManager.py" line="117"/>
         <source>Failed to connect.</source>
         <translation>Nie udało się połączyć.</translation>
     </message>
@@ -479,12 +479,12 @@ Użyj DB Manager i spróbuj ponownie.</translation>
         <translation type="obsolete">Wybrano &quot;{db_name}&quot; jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="160"/>
+        <location filename="../DBManager/DBManager.py" line="161"/>
         <source>Selection failed - db user permission error.</source>
         <translation>Wybór nie powiódł się - błąd uprawnień użytkownika bazy danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="166"/>
+        <location filename="../DBManager/DBManager.py" line="167"/>
         <source>Selection failed - connect to correct PostgreSQL server or no databases detected in server.</source>
         <translation>Wybór nie powiódł się - połącz się z właściwym serwerem PostgreSQL lub nie wykryto żadnych baz danych na serwerze.</translation>
     </message>
@@ -668,7 +668,7 @@ Czy chcesz kontynuować?</translation>
         <translation>Pobieranie informacji o bazie danych</translation>
     </message>
     <message>
-        <location filename="../DBManager/UI/db_manager_menu.py" line="83"/>
+        <location filename="../DBManager/UI/db_manager_menu.py" line="84"/>
         <source>Databases</source>
         <translation>Bazy danych</translation>
     </message>
@@ -683,17 +683,17 @@ Czy chcesz kontynuować?</translation>
         <translation>PostGIS Toolbox - Usuń połączenie</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="423"/>
+        <location filename="../utils.py" line="426"/>
         <source>Active database:</source>
         <translation>Aktywna baza danych:</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="207"/>
+        <location filename="../DBManager/DBManager.py" line="208"/>
         <source>PostGIS extension was detected, version is:</source>
         <translation>Wykryto rozszerzenie PostGIS, jego wersja to:</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="143"/>
+        <location filename="../DBManager/DBManager.py" line="144"/>
         <source>Successfully selected &quot;{0}&quot; as active database.</source>
         <translation>Wybrano &quot;{0}&quot; jako aktywną bazę danych.</translation>
     </message>
@@ -888,21 +888,21 @@ Czy chcesz kontynuować?</translation>
         <translation>Stwórz poligony z punktów</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="296"/>
+        <location filename="../DBManager/DBManager.py" line="297"/>
         <source>Rename database disconnects from her all active users.
 Do you want to continue?</source>
         <translation>Zmiana nazwy bazy danych odłączy od niej wszystkich aktywnych użytkowników.
 Czy chcesz kontynuować?</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="325"/>
+        <location filename="../DBManager/DBManager.py" line="326"/>
         <source>Deletion of the &quot;%s&quot; schema is irreversible!
 Do you want to continue?</source>
         <translation>Usunięcie schematu &quot;%s&quot; jest nieodwracalne!
 Czy chcesz kontynuować?</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="333"/>
+        <location filename="../DBManager/DBManager.py" line="334"/>
         <source>Deletion of the &quot;%s&quot; database is irreversible!
 Do you want to continue?</source>
         <translation>Usunięcie bazy danych &quot;%s&quot; jest nieodwracalne!
@@ -929,22 +929,22 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="415"/>
+        <location filename="../DBManager/DBManager.py" line="416"/>
         <source>Successfully removed &quot;%s&quot; database.</source>
         <translation>Pomyślnie usunięto bazę danych &quot;%s&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="433"/>
+        <location filename="../DBManager/DBManager.py" line="434"/>
         <source>Successfully removed &quot;%s&quot; schema.</source>
         <translation>Pomyślnie usunięto schemat &quot;%s&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="371"/>
+        <location filename="../DBManager/DBManager.py" line="372"/>
         <source>Successfully added &quot;%s&quot;.</source>
         <translation>Pomyślnie dodano &quot;%s&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="401"/>
+        <location filename="../DBManager/DBManager.py" line="402"/>
         <source>Successfully renamed &quot;{0}&quot; to &quot;{1}&quot;.</source>
         <translation>Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot;.</translation>
     </message>
@@ -982,6 +982,16 @@ Czy chcesz kontynuować?</translation>
         <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="46"/>
         <source>Repair method</source>
         <translation>Algorytm naprawy geometrii</translation>
+    </message>
+    <message>
+        <location filename="../DBManager/UI/new_connection_dialog.py" line="40"/>
+        <source>Please fill in the required fields.</source>
+        <translation>Proszę wypełnić wymagane pola.</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorAggregate.py" line="38"/>
+        <source>Group by column</source>
+        <translation>Grupuj według kolumny</translation>
     </message>
 </context>
 <context>
@@ -3653,7 +3663,7 @@ unique values</source>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.ui" line="44"/>
         <source>PostGIS Toolbox - Import vector into PostGIS database</source>
-        <translation>PostGIS Toolbox - Importuj dane wektorowe do bazy danych PostGIS</translation>
+        <translation>PostGIS Toolbox - Importuj dane wektorowe</translation>
     </message>
     <message>
         <location filename="../ImportVector/UI/import_vector_ui.ui" line="141"/>
@@ -3703,7 +3713,7 @@ unique values</source>
     <message>
         <location filename="../DBManager/UI/db_manager_menu.ui" line="142"/>
         <source>PostGIS Database Manager</source>
-        <translation>PostGIS Menedżer bazy danych</translation>
+        <translation>Menedżer baz danych PostGIS</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/db_manager_add.ui" line="166"/>
@@ -3713,7 +3723,7 @@ unique values</source>
     <message>
         <location filename="../DBManager/UI/db_manager_menu.ui" line="44"/>
         <source>PostGIS Toolbox - DB Manager</source>
-        <translation>PostGIS Toolbox - Menedżer bazy danych</translation>
+        <translation>PostGIS Toolbox - Menedżer baz danych</translation>
     </message>
     <message>
         <location filename="../DBManager/UI/db_manager_menu.ui" line="164"/>
@@ -3763,7 +3773,7 @@ unique values</source>
     <message>
         <location filename="../ImportRaster/UI/import_raster_ui.ui" line="44"/>
         <source>PostGIS Toolbox - Import raster into PostGIS database</source>
-        <translation>PostGIS Toolbox - Import danych rastrowych do bazy danych PostGIS</translation>
+        <translation>PostGIS Toolbox - Import danych rastrowych</translation>
     </message>
     <message>
         <location filename="../ImportRaster/UI/import_raster_ui.ui" line="142"/>

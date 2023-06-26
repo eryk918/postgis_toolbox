@@ -118,8 +118,8 @@ class DBManager:
                 self.dlg, plugin_name,
                 tr('Failed to connect.'), QMessageBox.Ok)
 
-    def select_operative_database(self, silent: bool = False,
-                                  db_name: str = False) -> None:
+    def select_operative_database(
+            self, silent: bool = False, db_name: str = False) -> None:
         self.db = None
         db_treeview = self.dlg.db_obj_treeview
         treeview_model = db_treeview.model()
@@ -161,7 +161,8 @@ class DBManager:
                         QMessageBox.critical(
                             self.dlg, plugin_name,
                             tr('Selection failed - db user permission error.'),
-                            QMessageBox.Ok)
+                            QMessageBox.Ok
+                        )
         else:
             if not silent:
                 QMessageBox.critical(
@@ -169,10 +170,12 @@ class DBManager:
                     tr('Selection failed - '
                        'connect to correct PostgreSQL server or '
                        'no databases detected in server.'),
-                    QMessageBox.Ok)
+                    QMessageBox.Ok
+                )
         self.dlg.disconnect_btn.setEnabled(
             True if tr('Not connected.') not in self.dlg.active_db_label.text()
-            else False)
+            else False
+        )
 
     def disconnect_db(self, silent: bool = False):
         if hasattr(self.main, 'db') and self.main.db:

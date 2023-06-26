@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Dict, Any, List
 
 from plugins.processing.gui.wrappers import WidgetWrapper
 from qgis.PyQt.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QComboBox,\
@@ -35,7 +36,7 @@ class CustomWidgetLayout(WidgetWrapper):
             lambda text: self.get_columns_for_lyr(text, self.input_layers_columns_combo))
         self.input_layers_combo.addItems(self.input_layers)
         layout.addWidget(self.input_layers_combo)
-        layout.addWidget(QLabel(tr('Choose columns from input layer')))
+        layout.addWidget(QLabel(tr('Group by column')))
         layout.addWidget(self.input_layers_columns_combo)
         layout.setContentsMargins(0, 0, 0, 0)
         editor.setLayout(layout)
@@ -155,16 +156,13 @@ class PostGISToolboxVectorAggregate(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db,
-                       f'''CREATE TABLE "{out_schema}"."{out_table}" AS 
-                            SELECT {', '.join(f'max("{elem}") AS "{elem}"' for elem in input_columns 
-                                              if elem != aggregate_column)},
-                                    "{aggregate_column}",
-                             ST_Union("{get_table_geom_columns(self.db,
-                                                               input_layer_info_dict['schema_name'],
-                                                               input_layer_info_dict['table_name'])[0]}") AS "geom"
-                            FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}"
-                            GROUP BY "{aggregate_column}";''')
+            make_query(
+                self.db,
+                self.generate_aggregate_query(
+                    out_table, out_schema, input_layer_info_dict,
+                    input_columns, aggregate_column
+                )
+            )
             create_vector_geom_index(self.db, out_table, 'geom', schema=out_schema)
             if feedback.isCanceled():
                 return {}
@@ -187,6 +185,30 @@ class PostGISToolboxVectorAggregate(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_aggregate_query(
+            self, out_table: str, out_schema: str,
+            input_layer_info_dict: Dict[str, Any],
+            input_columns: List[str], aggregate_column: str) -> str:
+
+        selected_columns = ', '.join(
+            f'MAX("{elem}") AS "{elem}"'
+            for elem in input_columns
+            if elem != aggregate_column
+        )
+        geom_column = get_table_geom_columns(
+            self.db,
+            input_layer_info_dict['schema_name'],
+            input_layer_info_dict['table_name']
+        )[0]
+        return f'''
+            CREATE TABLE "{out_schema}"."{out_table}" AS (
+                SELECT {selected_columns}, "{aggregate_column}", 
+                        ST_Union("{geom_column}") AS "geom"
+                FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}"
+                GROUP BY "{aggregate_column}"
+            );
+        '''
 
     def name(self):
         return 'vector_aggregate'

@@ -41,7 +41,7 @@ def create_raster_overviews(db: QSqlDatabase, schema_name: str,
         QApplication.processEvents()
         index_table = f'o_{str(level)}_{table_name}'
         make_query(db,
-                   make_sql_create_gist(table_name, index_table, column),
+                   make_sql_create_raster_gist(table_name, index_table, column),
                    schema_name)
         if base_class and hasattr(base_class, 'cancel_detection'):
             if base_class.cancel_detection():
@@ -53,7 +53,7 @@ def create_raster_overviews(db: QSqlDatabase, schema_name: str,
     return True
 
 
-def make_sql_create_gist(table: str, gist_table: str,
+def make_sql_create_raster_gist(table: str, gist_table: str,
                          column: str = 'rast') -> str:
     sql = f'CREATE INDEX "{gist_table}_{column}_gist_idx" ON ' \
           f'{table} USING GIST (ST_CONVEXHULL({column}));'
@@ -61,7 +61,7 @@ def make_sql_create_gist(table: str, gist_table: str,
     return sql
 
 
-def make_sql_create_table(table: str, rast_column: str = 'rast') -> str:
+def make_sql_create_raster_table(table: str, rast_column: str = 'rast') -> str:
     return f'CREATE TABLE "{table}" ' \
            f'("rid" serial PRIMARY KEY, "{rast_column}" raster);'
 
@@ -72,7 +72,7 @@ def make_sql_insert_raster(table: str, schema: str, srid: int,
            f'VALUES (ST_FromGDALRaster(?, {srid}));'
 
 
-def make_sql_addrastercolumn(table: str, schema: str,
+def make_sql_addr_raster_column(table: str, schema: str,
                              rast_column: str = 'rast') -> str:
     return f"SELECT AddRasterConstraints('{schema}','{table}'," \
            f"'{rast_column}',TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE," \

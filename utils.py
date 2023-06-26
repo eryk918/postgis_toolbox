@@ -223,24 +223,66 @@ def create_postgis_raster_layer(db: QSqlDatabase, schema_name: str,
     return QgsRasterLayer(uri.uri(False), raster_name, "postgresraster")
 
 
+def fetch_all_wkb_types_from_postgis_column(
+        db: callable, schema_name: str, table_name: str,
+        geom_col: str = 'geom') -> List[QgsWkbTypes.Type]:
+    query_rs = unpack_nested_lists(make_query(db, f'''
+        WITH all_geoms AS(
+            SELECT DISTINCT ST_GeometryType("{geom_col}") AS geometry_type, 
+                ST_AsText("{geom_col}") AS wkt_geometry
+            FROM "{schema_name}"."{table_name}" 
+        )
+        SELECT geometry_type, wkt_geometry
+        FROM all_geoms
+        WHERE wkt_geometry = (
+            SELECT ST_AsText("{geom_col}") 
+            FROM "{schema_name}"."{table_name}" 
+            WHERE ST_GeometryType("{geom_col}") = geometry_type 
+            LIMIT 1
+        )
+    '''))
+    wkt_list = [wkt for wkt in query_rs if "ST_" not in wkt]
+    wkb_types = []
+    for wkt in wkt_list:
+        try:
+            wkb_types.append(QgsWkbTypes.parseType(wkt))
+        except:
+            pass
+    return wkb_types
+
+
 def create_postgis_vector_layer(
         db, schema_name, table_name,
-        geom_col=None, layer_name='', ignore_validation=False):
+        geom_col=None, layer_name='', ignore_validation=False,
+        test_wkbs: bool = False):
     uri = QgsDataSourceUri()
     uri.setConnection(db.hostName(), str(db.port()), db.databaseName(),
                       db.userName(), db.password())
-    if geom_col:
-        uri.setDataSource(schema_name, table_name, geom_col)
-    else:
-        uri.setSchema(schema_name)
-        uri.setTable(table_name)
 
-    vlayer = QgsVectorLayer(uri.uri(), layer_name or table_name, "postgres")
-    if ignore_validation:
-        if vlayer.isValid():
-            return vlayer
-    else:
-        return vlayer
+    wkb_list = [None]
+    layers_list = []
+    if test_wkbs:
+        wkb_list = fetch_all_wkb_types_from_postgis_column(
+            db, schema_name, table_name, geom_col)
+        print(wkb_list)
+    for wkb_type in wkb_list:
+        if geom_col:
+            uri.setDataSource(schema_name, table_name, geom_col)
+        else:
+            uri.setSchema(schema_name)
+            uri.setTable(table_name)
+        if wkb_type is not None:
+            uri.setWkbType(wkb_type)
+
+        vlayer = QgsVectorLayer(uri.uri(), layer_name or table_name, "postgres")
+        if ignore_validation:
+            if vlayer.isValid():
+                layers_list.append(vlayer)
+        else:
+            layers_list.append(vlayer)
+
+    return layers_list if test_wkbs \
+        else (layers_list[0] if layers_list else None)
 
 
 def add_vectors_to_project(group_name: str,

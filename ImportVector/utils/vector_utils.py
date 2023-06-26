@@ -34,7 +34,7 @@ def make_sql_set_geometry_srid(table: str, schema: str, layer_path: str,
     return 'SELECT 1;'
 
 
-def check_duplicate_id_column_in_layer(input_layer_path: str) -> str:
+def check_for_duplicate_id_column(input_layer_path: str) -> str:
     out_file_path = input_layer_path
     tmp_layer = QgsVectorLayer(input_layer_path, 'temp', "ogr")
     fields_list = {

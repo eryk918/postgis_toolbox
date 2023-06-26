@@ -21,12 +21,12 @@ class PostGISHelpDialog(QDialog, FORM_CLASS):
         self.parent = main_class
         self.setupUi(self)
         self.setup_dialog()
-        self.add_webview_widget()
+        self.add_web_view_widget()
 
     def setup_dialog(self) -> None:
         repair_dialog(self, 'query_editor.png')
 
-    def add_webview_widget(self) -> None:
+    def add_web_view_widget(self) -> None:
         try:
             from qgis.PyQt import QtWebEngineWidgets
             self.webEngineView = QtWebEngineWidgets.QWebEngineView()

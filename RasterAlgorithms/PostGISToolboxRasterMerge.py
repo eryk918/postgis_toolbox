@@ -8,8 +8,8 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterNumber)
 from qgis.utils import iface
 
-from ..ImportRaster.utils.raster_utils import make_sql_create_gist, \
-    make_sql_addrastercolumn, create_raster_overviews
+from ..ImportRaster.utils.raster_utils import make_sql_create_raster_gist, \
+    make_sql_addr_raster_column, create_raster_overviews
 from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
     get_pg_table_name_from_raster_uri, check_table_exists_in_schema, \
     get_pg_table_name_from_uri
@@ -146,10 +146,10 @@ class PostGISToolboxRasterMerge(QgsProcessingAlgorithm):
             ''')
 
 
-            make_query(self.db, make_sql_create_gist(out_table, out_table),
+            make_query(self.db, make_sql_create_raster_gist(out_table, out_table),
                        out_schema)
             make_query(self.db,
-                       make_sql_addrastercolumn(out_table, out_schema))
+                       make_sql_addr_raster_column(out_table, out_schema))
             if q_overview:
                 create_raster_overviews(self.db, out_schema, out_table)
             if feedback.isCanceled():

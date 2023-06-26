@@ -191,21 +191,22 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
             if feedback.isCanceled():
                 return {}
 
-        out_layer = create_postgis_vector_layer(
+        out_layers = create_postgis_vector_layer(
             self.db,
             out_schema,
             out_table,
             layer_name=f'{tr("Intersection")} {input_vector_layer.name()}',
-            geom_col='geom'
+            geom_col='geom',
+            test_wkbs=True
         )
         if feedback.isCanceled():
             return {}
 
         if q_add_to_project:
-            add_vectors_to_project(PROCESSING_LAYERS_GROUP, [out_layer])
+            add_vectors_to_project(PROCESSING_LAYERS_GROUP, out_layers)
 
         return {
-            self.OUTPUT: out_layer,
+            self.OUTPUT: out_layers,
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }

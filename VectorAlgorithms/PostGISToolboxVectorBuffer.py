@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Dict, List, Any
 
 from plugins.processing.gui.wrappers import WidgetWrapper
 from qgis.PyQt.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QComboBox, \
@@ -174,14 +175,13 @@ class PostGISToolboxVectorBuffer(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db, f'''
-                CREATE TABLE "{out_schema}"."{out_table}" AS ( 
-                    SELECT {', '.join(f'"input_table"."{elem}"' for elem in input_columns)},
-                     ST_Buffer(input_table."{input_layer_info_dict['uri'].geometryColumn()}",
-                            {buffer_size}) AS "geom"
-                    FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}" 
-                        AS input_table
-                );''')
+            make_query(
+                self.db,
+                self.generate_buffer_query(
+                    out_table, out_schema, input_layer_info_dict,
+                    input_columns, buffer_size
+                )
+            )
             create_vector_geom_index(self.db, out_table, 'geom',
                                      schema=out_schema)
             if feedback.isCanceled():
@@ -205,6 +205,25 @@ class PostGISToolboxVectorBuffer(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_buffer_query(
+            self, out_table: str, out_schema: str,
+            input_layer_info_dict: Dict[str, Any],
+            input_columns: List[str], buffer_size: float) -> str:
+
+        selected_columns = ', '.join(
+            f'"input_table"."{elem}"'
+            for elem in input_columns
+        )
+        return f'''
+            CREATE TABLE "{out_schema}"."{out_table}" AS ( 
+                SELECT {selected_columns},
+                 ST_Buffer(input_table."{input_layer_info_dict['uri'].geometryColumn()}",
+                        {buffer_size}) AS "geom"
+                FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}" 
+                    AS input_table
+            );
+        '''
 
     def name(self):
         return 'vector_buffer'

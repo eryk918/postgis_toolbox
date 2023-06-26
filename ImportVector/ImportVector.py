@@ -6,7 +6,7 @@ from qgis.core import QgsTask, Qgis
 
 from .UI.import_vector_ui import ImportVector_UI
 from .utils.vector_utils import none_geometry_types, \
-    make_sql_set_geometry_srid, check_duplicate_id_column_in_layer
+    make_sql_set_geometry_srid, check_for_duplicate_id_column
 from ..utils import project, iface, repair_path_for_exec, change_alg_progress, \
     clean_after_analysis, tr, add_vectors_to_project, \
     create_postgis_vector_layer, VECTORS_LAYERS_GROUP, make_query
@@ -80,7 +80,7 @@ class VectorImporter(QgsTask):
             processing.run(
                 "qgis:importintopostgis",
                 {
-                    'INPUT': check_duplicate_id_column_in_layer(vector),
+                    'INPUT': check_for_duplicate_id_column(vector),
                     'DATABASE': self.main.db.databaseName(),
                     'SCHEMA': self.destination_schema,
                     'TABLENAME': self.destination_tables[
@@ -102,12 +102,15 @@ class VectorImporter(QgsTask):
                     self.destination_schema,
                     vector
                 ),
-                self.destination_schema)
+                self.destination_schema
+            )
             if self.cancel_detection():
                 return False
-            self.last_progress_value = \
-                change_alg_progress(self, self.last_progress_value,
-                                    96 / len(self.input_files))
+            self.last_progress_value = change_alg_progress(
+                self,
+                self.last_progress_value,
+                96 / len(self.input_files)
+            )
         return True
 
     def finished(self, result: bool or str) -> None:
