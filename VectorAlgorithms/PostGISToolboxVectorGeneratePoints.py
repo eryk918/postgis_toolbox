@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Dict, Any, List
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -125,12 +126,16 @@ class PostGISToolboxVectorGeneratePoints(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db,
-                       f'''CREATE TABLE "{out_schema}"."{out_table}" AS 
-                            SELECT ST_GeneratePoints(ST_Union(
-                                "{get_table_geom_columns(self.db, input_layer_info_dict['schema_name'],
-                                 input_layer_info_dict['table_name'])[0]}"), {number_of_points}) AS "geom"
-                            FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}";''')
+
+            make_query(
+                self.db,
+                self.generate_points_query(
+                    out_table,
+                    out_schema,
+                    input_layer_info_dict,
+                    number_of_points
+                )
+            )
             create_vector_geom_index(self.db, out_table, 'geom', schema=out_schema)
             if feedback.isCanceled():
                 return {}
@@ -153,6 +158,22 @@ class PostGISToolboxVectorGeneratePoints(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_points_query(
+            self, out_table: str, out_schema: str,
+            input_layer_info_dict: Dict[str, Any],
+            number_of_points: int) -> str:
+
+        return f'''
+            CREATE TABLE "{out_schema}"."{out_table}" AS (
+                SELECT ST_GeneratePoints(ST_Union(
+                    "{get_table_geom_columns(self.db, input_layer_info_dict['schema_name'],
+                     input_layer_info_dict['table_name'])[0]}"), 
+                    {number_of_points}
+                ) AS "geom"
+                FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}"
+            );
+        '''
 
     def name(self):
         return 'vector_generate_points'

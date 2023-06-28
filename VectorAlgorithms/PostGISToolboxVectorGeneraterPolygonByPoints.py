@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Any, Dict
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -123,13 +124,18 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db,
-                       f'''CREATE TABLE "{out_schema}"."{out_table}" AS 
-                            SELECT ST_ConcaveHull(ST_Union(
-                                "{get_table_geom_columns(self.db, input_layer_info_dict['schema_name'],
-                                 input_layer_info_dict['table_name'])[0]}"), 0.3, {allow_holes}) AS "geom"
-                            FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}";''')
-            create_vector_geom_index(self.db, out_table, 'geom', schema=out_schema)
+
+            make_query(
+                self.db,
+                self.generate_polygons_by_points_query(
+                    out_table,
+                    out_schema,
+                    input_layer_info_dict,
+                    allow_holes
+                )
+            )
+            create_vector_geom_index(
+                self.db, out_table, 'geom', schema=out_schema)
             if feedback.isCanceled():
                 return {}
 
@@ -151,6 +157,24 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_polygons_by_points_query(
+            self, out_table: str, out_schema: str,
+            input_layer_info_dict: Dict[str, Any],
+            allow_holes: bool) -> str:
+
+        return f'''
+            CREATE TABLE "{out_schema}"."{out_table}" AS (
+                SELECT ST_ConcaveHull(
+                    ST_Union(
+                        "{get_table_geom_columns(self.db, input_layer_info_dict['schema_name'],
+                         input_layer_info_dict['table_name'])[0]}"), 
+                         0.3, 
+                        {allow_holes}
+                    ) AS "geom"
+                FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}"
+            );
+        '''
 
     def name(self):
         return 'generate polygon from points'

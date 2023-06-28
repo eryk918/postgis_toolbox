@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Dict, Any
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -17,7 +18,7 @@ from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
     get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
     get_all_rasters_from_project, \
-    create_postgis_raster_layer, add_rasters_to_project, plugin_dir_name
+    create_postgis_raster_layer, add_rasters_to_project
 
 
 class PostGISToolboxRasterResample(QgsProcessingAlgorithm):
@@ -164,12 +165,14 @@ class PostGISToolboxRasterResample(QgsProcessingAlgorithm):
             if feedback.isCanceled():
                 return {}
 
-            make_query(self.db, f''' 
-                CREATE TABLE "{out_schema}"."{out_table}" AS (
-                    SELECT "rid", ST_Rescale("rast", {scale_value}, 
-                        '{resampling_algorithm}', {resampling_error}) AS "rast"
-                    FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
-                );''')
+            make_query(
+                self.db,
+                self.generate_raster_resample_query(
+                    out_table, out_schema,
+                    uri_dict, resampling_algorithm,
+                    scale_value, resampling_error
+                )
+            )
 
             make_query(self.db, make_sql_create_raster_gist(out_table, out_table),
                        out_schema)
@@ -198,6 +201,24 @@ class PostGISToolboxRasterResample(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_raster_resample_query(
+            self, out_table: str, out_schema: str,
+            uri_dict: Dict[str, Any], resampling_algorithm: str,
+            scale_value: float, resampling_error: float) -> str:
+
+        return f''' 
+            CREATE TABLE "{out_schema}"."{out_table}" AS (
+                SELECT "rid", 
+                    ST_Rescale(
+                        "rast", 
+                        {scale_value}, 
+                        '{resampling_algorithm}', 
+                        {resampling_error}
+                    ) AS "rast"
+                FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
+            );
+        '''
 
     def name(self):
         return 'raster_resample'

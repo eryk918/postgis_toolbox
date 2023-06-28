@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import List
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -127,19 +128,13 @@ class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
             if feedback.isCanceled():
                 return {}
 
-            geom_query = f'ST_Buffer(ST_Buffer(input_table."{uri.geometryColumn()}", 0.001), -0.001) ' \
-                if repair_method == 'ST_Buffer' \
-                else f'ST_MakeValid(input_table."{uri.geometryColumn()}")'
-
             make_query(
                 self.db,
-                f'''
-                    CREATE TABLE "{out_schema}"."{out_table}" AS ( 
-                        SELECT {', '.join(f'"input_table"."{elem}"' for elem in input_columns)},
-                         {geom_query} AS "geom"
-                        FROM "{schema_name}"."{table_name}" AS input_table
-                    );
-                '''
+                self.generate_repair_query(
+                    out_table, out_schema, schema_name,
+                    table_name, uri,
+                    input_columns,repair_method
+                )
             )
             create_vector_geom_index(
                 self.db, out_table, 'geom', schema=out_schema
@@ -166,6 +161,36 @@ class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_repair_query(
+            self, out_table: str, out_schema: str,
+            schema_name: str, table_name: str,
+            uri: QgsDataSourceUri, input_columns: List[str],
+            repair_method: str) -> str:
+
+        selected_columns = ', '.join(
+            f'"input_table"."{elem}"'
+            for elem in input_columns
+        )
+
+        geom_query = f'''
+            ST_Buffer(
+                ST_Buffer(
+                    input_table."{uri.geometryColumn()}", 
+                    0.001
+                ), 
+                -0.001
+            ) ''' \
+            if repair_method == 'ST_Buffer' \
+            else f'ST_MakeValid(input_table."{uri.geometryColumn()}")'
+
+        return f'''
+            CREATE TABLE "{out_schema}"."{out_table}" AS ( 
+                SELECT {selected_columns},
+                 {geom_query} AS "geom"
+                FROM "{schema_name}"."{table_name}" AS input_table
+            );
+        '''
 
     def name(self):
         return 'repair_geometry'

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Tuple, Dict, Any
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -128,24 +129,13 @@ class PostGISToolboxRasterMerge(QgsProcessingAlgorithm):
             if feedback.isCanceled():
                 return {}
 
-            make_query(self.db, f'''
-                CREATE TABLE "{out_schema}"."{out_table}" (
-                    rid serial PRIMARY KEY,
-                    rast raster
-                );
-            ''')
-
-            make_query(self.db, f'''    
-                WITH all_raster AS (
-                    SELECT ST_UNION("rast") AS merged
-                    FROM "{uri_dict['SCHEMA']}"."{uri_dict['TABLE']}"
+            create_raster_table_query, insert_raster_data_query = \
+                self.generate_raster_merge_queries(
+                    out_table, out_schema, uri_dict
                 )
-                INSERT INTO "{out_schema}"."{out_table}" ("rast")
-                SELECT merged AS rast
-                FROM all_raster;
-            ''')
 
-
+            make_query(self.db, create_raster_table_query)
+            make_query(self.db, insert_raster_data_query)
             make_query(self.db, make_sql_create_raster_gist(out_table, out_table),
                        out_schema)
             make_query(self.db,
@@ -173,6 +163,27 @@ class PostGISToolboxRasterMerge(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_raster_merge_queries(
+            self, out_table: str, out_schema: str,
+            uri_dict: Dict[str, Any]) -> Tuple[str, str]:
+
+        create_raster_table = f''' 
+            CREATE TABLE "{out_schema}"."{out_table}" (
+                rid serial PRIMARY KEY,
+                rast raster
+            );
+        '''
+        insert_merged_rasters_data = f'''    
+            WITH all_raster AS (
+                SELECT ST_UNION("rast") AS merged
+                FROM "{uri_dict['SCHEMA']}"."{uri_dict['TABLE']}"
+            )
+            INSERT INTO "{out_schema}"."{out_table}" ("rast")
+            SELECT merged AS rast
+            FROM all_raster;
+        '''
+        return create_raster_table, insert_merged_rasters_data
 
     def name(self):
         return 'raster_merge_tiles'

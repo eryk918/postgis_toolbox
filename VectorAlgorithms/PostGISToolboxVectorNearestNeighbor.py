@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import List
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -15,8 +16,7 @@ from .vec_alg_utils import get_pg_table_name_from_uri, \
 from ..utils import get_main_plugin_class, make_query, test_query, tr, \
     add_vectors_to_project, create_postgis_vector_layer, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
-    get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
-    plugin_dir_name
+    get_all_vectors_from_project, remove_unsupported_chars, plugin_name
 
 
 class PostGISToolboxVectorNearestNeighbor(QgsProcessingAlgorithm):
@@ -191,38 +191,18 @@ class PostGISToolboxVectorNearestNeighbor(QgsProcessingAlgorithm):
             if feedback.isCanceled():
                 return {}
 
-            geom_part_a = f'g1."{geom_col_a}"'
-            geom_part_b = f'"{table_name_b}"."{geom_col_b}"'
-
-            if srid_a != srid_b:
-                geom_part_b = f'ST_Transform({geom_part_b}, {srid_a})'
-
-            geom_query_part = f'{geom_part_a} AS geom'
-            if q_single_type:
-                geom_query_part = f'(ST_Dump({geom_part_a})).geom::geometry(' \
-                                  f'{out_geom_type}, {srid_a}) AS geom'
-
-            condition = ''
-            if min_distance:
-                condition += f'{geom_part_b} <-> {geom_part_a} >= ' \
-                             f'{min_distance} AND'
-            else:
-                condition += f'ST_Within({geom_part_b}, {geom_part_a}) OR '
-            condition += f'{geom_part_b} <-> {geom_part_a} <= {max_distance}'
-
-            query = f'''
-                CREATE TABLE "{out_schema}"."{out_table}" AS(
-                    SELECT g1."{f'", g1."'.join(columns)}", {geom_query_part}
-                       FROM "{schema_name_a}"."{table_name_a}" AS g1
-                       CROSS JOIN LATERAL (
-                           SELECT {geom_part_b} <-> {geom_part_a} AS dist
-                           FROM "{schema_name_b}"."{table_name_b}"
-                           WHERE {condition}
-                           ORDER BY dist
-                       ) g2
-                );
-            '''
-            make_query(self.db, query)
+            make_query(
+                self.db,
+                self.generate_nearest_neighbor_query(
+                    out_table, out_schema,
+                    schema_name_a, schema_name_b,
+                    columns, geom_col_a, table_name_a,
+                    table_name_b, geom_col_b,
+                    srid_a, srid_b, q_single_type,
+                    out_geom_type, min_distance,
+                    max_distance
+                )
+            )
             create_vector_geom_index(self.db, out_table, 'geom')
             if feedback.isCanceled():
                 return {}
@@ -245,6 +225,54 @@ class PostGISToolboxVectorNearestNeighbor(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_nearest_neighbor_query(
+            self, out_table: str, out_schema: str,
+            schema_name_a: str, schema_name_b: str,
+            columns: List[str],
+            geom_col_a: str, table_name_a: str,
+            table_name_b: str, geom_col_b: str,
+            srid_a: int, srid_b: int,
+            q_single_type: bool, out_geom_type: str,
+            min_distance: float, max_distance: float) -> str:
+
+        selected_columns = f'", g1."'.join(columns)
+
+        geom_part_a = f'g1."{geom_col_a}"'
+        geom_part_b = f'"{table_name_b}"."{geom_col_b}"'
+
+        if srid_a != srid_b:
+            geom_part_b = f'ST_Transform({geom_part_b}, {srid_a})'
+
+        geom_query_part = f'{geom_part_a} AS geom'
+        if q_single_type:
+            geom_query_part = f'''
+                (ST_Dump({geom_part_a})).geom::geometry(
+                    {out_geom_type}, 
+                    {srid_a}
+                ) AS geom'''
+
+        condition = ''
+        if min_distance:
+            condition += f'{geom_part_b} <-> {geom_part_a} >= ' \
+                         f'{min_distance} AND'
+        else:
+            condition += f'ST_Within({geom_part_b}, {geom_part_a}) OR '
+        condition += f'{geom_part_b} <-> {geom_part_a} <= ' \
+                     f'{max_distance}'
+
+        return f'''
+            CREATE TABLE "{out_schema}"."{out_table}" AS (
+                SELECT g1."{selected_columns}", {geom_query_part}
+                   FROM "{schema_name_a}"."{table_name_a}" AS g1
+                   CROSS JOIN LATERAL (
+                       SELECT {geom_part_b} <-> {geom_part_a} AS dist
+                       FROM "{schema_name_b}"."{table_name_b}"
+                       WHERE {condition}
+                       ORDER BY dist
+                   ) g2
+            );
+        '''
 
     def name(self):
         return 'vector_nearest_neighbor'

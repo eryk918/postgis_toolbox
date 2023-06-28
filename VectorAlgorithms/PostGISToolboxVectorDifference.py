@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import List
 
 from PyQt5.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -152,38 +153,22 @@ class PostGISToolboxVectorDifference(QgsProcessingAlgorithm):
                 make_query(self.db, f'DROP TABLE IF EXISTS '
                                     f'"{out_schema}"."{out_table}";')
             else:
-                if check_table_exists_in_schema(self.db, out_schema,
-                                                out_table):
+                if check_table_exists_in_schema(
+                        self.db, out_schema, out_table):
                     return {}
             if feedback.isCanceled():
                 return {}
 
-            union_geom_part = f"""
-                WITH union_geom AS (
-                    SELECT ST_Union("{geom_col_b}") AS geom
-                FROM "{schema_name_b}"."{table_name_b}"
+            make_query(
+                self.db,
+                self.generate_difference_query(
+                    out_table, out_schema, geom_col_a,
+                    geom_col_b, srid_a, srid_b, out_geom_type,
+                    schema_name_a, schema_name_b, table_name_a,
+                    table_name_b, q_single_type, columns
                 )
-            """
+            )
 
-            geom_b_part = f'g2."geom"'
-            if srid_b != srid_a:
-                geom_b_part = f'ST_Transform(g2."{geom_col_b}", {srid_a})'
-            geom_query_part = f'(ST_Multi(ST_Difference(g1."{geom_col_a}"' \
-                              f', {geom_b_part})))::geometry({out_geom_type}' \
-                              f', {srid_a}) AS geom'
-            if q_single_type:
-                geom_query_part = f'(ST_Difference(g1."{geom_col_a}", ' \
-                                  f'{geom_b_part}))::geometry(' \
-                                  f'{out_geom_type}, {srid_a}) AS geom'
-
-            make_query(self.db, f'''
-              CREATE TABLE "{out_schema}"."{out_table}" AS (
-                  {union_geom_part}
-                  SELECT g1."{'", g1."'.join(columns)}", {geom_query_part}
-                  FROM "{schema_name_a}"."{table_name_a}" AS g1, 
-                      union_geom AS g2 
-              );
-            ''')
             create_vector_geom_index(self.db, out_table, 'geom')
             if feedback.isCanceled():
                 return {}
@@ -206,6 +191,43 @@ class PostGISToolboxVectorDifference(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_difference_query(
+            self, out_table: str, out_schema: str, geom_col_a: str,
+            geom_col_b: str, srid_a: int, srid_b: int,
+            out_geom_type: str, schema_name_a: str,
+            schema_name_b: str, table_name_a: str,
+            table_name_b: str, q_single_type: bool,
+            columns: List[str]) -> str:
+
+        union_geom_part = f"""
+            WITH union_geom AS (
+                SELECT ST_Union("{geom_col_b}") AS geom
+            FROM "{schema_name_b}"."{table_name_b}"
+            )
+        """
+
+        geom_b_part = f'g2."geom"'
+        if srid_b != srid_a:
+            geom_b_part = f'ST_Transform(g2."{geom_col_b}", {srid_a})'
+        geom_query_part = \
+            f'(ST_Multi(ST_Difference(g1."{geom_col_a}"' \
+            f', {geom_b_part})))::geometry({out_geom_type}' \
+            f', {srid_a}) AS geom'
+        if q_single_type:
+            geom_query_part = \
+                f'(ST_Difference(g1."{geom_col_a}", ' \
+                f'{geom_b_part}))::geometry(' \
+                f'{out_geom_type}, {srid_a}) AS geom'
+
+        return f'''
+          CREATE TABLE "{out_schema}"."{out_table}" AS (
+              {union_geom_part}
+              SELECT g1."{'", g1."'.join(columns)}", {geom_query_part}
+              FROM "{schema_name_a}"."{table_name_a}" AS g1, 
+                  union_geom AS g2 
+          );
+        '''
 
     def name(self):
         return 'vector_difference'

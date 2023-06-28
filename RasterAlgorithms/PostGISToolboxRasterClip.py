@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import List, Dict, Any
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -156,11 +157,13 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db, f''' CREATE TABLE "{out_schema}"."{out_table}" AS (
-                SELECT "rid", ST_CLIP("rast", ST_GeomFromText('{geom_list[0].asWkt()}', {raster_layer.crs().postgisSrid()})) AS "rast"
-                FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
-                WHERE ST_Intersects("rast", ST_GeomFromText('{geom_list[0].asWkt()}', {raster_layer.crs().postgisSrid()})));''')
-
+            make_query(
+                self.db,
+                self.generate_raster_clip_query(
+                    out_table, out_schema, raster_layer,
+                    uri_dict, geom_list
+                )
+            )
             make_query(self.db, make_sql_create_raster_gist(out_table, out_table), out_schema)
             make_query(self.db, make_sql_addr_raster_column(out_table, out_schema))
             if feedback.isCanceled():
@@ -182,6 +185,31 @@ class PostGISToolboxRasterClip(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_raster_clip_query(
+            self, out_table: str, out_schema: str,
+            raster_layer: str, uri_dict: Dict[str, Any],
+            geom_list: List[QgsGeometry]) -> str:
+
+        return f''' 
+            CREATE TABLE "{out_schema}"."{out_table}" AS (
+                SELECT "rid", 
+                    ST_Clip("rast", 
+                        ST_GeomFromText(
+                            '{geom_list[0].asWkt()}', 
+                            {raster_layer.crs().postgisSrid()}
+                        )
+                    ) AS "rast"
+                FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
+                WHERE ST_Intersects(
+                    "rast", 
+                    ST_GeomFromText(
+                        '{geom_list[0].asWkt()}', 
+                        {raster_layer.crs().postgisSrid()}
+                    )
+                )
+            );
+        '''
 
     def name(self):
         return 'raster_clip'

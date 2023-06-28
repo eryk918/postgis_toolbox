@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Dict, Any
 
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import (QgsProcessingAlgorithm,
@@ -147,38 +148,14 @@ class PostGISToolboxVectorMerge(QgsProcessingAlgorithm):
             if feedback.isCanceled():
                 return {}
 
-            query = f'CREATE TABLE "{out_schema}"."{out_table}" AS('
-            it = 1
-            for layer_name, layer_dict in layers_dict.items():
-                schema, table, srid, uri, geom_col, geom_type = layer_dict.values()
-                columns = get_table_columns(
-                    self.db,
-                    schema,
-                    table,
-                    get_table_geom_columns(
-                        self.db,
-                        schema,
-                        table
-                    )
+            make_query(
+                self.db,
+                self.generate_merge_query(
+                    out_table, out_schema,
+                    layers_dict, base_srid,
+                    q_single_type, out_geom_type
                 )
-                geom_part = f'g{it}."{geom_col}"'
-                if base_srid != srid:
-                    geom_part = f'ST_Transform({geom_part}, {base_srid})'
-                geom_query_part = f'{geom_part} AS geom'
-
-                if q_single_type:
-                    geom_query_part = \
-                        f'(ST_Dump({geom_part})).geom::geometry(' \
-                        f'{out_geom_type}, {base_srid}) AS geom'
-
-                query += f'''SELECT g{it}."{f'", g{it}."'.join(columns)}", {geom_query_part} FROM "{schema}"."{table}" AS g{it}'''
-                if list(layers_dict.keys()).index(layer_name) != len(
-                        list(layers_dict.keys())) - 1:
-                    query += " UNION "
-                it += 1
-            query += ");"
-
-            make_query(self.db, query)
+            )
             create_vector_geom_index(self.db, out_table, 'geom')
             if feedback.isCanceled():
                 return {}
@@ -201,6 +178,48 @@ class PostGISToolboxVectorMerge(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_merge_query(
+            self, out_table: str, out_schema: str,
+            layers_dict: Dict[str, Any], base_srid: int,
+            q_single_type: bool, out_geom_type: str) -> str:
+
+        query = f'CREATE TABLE "{out_schema}"."{out_table}" AS('
+        table_ord_number = 1
+        for layer_name, layer_dict in layers_dict.items():
+            schema, table, srid, uri, geom_col, geom_type = layer_dict.values()
+            columns = get_table_columns(
+                self.db,
+                schema,
+                table,
+                get_table_geom_columns(
+                    self.db,
+                    schema,
+                    table
+                )
+            )
+            geom_part = f'g{table_ord_number}."{geom_col}"'
+            if base_srid != srid:
+                geom_part = f'ST_Transform({geom_part}, {base_srid})'
+            geom_query_part = f'{geom_part} AS geom'
+
+            if q_single_type:
+                geom_query_part = \
+                    f'(ST_Dump({geom_part})).geom::geometry(' \
+                    f'{out_geom_type}, {base_srid}) AS geom'
+
+            query += f'''
+                SELECT g{table_ord_number}."{f'", g{table_ord_number}."'.join(columns)}", 
+                    {geom_query_part} 
+                FROM "{schema}"."{table}" AS g{table_ord_number}
+            '''
+            if list(layers_dict.keys()).index(layer_name) != \
+                    len(list(layers_dict.keys())) - 1:
+                query += " UNION "
+            table_ord_number += 1
+        query += ");"
+
+        return query
 
     def name(self):
         return 'vector_merge'

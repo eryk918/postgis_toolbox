@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from typing import Any, Dict
 
 from plugins.processing.gui.wrappers import WidgetWrapper
 from qgis.PyQt.QtWidgets import QMessageBox, QComboBox, QWidget, QVBoxLayout, QSpinBox, QLabel
@@ -98,11 +99,9 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
         if self.db.isOpen() and self.db.isValid() \
                 and make_query(self.db, test_query):
             result_statistics = unpack_nested_lists(make_query(
-                self.db, f'''WITH union_raster AS (
-                                SELECT ST_UNION("rast", {band_numb}) AS rast_union 
-                                FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}")
-                            SELECT (stats).*
-                            FROM (SELECT ST_SummaryStats(rast_union, {band_numb}) AS stats FROM union_raster) AS foo;'''))
+                self.db,
+                self.generate_raster_statistics_query(uri_dict, band_numb)
+            ))
             if result_statistics:
                 file_handle, path_to_temp_file = tempfile.mkstemp(
                     suffix='_statistics_tmp.html')
@@ -146,6 +145,25 @@ class PostGISToolboxRasterSummary(QgsProcessingAlgorithm):
                             tr('There was a problem with opening a file.'),
                             QMessageBox.Ok)
         return {'OUTPUT': result_path}
+
+    def generate_raster_statistics_query(
+            self, uri_dict: Dict[str, Any],
+            band_numb: int) -> str:
+
+        return f'''
+            WITH union_raster AS (
+                SELECT ST_UNION("rast", {band_numb}) AS rast_union 
+                FROM "{uri_dict.get('SCHEMA')}"."{uri_dict.get('TABLE')}"
+            )
+            SELECT (stats).*
+            FROM (
+                SELECT ST_SummaryStats(
+                    rast_union, 
+                    {band_numb}
+                ) AS stats 
+                FROM union_raster
+            ) AS temp;
+        '''
 
     def name(self):
         return 'raster_summary'

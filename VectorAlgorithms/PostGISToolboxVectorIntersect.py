@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Any, Dict, List
 
 from plugins.processing.gui.wrappers import WidgetWrapper
 from qgis.PyQt.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QComboBox, QCheckBox,\
@@ -176,18 +177,15 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
                     return {}
             if feedback.isCanceled():
                 return {}
-            make_query(self.db,
-                       f'''CREATE TABLE "{out_schema}"."{out_table}" AS 
-                            SELECT {', '.join(f'"input_table"."{elem}"' for elem in input_columns)},
-                             ST_Intersection(input_table."{input_layer_info_dict['uri'].geometryColumn()}",
-                                    mask_table."{mask_layer_info_dict['uri'].geometryColumn()}") AS "geom"
-                            FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}" 
-                                AS input_table
-                            JOIN "{mask_layer_info_dict['schema_name']}"."{mask_layer_info_dict['table_name']}" 
-                                AS mask_table
-                            ON ST_Intersects(input_table."{input_layer_info_dict['uri'].geometryColumn()}",
-                             mask_table."{mask_layer_info_dict['uri'].geometryColumn()}");''')
-            create_vector_geom_index(self.db, out_table, 'geom', schema=out_schema)
+            make_query(
+                self.db,
+                self.generate_intersect_query(
+                    out_table, out_schema, input_layer_info_dict,
+                    input_columns, mask_layer_info_dict
+                )
+            )
+            create_vector_geom_index(
+                self.db, out_table, 'geom', schema=out_schema)
             if feedback.isCanceled():
                 return {}
 
@@ -210,6 +208,33 @@ class PostGISToolboxVectorIntersects(QgsProcessingAlgorithm):
             self.DEST_SCHEMA: schema_enum,
             self.DEST_TABLE: out_table
         }
+
+    def generate_intersect_query(
+            self, out_table: str, out_schema: str,
+            input_layer_info_dict: Dict[str, Any],
+            input_columns: List[str],
+            mask_layer_info_dict: Dict[str, Any]) -> str:
+
+        selected_columns = ', '.join(
+            f'"input_table"."{elem}"'
+            for elem in input_columns
+        )
+
+        return f'''
+            CREATE TABLE "{out_schema}"."{out_table}" AS (
+                SELECT {selected_columns},
+                 ST_Intersection(
+                        input_table."{input_layer_info_dict['uri'].geometryColumn()}",
+                        mask_table."{mask_layer_info_dict['uri'].geometryColumn()}"
+                    ) AS "geom"
+                FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}" 
+                    AS input_table
+                JOIN "{mask_layer_info_dict['schema_name']}"."{mask_layer_info_dict['table_name']}" 
+                    AS mask_table
+                ON ST_Intersects(input_table."{input_layer_info_dict['uri'].geometryColumn()}",
+                 mask_table."{mask_layer_info_dict['uri'].geometryColumn()}")
+            );
+        '''
 
     def name(self):
         return 'vector_intersect'
