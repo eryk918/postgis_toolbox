@@ -770,7 +770,7 @@ Czy chcesz kontynuować?</translation>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="58"/>
         <source>Output layer CRS</source>
-        <translation>Wyjściowy układ odniesienia</translation>
+        <translation>Wyjściowy układ współrzędnych</translation>
     </message>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="159"/>
@@ -855,7 +855,7 @@ Czy chcesz kontynuować?</translation>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="171"/>
         <source>Reproject</source>
-        <translation>Zmień układ odniesienia</translation>
+        <translation>Zmień układ współrzędnych</translation>
     </message>
     <message>
         <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="206"/>
