@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import sys
 from datetime import datetime
-from typing import List, Tuple, Any, Dict
+from typing import List, Tuple, Any, Dict, Union
 
 import qgis
 from PyQt5.QtCore import Qt
@@ -511,7 +511,7 @@ def create_pg_connecton(db_params: dict) -> QSqlDatabase:
 
 
 def make_query(db: QSqlDatabase, query: str, schema_name: str = '',
-               prepare: Any = None, postgis_raster: bool = False) -> list:
+               bind_value: Any = None, postgis_raster: bool = False) -> list:
     response = []
     if not db:
         return []
@@ -522,10 +522,10 @@ def make_query(db: QSqlDatabase, query: str, schema_name: str = '',
         query_obj.exec_(f'SET search_path TO "{schema_name}",public;')
     if postgis_raster:
         query_obj.exec_('''SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';''')
-    if prepare is not None:
+    if bind_value is not None:
         query_obj.prepare(query)
-        query_obj.addBindValue(prepare)
-    request = query_obj.exec_(query) if prepare is None else query_obj.exec()
+        query_obj.addBindValue(bind_value)
+    request = query_obj.exec_(query) if bind_value is None else query_obj.exec()
     if request:
         object_amount = query_obj.record().count()
         while query_obj.next():
@@ -539,9 +539,9 @@ def make_query(db: QSqlDatabase, query: str, schema_name: str = '',
     return response
 
 
-def make_queries(db: QSqlDatabase, sql_list: List[str] or List[str, Any],
+def make_queries(db: QSqlDatabase, sql_list: Union[List[str], List[Tuple[str, Any]]],
                  schema_name: str = '', postgis_raster: bool = False,
-                 prepare: bool = False, base_class=None,
+                 bind_value: bool = False, base_class=None,
                  percent_amount: int = None) -> bool:
     query = QSqlQuery(db)
     if db.driverName() == "QPSQL":
@@ -550,7 +550,7 @@ def make_queries(db: QSqlDatabase, sql_list: List[str] or List[str, Any],
     if postgis_raster:
         query.exec_('''SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';''')
     for exp in sql_list:
-        if prepare:
+        if bind_value:
             query.prepare(exp[0])
             query.addBindValue((exp[1]))
             query.exec()

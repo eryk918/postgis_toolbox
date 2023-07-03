@@ -29,11 +29,11 @@ class PostGISHelpDialog(QDialog, FORM_CLASS):
     def add_web_view_widget(self) -> None:
         try:
             from qgis.PyQt import QtWebEngineWidgets
-            self.webEngineView = QtWebEngineWidgets.QWebEngineView()
+            self.webView = QtWebEngineWidgets.QWebEngineView()
         except ImportError:
             from qgis.PyQt import QtWebKitWidgets
-            self.webEngineView = QtWebKitWidgets.QWebView()
-        self.frame_web.layout().addWidget(self.webEngineView)
+            self.webView = QtWebKitWidgets.QWebView()
+        self.frame_web.layout().addWidget(self.webView)
         self.function_cbbx.currentTextChanged.connect(self.set_address)
 
     def load_functions(self):
@@ -41,23 +41,25 @@ class PostGISHelpDialog(QDialog, FORM_CLASS):
         self.function_cbbx.addItems(self.get_function_list())
 
     def get_function_list(self) -> List[str]:
-        functions = []
-        for func_name_id in range(self.parent.functions.count()):
-            func_name = self.parent.functions.itemText(func_name_id).strip('(')
-            if func_name in deprecated_functions or func_name_id == 0:
+        function_names = []
+        for function_id in range(self.parent.functions.count()):
+            function_name = \
+                self.parent.functions.itemText(function_id).strip('(')
+            if function_name in deprecated_functions or function_id == 0:
                 continue
-            if misspelled_functions_dict.get(func_name):
-                func_name = misspelled_functions_dict[func_name]
-            functions.append(func_name)
-        return functions
+            if misspelled_functions_dict.get(function_name):
+                function_name = misspelled_functions_dict[function_name]
+            function_names.append(function_name)
+        return function_names
 
     def set_address(self) -> None:
-        function = self.function_cbbx.currentText()
-        address = f'https://postgis.net/docs/{function}.html'
-        tmp = requests.get(address, verify=False).text
-        if '404 Not Found' in tmp:
-            address = f'https://postgis.net/docs/RT_{function}.html'
-        self.webEngineView.setUrl(QUrl(address))
+        function_name = self.function_cbbx.currentText()
+        address = f'https://postgis.net/docs/{function_name}.html'
+        test_request = requests.get(address, verify=False)
+        if test_request.status_code == 404 or \
+                '404 Not Found' in test_request.text:
+            address = f'https://postgis.net/docs/RT_{function_name}.html'
+        self.webView.setUrl(QUrl(address))
 
     def run(self) -> None:
         self.load_functions()

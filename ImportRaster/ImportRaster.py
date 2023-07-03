@@ -163,13 +163,13 @@ class RasterImporter(QgsTask):
                         QByteArray(raster_file.read())
                     )
                 )
-                if self.cancel_detection():
-                    return False
-                self.last_progress_value = change_alg_progress(
-                    self,
-                    self.last_progress_value,
-                    32 / len(raster_list)
-                )
+            if self.cancel_detection():
+                return False
+            self.last_progress_value = change_alg_progress(
+                self,
+                self.last_progress_value,
+                32 / len(raster_list)
+            )
         make_queries(
             self.main.db,
             query_list,

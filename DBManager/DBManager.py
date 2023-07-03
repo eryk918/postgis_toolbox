@@ -119,14 +119,14 @@ class DBManager:
                 tr('Failed to connect.'), QMessageBox.Ok)
 
     def select_operative_database(
-            self, silent: bool = False, db_name: str = False) -> None:
+            self, silent: bool = False, db_name: str = None) -> None:
         self.db = None
         db_treeview = self.dlg.db_obj_treeview
         treeview_model = db_treeview.model()
         if treeview_model.rowCount() > 1 or db_name:
             if not db_name:
-                treeview_selection_model = db_treeview.selectionModel()
-                selected_items = treeview_selection_model.selectedRows()
+                treeview_sel_model = db_treeview.selectionModel()
+                selected_items = treeview_sel_model.selectedRows()
                 if selected_items and selected_items[0]:
                     db_name = selected_items[0]
                     if db_name.parent().data():
@@ -138,8 +138,6 @@ class DBManager:
                 self.db.setDatabaseName(db_name)
                 self.db.open()
                 if universal_db_check(self.db):
-                    selected_db_str = \
-                        tr('Successfully selected "{0}" as active database.')
                     if not silent:
                         QMessageBox.information(
                             self.dlg, plugin_name,
