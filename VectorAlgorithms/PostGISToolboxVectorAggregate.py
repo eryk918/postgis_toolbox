@@ -192,7 +192,7 @@ class PostGISToolboxVectorAggregate(QgsProcessingAlgorithm):
             input_columns: List[str], aggregate_column: str) -> str:
 
         selected_columns = ', '.join(
-            f'MAX("{elem}") AS "{elem}"'
+            f'STRING_AGG(DISTINCT "{elem}"::TEXT, \', \') AS "{elem}"'
             for elem in input_columns
             if elem != aggregate_column
         )
