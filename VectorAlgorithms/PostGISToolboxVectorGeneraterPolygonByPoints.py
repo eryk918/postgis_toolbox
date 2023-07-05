@@ -6,7 +6,7 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterBoolean,
                        QgsProcessingParameterString, QgsDataSourceUri,
                        QgsProcessingParameterEnum,
-                       QgsWkbTypes)
+                       QgsWkbTypes, QgsProcessingParameterNumber)
 from qgis.utils import iface
 
 from .vec_alg_utils import get_pg_table_name_from_uri, \
@@ -23,6 +23,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
     ALLOW_HOLES = 'ALLOW_HOLES'
+    CONCAVITY_RATIO = 'CONCAVITY_RATIO'
     POINT_COUNT = 'POINT_COUNT'
     INPUT_SELECT = 'INPUT_SELECT'
     INPUT_MASK_SELECT = 'INPUT_MASK_SELECT'
@@ -54,6 +55,15 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
             options=self.input_layers,
             allowMultiple=False,
             defaultValue=default_layer))
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.CONCAVITY_RATIO,
+            tr('Concavity ratio'),
+            type=QgsProcessingParameterNumber.Double,
+            defaultValue=0.4,
+            minValue=0,
+            maxValue=1
+        ))
 
         self.addParameter(QgsProcessingParameterBoolean(
             self.ALLOW_HOLES,
@@ -99,6 +109,8 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
                 input_vector_layer.dataProvider().dataSourceUri()).split('.')[1],
             'srid': input_vector_layer.crs().postgisSrid(),
             'uri': QgsDataSourceUri(input_vector_layer.source()), }
+        concavity_ratio = self.parameterAsDouble(
+            parameters, self.CONCAVITY_RATIO, context)
         allow_holes = self.parameterAsBool(
             parameters, self.ALLOW_HOLES, context)
         q_add_to_project = self.parameterAsBool(
@@ -131,6 +143,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
                     out_table,
                     out_schema,
                     input_layer_info_dict,
+                    concavity_ratio,
                     allow_holes
                 )
             )
@@ -161,7 +174,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
     def generate_polygons_by_points_query(
             self, out_table: str, out_schema: str,
             input_layer_info_dict: Dict[str, Any],
-            allow_holes: bool) -> str:
+            concavity_ratio: float, allow_holes: bool) -> str:
 
         return f'''
             CREATE TABLE "{out_schema}"."{out_table}" AS (
@@ -169,8 +182,8 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(QgsProcessingAlgorithm):
                     ST_Union(
                         "{get_table_geom_columns(self.db, input_layer_info_dict['schema_name'],
                          input_layer_info_dict['table_name'])[0]}"), 
-                         0.3, 
-                        {allow_holes}
+                         {concavity_ratio}, 
+                         {allow_holes}
                     ) AS "geom"
                 FROM "{input_layer_info_dict['schema_name']}"."{input_layer_info_dict['table_name']}"
             );

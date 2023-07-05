@@ -9,27 +9,27 @@
         <translation type="obsolete">Połącz ponownie</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="64"/>
+        <location filename="../postgis_toolbox.py" line="65"/>
         <source>&amp;{plugin_name}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="72"/>
+        <location filename="../postgis_toolbox.py" line="81"/>
         <source>Manage databases</source>
         <translation>Menedżer baz danych</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="77"/>
+        <location filename="../postgis_toolbox.py" line="86"/>
         <source>Import vector data</source>
         <translation>Importuj dane wektorowe</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="82"/>
+        <location filename="../postgis_toolbox.py" line="91"/>
         <source>Import raster data</source>
         <translation>Importuj dane rastrowe</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="87"/>
+        <location filename="../postgis_toolbox.py" line="96"/>
         <source>Query editor</source>
         <translation>Edytor zapytań</translation>
     </message>
@@ -39,7 +39,7 @@
         <translation type="obsolete">Ustawienia</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="97"/>
+        <location filename="../postgis_toolbox.py" line="106"/>
         <source>&amp;PostGIS Toolbox</source>
         <translation></translation>
     </message>
@@ -49,7 +49,7 @@
         <translation>Funkcje przestrzenne PostGIS</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="39"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="40"/>
         <source>Input layer</source>
         <translation>Warstwa wejściowa</translation>
     </message>
@@ -109,12 +109,12 @@
         <translation>Czy należy usunąć to połączenie?</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="190"/>
+        <location filename="../DBManager/DBManager.py" line="191"/>
         <source>Successfully disconnected.</source>
         <translation>Rozłączono.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="196"/>
+        <location filename="../DBManager/DBManager.py" line="197"/>
         <source>Already disconnected.</source>
         <translation>Już rozłączono.</translation>
     </message>
@@ -124,44 +124,44 @@
         <translation type="obsolete">Rozszerzenie PostGIS zostało wykryte, wersja to: {&apos;, &apos;.join(simple_pg_ver)}</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="230"/>
+        <location filename="../DBManager/DBManager.py" line="231"/>
         <source>No PostGIS extension was detected in the selected database!</source>
         <translation>W wybranej bazie danych nie wykryto rozszerzenia PostGIS!</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="224"/>
+        <location filename="../DBManager/DBManager.py" line="225"/>
         <source>PostGIS version check failed!
 Connect to correct PostgreSQL server and try again.</source>
         <translation>Nie udało się sprawdzić wersji PostGIS!
 Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="252"/>
+        <location filename="../DBManager/DBManager.py" line="253"/>
         <source>Enter a name for the new schema</source>
         <translation>Podaj nazwę nowego schematu</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="284"/>
+        <location filename="../DBManager/DBManager.py" line="285"/>
         <source>Schema name...</source>
         <translation>Nazwa schematu...</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="260"/>
+        <location filename="../DBManager/DBManager.py" line="261"/>
         <source>Enter a name for the new database</source>
         <translation>Podaj nazwę dla nowej bazy danych</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="292"/>
+        <location filename="../DBManager/DBManager.py" line="293"/>
         <source>Database name...</source>
         <translation>Nazwa bazy danych...</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="284"/>
+        <location filename="../DBManager/DBManager.py" line="285"/>
         <source>Enter a name for schema</source>
         <translation>Podaj nazwę schematu</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="292"/>
+        <location filename="../DBManager/DBManager.py" line="293"/>
         <source>Enter a name for database</source>
         <translation>Podaj nazwę bazy danych</translation>
     </message>
@@ -171,7 +171,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się dodać &quot;{db_name}&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="363"/>
+        <location filename="../DBManager/DBManager.py" line="364"/>
         <source>An error occurred while adding a database!</source>
         <translation>Wystąpił błąd podczas dodawania bazy danych!</translation>
     </message>
@@ -181,7 +181,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się dodać &quot;{schema_name}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="378"/>
+        <location filename="../DBManager/DBManager.py" line="379"/>
         <source>An error occurred while adding a schema!</source>
         <translation>Podczas dodawania schematu wystąpił błąd!</translation>
     </message>
@@ -191,7 +191,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się zmienić nazwę &quot;{self.old_name}&quot; na &quot;{db_name}&quot; i ustawić jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="393"/>
+        <location filename="../DBManager/DBManager.py" line="394"/>
         <source>An error occurred while renaming the database!</source>
         <translation>Podczas zmiany nazwy bazy danych wystąpił błąd!</translation>
     </message>
@@ -201,7 +201,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Udało się zmienić nazwę &quot;{self.old_name}&quot; na &quot;{schema_name}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="408"/>
+        <location filename="../DBManager/DBManager.py" line="409"/>
         <source>An error occurred while renaming the schema!</source>
         <translation>Podczas zmiany nazwy schematu wystąpił błąd!</translation>
     </message>
@@ -211,7 +211,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Pomyślnie usunięto bazę danych &quot;{self.old_name}&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="425"/>
+        <location filename="../DBManager/DBManager.py" line="426"/>
         <source>An error occurred while removing the database!</source>
         <translation>Podczas usuwania bazy danych wystąpił błąd!</translation>
     </message>
@@ -221,7 +221,7 @@ Połącz się z właściwym serwerem PostgreSQL i spróbuj ponownie.</translatio
         <translation type="obsolete">Pomyślnie usunięto schemat &quot;{self.old_name}&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="440"/>
+        <location filename="../DBManager/DBManager.py" line="441"/>
         <source>An error occurred while removing the schema!</source>
         <translation>Podczas usuwania schematu wystąpił błąd!</translation>
     </message>
@@ -255,17 +255,17 @@ Spróbuj ponownie.</translation>
         <translation>Połączenie nie powiodło się - sprawdź szczegóły w dzienniku komunikatów.</translation>
     </message>
     <message>
-        <location filename="../ImportVector/ImportVector.py" line="115"/>
+        <location filename="../ImportVector/ImportVector.py" line="118"/>
         <source>An error occurred while importing the raster.</source>
         <translation>Podczas importu rastra wystąpił błąd.</translation>
     </message>
     <message>
-        <location filename="../ImportVector/ImportVector.py" line="120"/>
+        <location filename="../ImportVector/ImportVector.py" line="123"/>
         <source>The import was aborted by the user.</source>
         <translation>Import został przerwany przez użytkownika.</translation>
     </message>
     <message>
-        <location filename="../ImportRaster/ImportRaster.py" line="184"/>
+        <location filename="../ImportRaster/ImportRaster.py" line="205"/>
         <source>The raster import has been completed successfully.</source>
         <translation>Import rastra został zakończony pomyślnie.</translation>
     </message>
@@ -287,7 +287,7 @@ Opcja kafelkowania została wymuszona.</translation>
         <translation>Ustaw prawidłowe parametry!</translation>
     </message>
     <message>
-        <location filename="../ImportVector/ImportVector.py" line="125"/>
+        <location filename="../ImportVector/ImportVector.py" line="128"/>
         <source>The vector import has been completed successfully.</source>
         <translation>Import wektora został zakończony pomyślnie.</translation>
     </message>
@@ -327,7 +327,7 @@ Opcja kafelkowania została wymuszona.</translation>
         <translation>Schemat wyjściowy</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="60"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="61"/>
         <source>Output table name</source>
         <translation>Nazwa tabeli wyjściowej</translation>
     </message>
@@ -342,27 +342,27 @@ Opcja kafelkowania została wymuszona.</translation>
         <translation>Dodaj warstwę wynikową do projektu</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorClip.py" line="208"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorClip.py" line="230"/>
         <source>Clip</source>
         <translation>Przytnij</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="54"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="55"/>
         <source>Layer to be subtracted</source>
         <translation>Warstwa do odjęcia</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="214"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorDifference.py" line="236"/>
         <source>Difference</source>
         <translation>Różnica</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="44"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="45"/>
         <source>Input layers</source>
         <translation>Warstwy wejściowe</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="209"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMerge.py" line="228"/>
         <source>Merge</source>
         <translation>Połącz</translation>
     </message>
@@ -397,7 +397,7 @@ Opcja kafelkowania została wymuszona.</translation>
         <translation>Nazwa tabeli wyjściowej:</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="253"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="281"/>
         <source>Nearest Neighbor</source>
         <translation>Najbliższy sąsiad</translation>
     </message>
@@ -409,17 +409,17 @@ Use DB Manager and try again.</source>
 Użyj DB Manager i spróbuj ponownie.</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="34"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="35"/>
         <source>Band number</source>
         <translation>Numer kanału</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="67"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="68"/>
         <source>Output path</source>
         <translation>Ścieżka wyjściowa</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="144"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="143"/>
         <source>There was a problem with opening a file.</source>
         <translation>Wystąpił problem z otwarciem pliku.</translation>
     </message>
@@ -429,7 +429,7 @@ Użyj DB Manager i spróbuj ponownie.</translation>
         <translation type="obsolete">Statystyki rastra</translation>
     </message>
     <message>
-        <location filename="../postgis_toolbox.py" line="181"/>
+        <location filename="../postgis_toolbox.py" line="190"/>
         <source>There is no connection to the PostGIS database!</source>
         <translation>Nie ma połączenia z bazą danych PostGIS!</translation>
     </message>
@@ -479,12 +479,12 @@ Użyj DB Manager i spróbuj ponownie.</translation>
         <translation type="obsolete">Wybrano &quot;{db_name}&quot; jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="161"/>
+        <location filename="../DBManager/DBManager.py" line="159"/>
         <source>Selection failed - db user permission error.</source>
         <translation>Wybór nie powiódł się - błąd uprawnień użytkownika bazy danych.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="167"/>
+        <location filename="../DBManager/DBManager.py" line="166"/>
         <source>Selection failed - connect to correct PostgreSQL server or no databases detected in server.</source>
         <translation>Wybór nie powiódł się - połącz się z właściwym serwerem PostgreSQL lub nie wykryto żadnych baz danych na serwerze.</translation>
     </message>
@@ -613,12 +613,12 @@ Czy chcesz kontynuować?</translation>
         <translation>&amp;Wyjdź</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="50"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="51"/>
         <source>Input raster layer</source>
         <translation>Wprowadź warstwę rastrową</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="44"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="45"/>
         <source>Mask layer</source>
         <translation>Warstwa maski</translation>
     </message>
@@ -683,82 +683,82 @@ Czy chcesz kontynuować?</translation>
         <translation>PostGIS Toolbox - Usuń połączenie</translation>
     </message>
     <message>
-        <location filename="../utils.py" line="426"/>
+        <location filename="../utils.py" line="468"/>
         <source>Active database:</source>
         <translation>Aktywna baza danych:</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="208"/>
+        <location filename="../DBManager/DBManager.py" line="209"/>
         <source>PostGIS extension was detected, version is:</source>
         <translation>Wykryto rozszerzenie PostGIS, jego wersja to:</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="144"/>
+        <location filename="../DBManager/DBManager.py" line="142"/>
         <source>Successfully selected &quot;{0}&quot; as active database.</source>
         <translation>Wybrano &quot;{0}&quot; jako aktywną bazę danych.</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="198"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="210"/>
         <source>Raster</source>
         <translation>Dane rastrowe</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="259"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorNearestNeighbor.py" line="287"/>
         <source>Vector</source>
         <translation>Dane wektorowe</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="115"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="114"/>
         <source>File analyzed</source>
         <translation>Przeanalizowany plik</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="115"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="114"/>
         <source>database</source>
         <translation>baza danych</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="115"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="114"/>
         <source>schema</source>
         <translation>schemat</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="116"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="115"/>
         <source>table</source>
         <translation>tabela</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="116"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="115"/>
         <source>Minimum value</source>
         <translation>Wartość minimalna</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="116"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="115"/>
         <source>Maximum value</source>
         <translation>Wartość maksymalna</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="117"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="116"/>
         <source>Range</source>
         <translation>Zakres</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="117"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="116"/>
         <source>Sum</source>
         <translation>Suma</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="117"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="116"/>
         <source>Mean value</source>
         <translation>Średnia</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="118"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="117"/>
         <source>Standard deviation</source>
         <translation>Odchylenie standardowe</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="80"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="81"/>
         <source>Create raster overviews</source>
         <translation>Utwórz tabele przeglądowe (piramidy)</translation>
     </message>
@@ -768,7 +768,7 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Złącz kafle rastra</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="58"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="56"/>
         <source>Output layer CRS</source>
         <translation>Wyjściowy układ współrzędnych</translation>
     </message>
@@ -778,12 +778,12 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Zmień układ odniesienia rastra</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="69"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="70"/>
         <source>Resampling algorithm</source>
         <translation>Algorytm resamplingu</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="76"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="77"/>
         <source>Maximum percentage error</source>
         <translation>Maksymalny procent błędu</translation>
     </message>
@@ -793,12 +793,12 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Resampling rastra</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="57"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="58"/>
         <source>Tile size X</source>
         <translation>Szerokość kafla</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="61"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="62"/>
         <source>Tile size Y</source>
         <translation>Wysokość kafla</translation>
     </message>
@@ -808,22 +808,22 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Kaflowanie rastra</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="36"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="37"/>
         <source>Only selected features</source>
         <translation>Tylko zaznaczone obiekty</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="47"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="48"/>
         <source>Choose columns from input layer</source>
         <translation>Wybierz kolumny z warstwy wejściowej</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorBuffer.py" line="93"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorBuffer.py" line="94"/>
         <source>Buffer size</source>
         <translation>Rozmiar bufora</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorBuffer.py" line="213"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorBuffer.py" line="232"/>
         <source>Buffer</source>
         <translation>Bufor</translation>
     </message>
@@ -833,76 +833,76 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Uprość</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneratePoints.py" line="55"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneratePoints.py" line="56"/>
         <source>Number of points</source>
         <translation>Ilość punktów</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneratePoints.py" line="161"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneratePoints.py" line="182"/>
         <source>Generate points</source>
         <translation>Wygeneruj punkty</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="217"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorIntersect.py" line="243"/>
         <source>Intersection</source>
         <translation>Przecięcie</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterMerge.py" line="181"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterMerge.py" line="192"/>
         <source>Merge tiles</source>
         <translation>Złącz kafle</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="171"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterReproject.py" line="193"/>
         <source>Reproject</source>
         <translation>Zmień układ współrzędnych</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="206"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="227"/>
         <source>Resample</source>
         <translation>Resampling</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="154"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterSummary.py" line="172"/>
         <source>Summary</source>
         <translation>Statystyki</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="192"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterTile.py" line="204"/>
         <source>Tiles</source>
         <translation>Stwórz kafle</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="50"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="52"/>
         <source>Input point layer</source>
         <translation>Wejściowa warstwa punktowa</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="57"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="68"/>
         <source>Allow holes?</source>
         <translation>Pozwolić na dziury?</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="159"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="196"/>
         <source>Generate polygon from points</source>
         <translation>Stwórz poligony z punktów</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="297"/>
+        <location filename="../DBManager/DBManager.py" line="298"/>
         <source>Rename database disconnects from her all active users.
 Do you want to continue?</source>
         <translation>Zmiana nazwy bazy danych odłączy od niej wszystkich aktywnych użytkowników.
 Czy chcesz kontynuować?</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="326"/>
+        <location filename="../DBManager/DBManager.py" line="327"/>
         <source>Deletion of the &quot;%s&quot; schema is irreversible!
 Do you want to continue?</source>
         <translation>Usunięcie schematu &quot;%s&quot; jest nieodwracalne!
 Czy chcesz kontynuować?</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="334"/>
+        <location filename="../DBManager/DBManager.py" line="335"/>
         <source>Deletion of the &quot;%s&quot; database is irreversible!
 Do you want to continue?</source>
         <translation>Usunięcie bazy danych &quot;%s&quot; jest nieodwracalne!
@@ -929,22 +929,22 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot; i ustawić jako aktywny schemat.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="416"/>
+        <location filename="../DBManager/DBManager.py" line="417"/>
         <source>Successfully removed &quot;%s&quot; database.</source>
         <translation>Pomyślnie usunięto bazę danych &quot;%s&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="434"/>
+        <location filename="../DBManager/DBManager.py" line="435"/>
         <source>Successfully removed &quot;%s&quot; schema.</source>
         <translation>Pomyślnie usunięto schemat &quot;%s&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="372"/>
+        <location filename="../DBManager/DBManager.py" line="373"/>
         <source>Successfully added &quot;%s&quot;.</source>
         <translation>Pomyślnie dodano &quot;%s&quot;.</translation>
     </message>
     <message>
-        <location filename="../DBManager/DBManager.py" line="402"/>
+        <location filename="../DBManager/DBManager.py" line="403"/>
         <source>Successfully renamed &quot;{0}&quot; to &quot;{1}&quot;.</source>
         <translation>Udało się zmienić nazwę &quot;{0}&quot; na &quot;{1}&quot;.</translation>
     </message>
@@ -954,12 +954,12 @@ Czy chcesz kontynuować?</translation>
         <translation>WARSTWY_WYNIKOWE_PROCESSINGU</translation>
     </message>
     <message>
-        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="60"/>
+        <location filename="../RasterAlgorithms/PostGISToolboxRasterResample.py" line="61"/>
         <source>Spatial resolution</source>
         <translation>Rozdzielczość przestrzenna</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorAggregate.py" line="195"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorAggregate.py" line="217"/>
         <source>Aggregate</source>
         <translation>Agregacja</translation>
     </message>
@@ -974,12 +974,12 @@ Czy chcesz kontynuować?</translation>
         <translation type="obsolete">Napraw geometrię</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="174"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="199"/>
         <source>Repair geometry</source>
         <translation>Napraw geometrię</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="46"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorMakeValid.py" line="47"/>
         <source>Repair method</source>
         <translation>Algorytm naprawy geometrii</translation>
     </message>
@@ -989,9 +989,14 @@ Czy chcesz kontynuować?</translation>
         <translation>Proszę wypełnić wymagane pola.</translation>
     </message>
     <message>
-        <location filename="../VectorAlgorithms/PostGISToolboxVectorAggregate.py" line="38"/>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorAggregate.py" line="39"/>
         <source>Group by column</source>
         <translation>Grupuj według kolumny</translation>
+    </message>
+    <message>
+        <location filename="../VectorAlgorithms/PostGISToolboxVectorGeneraterPolygonByPoints.py" line="59"/>
+        <source>Concavity ratio</source>
+        <translation type="unfinished">Stopień wklęsłości</translation>
     </message>
 </context>
 <context>
