@@ -186,8 +186,9 @@ class PostGISToolboxVectorMerge(QgsProcessingAlgorithm):
 
         query = f'CREATE TABLE "{out_schema}"."{out_table}" AS('
         table_ord_number = 1
-        for layer_name, layer_dict in layers_dict.items():
-            schema, table, srid, uri, geom_col, geom_type = layer_dict.values()
+        for layer_name, layer_info_dict in layers_dict.items():
+            schema, table, srid, uri, geom_col, geom_type = \
+                layer_info_dict.values()
             columns = get_table_columns(
                 self.db,
                 schema,
