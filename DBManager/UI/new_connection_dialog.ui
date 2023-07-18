@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QgsPgNewConnectionBase</class>
+ <widget class="QDialog" name="QgsPgNewConnectionBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>690</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>690</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>PostGIS Toolbox - Create a New PostGIS Connection</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QgsMessageBar" name="bar" native="true"/>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="GroupBox1">
+     <property name="title">
+      <string>Connection Information</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="5" column="0">
+         <widget class="QLabel" name="TextLabel3_3">
+          <property name="text">
+           <string>SSL &amp;mode</string>
+          </property>
+          <property name="buddy">
+           <cstring>ssl_mode_combo</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="port_lineEdit">
+          <property name="text">
+           <string>5432</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="conn_name_lineEdit">
+          <property name="toolTip">
+           <string>Name of the new connection</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="service_name_lineEdit"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="TextLabel1">
+          <property name="text">
+           <string>Hos&amp;t</string>
+          </property>
+          <property name="buddy">
+           <cstring>host_name_lineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="host_name_lineEdit"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="TextLabel1_2">
+          <property name="text">
+           <string>&amp;Name</string>
+          </property>
+          <property name="buddy">
+           <cstring>conn_name_lineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="TextLabel2">
+          <property name="text">
+           <string>&amp;Database</string>
+          </property>
+          <property name="buddy">
+           <cstring>database_lineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="database_lineEdit"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Service</string>
+          </property>
+          <property name="buddy">
+           <cstring>service_name_lineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QComboBox" name="ssl_mode_combo"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="TextLabel2_2">
+          <property name="text">
+           <string>Port</string>
+          </property>
+          <property name="buddy">
+           <cstring>port_lineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="mAuthGroupBox">
+        <property name="title">
+         <string>Authentication</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <property name="leftMargin">
+          <number>6</number>
+         </property>
+         <property name="topMargin">
+          <number>6</number>
+         </property>
+         <property name="rightMargin">
+          <number>6</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QgsAuthSettingsWidget" name="settings_widget" native="true"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnConnect">
+        <property name="text">
+         <string>&amp;Test Connection</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QgsAuthSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsauthsettingswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QgsMessageBar</class>
+   <extends>QWidget</extends>
+   <header>qgsmessagebar.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>conn_name_lineEdit</tabstop>
+  <tabstop>service_name_lineEdit</tabstop>
+  <tabstop>host_name_lineEdit</tabstop>
+  <tabstop>port_lineEdit</tabstop>
+  <tabstop>database_lineEdit</tabstop>
+  <tabstop>ssl_mode_combo</tabstop>
+  <tabstop>btnConnect</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>QgsPgNewConnectionBase</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>313</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>451</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>QgsPgNewConnectionBase</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>395</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>450</x>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
