@@ -11,6 +11,7 @@ about=The plugin implements:
  • extended query editor,
  • several algorithms for vectors and rasters.
 
+homepage=https://github.com/eryk918/postgis_toolbox
 tracker=https://github.com/eryk918/postgis_toolbox/issues
 repository=https://github.com/eryk918/postgis_toolbox
 
