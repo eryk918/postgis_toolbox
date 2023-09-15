@@ -11,7 +11,7 @@ from ..utils.vector_utils import vector_extensions, simple_vector_extensions
 from ...utils import repair_dialog, os, \
     QDialog, get_all_vectors_from_project, plugin_name, get_active_db_info, \
     get_schema_name_list, standardize_path, NewThreadAlg, tr, \
-    remove_unsupported_chars, get_main_plugin_class, project
+    remove_unsupported_chars, get_plugin_object, project
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_vector_ui.ui'))
@@ -68,8 +68,8 @@ class ImportVector_UI(QDialog, FORM_CLASS):
             not len(self.vector_layer_cbbx.checkedItems()) > 1)
 
     def change_db(self):
-        get_main_plugin_class().run_db_config()
-        self.import_vector.db = get_main_plugin_class().db
+        get_plugin_object().run_db_config()
+        self.import_vector.db = get_plugin_object().db
         self.close()
         self.manage_vectors()
         con_status = \
