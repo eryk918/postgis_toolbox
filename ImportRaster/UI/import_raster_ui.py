@@ -8,7 +8,7 @@ from ..utils.raster_utils import raster_extensions, max_raster_untiled_size
 from ...utils import repair_dialog, main_plugin_icon, os, \
     QDialog, get_all_rasters_from_project, plugin_name, get_active_db_info, \
     get_schema_name_list, standardize_path, NewThreadAlg, tr, \
-    remove_unsupported_chars, get_main_plugin_class
+    remove_unsupported_chars, get_plugin_object
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_raster_ui.ui'))
@@ -97,8 +97,8 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
                 pass
 
     def change_db(self):
-        get_main_plugin_class().run_db_config()
-        self.importRaster.db = get_main_plugin_class().db
+        get_plugin_object().run_db_config()
+        self.importRaster.db = get_plugin_object().db
         self.close()
         self.manage_rasters()
         con_status = \

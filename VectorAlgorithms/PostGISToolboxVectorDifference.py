@@ -11,7 +11,7 @@ from qgis.utils import iface
 from .vec_alg_utils import get_pg_table_name_from_uri, \
     get_table_geom_columns, get_table_columns, create_vector_geom_index, \
     check_table_exists_in_schema, check_db_connection
-from ..utils import get_main_plugin_class, make_query, test_query, tr, \
+from ..utils import get_plugin_object, make_query, test_query, tr, \
     add_vectors_to_project, create_postgis_vector_layer, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
     get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
@@ -38,10 +38,10 @@ class PostGISToolboxVectorDifference(QgsProcessingAlgorithm):
             if self.input_layers_dict else []
         default_layer = self.input_layers[0] if self.input_layers else None
 
-        if not get_main_plugin_class().db or not self.input_layers_dict:
+        if not get_plugin_object().db or not self.input_layers_dict:
             return
 
-        self.db = get_main_plugin_class().db
+        self.db = get_plugin_object().db
         self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
         default_schema = self.schemas_list[0] if self.schemas_list else None
 

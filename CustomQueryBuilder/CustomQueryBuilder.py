@@ -29,7 +29,7 @@ from .db_manager.layer_preview import LayerPreview
 from .db_manager.table_viewer import TableViewer
 from ..CustomQueryBuilder.UI.CustomQueryBuilderDialog import CustomQueryBuilderDialog
 
-from ..utils import tr, get_schema_name_list, get_main_plugin_class, plugin_dir
+from ..utils import tr, get_schema_name_list, get_plugin_object, plugin_dir
 
 
 class CustomQueryBuilder(QueryBuilderDlg):
@@ -363,7 +363,7 @@ class CustomDbSqlWindow(DlgSqlWindow):
 
     def _create_add_object_window(
             self, dialog_name: str) -> Tuple[Optional[str], Optional[str]]:
-        main_db = get_main_plugin_class().db
+        main_db = get_plugin_object().db
         dlg = QDialog(None)
         dlg.setWindowTitle(dialog_name)
         dlg.setMaximumSize(350, 105)

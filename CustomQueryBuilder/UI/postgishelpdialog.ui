@@ -48,13 +48,7 @@
     <normaloff>../../../../../../../../../../../images/icon.png</normaloff>../../../../../../../../../../../images/icon.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">QComboBox {
-	color: rgb(0,0,0);
-}
-* {
-    font: 10pt &quot;Segoe UI&quot;; 
-}
-</string>
+   <string notr="true"/>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>

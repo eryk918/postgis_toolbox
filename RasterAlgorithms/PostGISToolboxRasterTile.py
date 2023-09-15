@@ -14,7 +14,7 @@ from ..ImportRaster.utils.raster_utils import make_sql_create_raster_gist, \
 from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
     get_pg_table_name_from_raster_uri, check_table_exists_in_schema, \
     get_pg_table_name_from_uri
-from ..utils import get_main_plugin_class, make_query, test_query, tr, \
+from ..utils import get_plugin_object, make_query, test_query, tr, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
     get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
     get_all_rasters_from_project, \
@@ -42,9 +42,9 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
                                 **get_all_vectors_from_project(True)}
         self.all_layers_list = list(self.all_layers_dict.keys()) \
             if self.all_layers_dict else []
-        if not get_main_plugin_class().db or not self.input_raster_layers_dict:
+        if not get_plugin_object().db or not self.input_raster_layers_dict:
             return
-        self.db = get_main_plugin_class().db
+        self.db = get_plugin_object().db
         self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
         default_schema = self.schemas_list[0] if self.schemas_list else None
 

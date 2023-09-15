@@ -14,7 +14,7 @@ from .vec_alg_utils import get_pg_table_name_from_uri, \
     create_vector_geom_index, \
     check_table_exists_in_schema, check_db_connection, get_table_columns, \
     get_table_geom_columns
-from ..utils import get_main_plugin_class, make_query, test_query, tr, \
+from ..utils import get_plugin_object, make_query, test_query, tr, \
     add_vectors_to_project, create_postgis_vector_layer, \
     get_schema_name_list, PROCESSING_LAYERS_GROUP, \
     get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
@@ -24,7 +24,7 @@ from ..utils import get_main_plugin_class, make_query, test_query, tr, \
 class CustomWidgetLayout(WidgetWrapper):
 
     def createWidget(self):
-        self.db = get_main_plugin_class().db
+        self.db = get_plugin_object().db
         self.input_layers_dict = get_all_vectors_from_project(True)
         self.input_layers = list(self.input_layers_dict.keys()) \
             if self.input_layers_dict else []
@@ -71,10 +71,10 @@ class PostGISToolboxVectorAggregate(QgsProcessingAlgorithm):
         self.input_layers = list(self.input_layers_dict.keys()) \
             if self.input_layers_dict else []
 
-        if not get_main_plugin_class().db or not self.input_layers_dict:
+        if not get_plugin_object().db or not self.input_layers_dict:
             return
 
-        self.db = get_main_plugin_class().db
+        self.db = get_plugin_object().db
         self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
         default_schema = self.schemas_list[0] if self.schemas_list else None
 

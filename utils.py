@@ -72,12 +72,7 @@ class CreateTemporaryLayer(QgsVectorLayer):
 
 def repair_dialog(dlg: QDialog, icon_file: str = None,
                   translate_dialog: bool = True) -> None:
-    obj_types = [QLabel, QLineEdit, QRadioButton, QToolButton, QCheckBox,
-                 QGroupBox, QFrame]
     dialog_obj_list = [dlg.__getattribute__(obj) for obj in dlg.__dir__()]
-    objs_to_repair = [elem for obj_list in
-                      [dlg.findChildren(obj) for obj in obj_types]
-                      for elem in obj_list]
 
     if translate_dialog:
         for obj in dialog_obj_list:
@@ -86,25 +81,6 @@ def repair_dialog(dlg: QDialog, icon_file: str = None,
                 continue
             set_dialog_labels(obj, tr(data))
 
-    combo_list = list(
-        filter(lambda elem: isinstance(elem, QComboBox), dialog_obj_list))
-    if not combo_list:
-        return
-    for combo in combo_list:
-        combo.installEventFilter(dlg)
-        temp_value = combo.isEditable()
-        combo.setEditable(True)
-        combo_css = 'QComboBox { combobox-popup: 0; }'
-        combo.setStyleSheet(f"{combo.styleSheet()} {combo_css}")
-        combo.setMaxVisibleItems(10)
-        combo.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        combo.setEditable(temp_value)
-    for dlg_obj in objs_to_repair:
-        if dlg_obj.objectName() != 'title_frame':
-            dlg_obj.setStyleSheet(
-                dlg_obj.styleSheet() +
-                ''' QLabel, QLineEdit, QRadioButton, QToolButton, 
-                QFrame, QCheckBox, QGroupBox{background-color: 0;}''')
     if icon_file:
         dlg.setWindowIcon(QIcon(
             os.path.join(plugin_dir, 'icons', icon_file)))
@@ -368,7 +344,7 @@ def standardize_path(path: str) -> str:
     return os.path.normpath(os.sep.join(re.split(r'\\|/', path)))
 
 
-def get_main_plugin_class() -> object:
+def get_plugin_object() -> object:
     return qgis.utils.plugins[plugin_dir_name]
 
 
