@@ -106,6 +106,12 @@ class DBManager:
         progressbar.open()
         self.fetched_dbs = {}
         current_server = self.dlg.connection_cbbx.currentText()
+        if not current_server or not self.connections_dict.get(current_server):
+            progressbar.close()
+            QMessageBox.critical(
+                self.dlg, plugin_name,
+                tr('Failed to connect.'), QMessageBox.Ok)
+            return
         connection_parameters = self.connections_dict[current_server]
         self.dummydb = create_pg_connecton(connection_parameters)
         if self.dummydb.isValid() and self.dummydb.isOpen() and \
