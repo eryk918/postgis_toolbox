@@ -3,6 +3,7 @@ import os
 from typing import List
 
 from qgis.PyQt.QtCore import QSettings
+from qgis.core import QgsMessageLog, Qgis
 
 from .UI.db_manager_add import DBManagerAdd_UI
 from .UI.db_manager_menu import DBManagerMenu_UI
@@ -123,6 +124,9 @@ class DBManager:
             QMessageBox.critical(
                 self.dlg, plugin_name,
                 tr('Failed to connect.'), QMessageBox.Ok)
+            QgsMessageLog.logMessage(
+                self.dummydb.lastError().text(), level=Qgis.Critical,
+                tag=plugin_name)
 
     def select_operative_database(
             self, silent: bool = False, db_name: str = None) -> None:
