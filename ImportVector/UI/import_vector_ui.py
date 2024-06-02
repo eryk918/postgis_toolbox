@@ -33,11 +33,8 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         self.set_object_visibility(con_status)
         self.import_btn.clicked.connect(self.validate_fields)
         self.browse_layer_btn.clicked.connect(self.select_vector_file)
-        self.vector_layer_cbbx.currentTextChanged[str].connect(
-            lambda: self.tablename_lineedit.setText(
-                ', '.join(self.vector_layer_cbbx.checkedItems()).lower()))
-        self.vector_layer_cbbx.currentTextChanged[str].connect(
-            self.manage_table_names_visibility)
+        self.vector_layer_cbbx.checkedItemsChanged.connect(
+            self.add_layer_table_names)
         self.change_conn_btn.clicked.connect(self.change_db)
 
     def run_dialog(self) -> None:
@@ -63,7 +60,10 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         self.additional_params_groupbox.setEnabled(visible)
         self.import_btn.setEnabled(visible)
 
-    def manage_table_names_visibility(self) -> None:
+    def add_layer_table_names(self) -> None:
+        self.tablename_lineedit.setEnabled(True)
+        self.tablename_lineedit.setText(
+            ', '.join(self.vector_layer_cbbx.checkedItems()).lower())
         self.tablename_lineedit.setEnabled(
             not len(self.vector_layer_cbbx.checkedItems()) > 1)
 
@@ -98,7 +98,7 @@ class ImportVector_UI(QDialog, FORM_CLASS):
                             QMessageBox.Ok)
                         return
                     self.vector_dict[filename] = (
-                        filepath, tmp_layer.wkbType())
+                        filepath, int(tmp_layer.wkbType()))
                     filenames.append(filename)
             else:
                 tmp_layer = QgsVectorLayer(filepath, filename, "ogr")
@@ -109,7 +109,7 @@ class ImportVector_UI(QDialog, FORM_CLASS):
                         tr('The selected file is not a vector format file!'),
                         QMessageBox.Ok)
                     return
-                self.vector_dict[filename] = (filepath, tmp_layer.wkbType())
+                self.vector_dict[filename] = (filepath, int(tmp_layer.wkbType()))
                 filenames = [filename]
             self.vector_layer_cbbx.clear()
             self.vector_layer_cbbx.addItems(list(self.vector_dict.keys()))

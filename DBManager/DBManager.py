@@ -57,7 +57,7 @@ class DBManager:
         self.dlg.connection_cbbx.addItems(list(self.connections_dict))
 
     def add_connection(self) -> None:
-        connection_dlg = NewPGConnectionDialog()
+        connection_dlg = NewPGConnectionDialog(parent=self.dlg)
         result = connection_dlg.exec_()
         if result:
             result_conn_dict = connection_dlg.save_conn()

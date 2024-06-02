@@ -130,7 +130,8 @@ class RasterImporter(QgsTask):
                 'ONLY_PYRAMIDS': False,
                 'DIR_FOR_ROW': False,
                 'OUTPUT': self.temp_dir
-            })
+            }
+        )
         return [join(self.temp_dir, file) for file in listdir(self.temp_dir)
                 if isfile(join(self.temp_dir, file))]
 

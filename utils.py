@@ -96,12 +96,13 @@ def set_project_setting(parameter, key, value):
     return project.writeEntry(parameter, key, value)
 
 
-def create_progress_bar(max_len, title=tr('Please wait'),
-                        txt=tr('Data is being processed...'), start_val=0,
-                        auto_close=True, cancel_btn=None, silent=False,
-                        parent: QWidget = None) -> QProgressDialog:
+def create_progress_bar(
+        max_len, title=tr('Please wait'), txt=tr('Data is being processed...'),
+        start_val=0, auto_close=True, cancel_btn=None, silent=False,
+        parent: QWidget = None, width: int = None) -> QProgressDialog:
     progress_bar = QProgressDialog(parent)
-    progress_bar.setFixedWidth(500)
+    if width:
+        progress_bar.setFixedWidth(width)
     progress_bar.setWindowTitle(f"{plugin_name} - {title}")
     progress_bar.setWindowIcon(
         parent.windowIcon() if parent else main_plugin_icon)
@@ -126,7 +127,7 @@ def change_progressbar_value(progress, last_progress_value,
         progress.setValue(100)
         progress.close()
     else:
-        progress.setValue(last_progress_value)
+        progress.setValue(int(last_progress_value))
 
 
 def change_alg_progress(progress, last_progress_value, value):
@@ -336,7 +337,7 @@ def get_all_vectors_from_project(only_postgis: bool = False, wkb: bool = False) 
             elif not only_postgis and \
                     'postgres' not in predict_layer.dataProvider().name():
                 vectors_dict[predict_layer.name()] = \
-                    (predict_layer.source(), predict_layer.wkbType())
+                    (predict_layer.source(), int(predict_layer.wkbType()))
     return vectors_dict
 
 
@@ -596,7 +597,7 @@ class NewThreadAlg:
         self.task.begun.connect(
             lambda: iface.messageBar().pushWidget(self.msg, Qgis.Info))
         self.task.progressChanged.connect(
-            lambda: self.prog.setValue(self.task.progress()))
+            lambda: self.prog.setValue(int(self.task.progress())))
         self.task.taskCompleted.connect(lambda: self.task_ended_info())
         self.task.taskTerminated.connect(lambda: self.task_ended_info(False))
         QgsApplication.taskManager().addTask(self.task)
