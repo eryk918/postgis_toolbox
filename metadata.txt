@@ -2,7 +2,7 @@
 name=PostGIS Toolbox
 qgisMinimumVersion=3.16
 description=Plugin for QGIS implementing selected PostGIS functions
-version=1.1
+version=1.2
 author=Eryk Chełchowski
 email=erwinek1998@gmail.com
 about=The plugin implements:
