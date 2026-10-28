@@ -1,194 +1,81 @@
 # -*- coding: utf-8 -*-
 from typing import List
 
-from qgis.PyQt.QtWidgets import QMessageBox
-from qgis.core import (QgsProcessingAlgorithm,
-                       QgsProcessingParameterBoolean,
-                       QgsProcessingParameterString, QgsDataSourceUri,
-                       QgsProcessingParameterEnum)
-from qgis.utils import iface
+from qgis.core import QgsProcessingParameterVectorLayer, \
+    QgsProcessingParameterField, QgsProcessingParameterEnum
 
-from .vec_alg_utils import get_pg_table_name_from_uri, \
-    get_table_geom_columns, get_table_columns, create_vector_geom_index, \
-    check_table_exists_in_schema, check_db_connection
-from ..utils import get_plugin_object, make_query, test_query, tr, \
-    add_vectors_to_project, create_postgis_vector_layer, \
-    get_schema_name_list, PROCESSING_LAYERS_GROUP, \
-    get_all_vectors_from_project, remove_unsupported_chars, plugin_name
+from ..postgis_toolbox_algorithm import PostGISToolboxAlgorithm, \
+    qualified_name, quote_identifier, select_columns
+from ..utils import tr
+
+REPAIR_METHODS = ['ST_Buffer', 'ST_MakeValid']
 
 
-class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
-    OUTPUT = 'OUTPUT'
+class PostGISToolboxVectorMakeValid(PostGISToolboxAlgorithm):
     INPUT = 'INPUT'
+    FIELDS = 'FIELDS'
     METHOD = 'METHOD'
-    DEST_TABLE = 'DEST_TABLE'
-    DEST_SCHEMA = 'DEST_SCHEMA'
-    LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
-    OVERWRITE = 'OVERWRITE'
 
     def initAlgorithm(self, config=None):
-        self.input_layers_dict = get_all_vectors_from_project(True)
-        self.input_layers = list(self.input_layers_dict.keys()) \
-            if self.input_layers_dict else []
-        self.repair_methods = ['ST_Buffer', 'ST_MakeValid']
-        if not get_plugin_object().db or not self.input_layers_dict:
-            return
-        self.db = get_plugin_object().db
-        self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
-        default_schema = self.schemas_list[0] if self.schemas_list else None
-
+        self.addParameter(QgsProcessingParameterVectorLayer(
+            self.INPUT, tr('Input layer')))
+        self.addParameter(QgsProcessingParameterField(
+            self.FIELDS, tr('Choose columns from input layer'),
+            parentLayerParameterName=self.INPUT, allowMultiple=True,
+            optional=True, defaultToAllFields=True))
         self.addParameter(QgsProcessingParameterEnum(
-            self.INPUT,
-            tr('Input layer'),
-            options=self.input_layers,
-            allowMultiple=False,
-            defaultValue=self.input_layers[0]))
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.METHOD,
-            tr('Repair method'),
-            options=self.repair_methods,
-            allowMultiple=False,
-            defaultValue=self.repair_methods[0]))
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.DEST_SCHEMA,
-            tr("Output schema"),
-            options=self.schemas_list,
-            allowMultiple=False,
-            defaultValue=default_schema))
-
-        self.addParameter(QgsProcessingParameterString(
-            self.DEST_TABLE, tr('Output table name'), 'repaired_vectors'))
-
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.OVERWRITE,
-            tr('Overwrite table if exists'),
-            True))
-
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.LOAD_TO_PROJECT,
-            tr('Add result layer to the project'),
-            True))
+            self.METHOD, tr('Repair method'), options=REPAIR_METHODS,
+            allowMultiple=False, defaultValue=0))
+        self.add_connection_parameter()
+        self.add_output_parameters('repaired_vectors')
 
     def processAlgorithm(self, parameters, context, feedback):
-        if not self.input_layers:
-            QMessageBox.critical(
-                iface.mainWindow(), plugin_name,
-                tr('No PostGIS layers in the active project!'),
-                QMessageBox.Ok)
-            return {}
-        elif not check_db_connection(self, 'schemas_list'):
-            return {}
-
-        input_layer = self.input_layers_dict[
-            self.input_layers[self.parameterAsEnum(
-                parameters, self.INPUT, context)]]
-        repair_method = self.repair_methods[
+        connection = self.get_connection(parameters, context)
+        input_layer = self.get_postgis_layer(
+            parameters, self.INPUT, context, connection)
+        schema, table, geom_column = self.layer_table(input_layer)
+        columns = self.get_input_columns(
+            parameters, self.FIELDS, context, input_layer)
+        repair_method = REPAIR_METHODS[
             self.parameterAsEnum(parameters, self.METHOD, context)]
-        schema_name, table_name = get_pg_table_name_from_uri(
-            input_layer.dataProvider().dataSourceUri()).split('.')
-        uri = QgsDataSourceUri(input_layer.source())
+        out_schema, out_table = self.get_output_target(parameters, context)
 
-        q_add_to_project = self.parameterAsBool(
-            parameters, self.LOAD_TO_PROJECT, context)
-        q_overwrite = self.parameterAsBool(parameters, self.OVERWRITE, context)
-        schema_enum = self.parameterAsEnum(
-            parameters, self.DEST_SCHEMA, context)
-        out_schema = self.schemas_list[schema_enum]
-        out_table = remove_unsupported_chars(
-            self.parameterAsString(parameters, self.DEST_TABLE, context))
-
+        self.prepare_output_table(connection, parameters, context, feedback,
+                                  out_schema, out_table)
+        if feedback.isCanceled():
+            return {}
+        self.execute_sql(connection, self.generate_repair_query(
+            out_schema, out_table, schema, table, geom_column, columns,
+            repair_method), feedback)
+        feedback.setProgress(80)
+        self.create_geometry_index(connection, out_schema, out_table, feedback)
         if feedback.isCanceled():
             return {}
 
-        input_columns = get_table_columns(
-            self.db,
-            schema_name,
-            table_name,
-            get_table_geom_columns(
-                self.db,
-                schema_name,
-                table_name
-            )
-        )
-        if feedback.isCanceled():
-            return {}
-
-        if self.db.isOpen() and self.db.isValid() \
-                and make_query(self.db, test_query):
-            if q_overwrite:
-                make_query(self.db, f'DROP TABLE IF EXISTS '
-                                    f'"{out_schema}"."{out_table}";')
-            else:
-                if check_table_exists_in_schema(
-                        self.db, out_schema, out_table):
-                    return {}
-
-            if feedback.isCanceled():
-                return {}
-
-            make_query(
-                self.db,
-                self.generate_repair_query(
-                    out_table, out_schema, schema_name,
-                    table_name, uri,
-                    input_columns,repair_method
-                )
-            )
-            create_vector_geom_index(
-                self.db, out_table, 'geom', schema=out_schema
-            )
-
-            if feedback.isCanceled():
-                return {}
-
-        out_layer = create_postgis_vector_layer(
-            self.db,
-            out_schema,
-            out_table,
-            layer_name=f'{tr("Repaired")} {input_layer.name()}',
-            geom_col='geom'
-        )
-        if feedback.isCanceled():
-            return {}
-
-        if q_add_to_project:
-            add_vectors_to_project(PROCESSING_LAYERS_GROUP, [out_layer])
-
+        out_layer = self.create_output_vector_layer(
+            connection, out_schema, out_table,
+            f'{tr("Repaired")} {input_layer.name()}')
         return {
-            self.OUTPUT: out_layer,
-            self.DEST_SCHEMA: schema_enum,
+            self.OUTPUT: self.register_output_layers(
+                [out_layer], parameters, context),
+            self.DEST_SCHEMA: out_schema,
             self.DEST_TABLE: out_table
         }
 
     def generate_repair_query(
-            self, out_table: str, out_schema: str,
-            schema_name: str, table_name: str,
-            uri: QgsDataSourceUri, input_columns: List[str],
+            self, out_schema: str, out_table: str, schema: str, table: str,
+            geom_column: str, columns: List[str],
             repair_method: str) -> str:
-
-        selected_columns = ', '.join(
-            f'"input_table"."{elem}"'
-            for elem in input_columns
-        )
-
-        geom_query = f'''
-            ST_Buffer(
-                ST_Buffer(
-                    input_table."{uri.geometryColumn()}", 
-                    0.001
-                ), 
-                -0.001
-            ) ''' \
-            if repair_method == 'ST_Buffer' \
-            else f'ST_MakeValid(input_table."{uri.geometryColumn()}")'
-
+        input_geom = f'input_table.{quote_identifier(geom_column)}'
+        if repair_method == 'ST_Buffer':
+            geom_query = f'ST_Buffer(ST_Buffer({input_geom}, 0.001), -0.001)'
+        else:
+            geom_query = f'ST_MakeValid({input_geom})'
         return f'''
-            CREATE TABLE "{out_schema}"."{out_table}" AS ( 
-                SELECT {selected_columns},
-                 {geom_query} AS "geom"
-                FROM "{schema_name}"."{table_name}" AS input_table
+            CREATE TABLE {qualified_name(out_schema, out_table)} AS (
+                SELECT {select_columns('input_table', columns)}
+                    {geom_query} AS "geom"
+                FROM {qualified_name(schema, table)} AS input_table
             );
         '''
 
@@ -199,10 +86,10 @@ class PostGISToolboxVectorMakeValid(QgsProcessingAlgorithm):
         return tr('Repair geometry')
 
     def group(self):
-        return tr(self.groupId())
+        return tr('Vector')
 
     def groupId(self):
-        return tr('Vector')
+        return 'vector'
 
     def createInstance(self):
         return PostGISToolboxVectorMakeValid()

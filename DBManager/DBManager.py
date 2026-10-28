@@ -2,21 +2,17 @@
 import os
 from typing import List
 
-from qgis.PyQt.QtCore import QSettings
-from qgis.core import QgsMessageLog, Qgis
-
 from .UI.db_manager_add import DBManagerAdd_UI
 from .UI.db_manager_menu import DBManagerMenu_UI
 from .UI.new_connection_dialog import NewPGConnectionDialog
 from .db_utils.db_utils import get_postgis_version_extended_query, \
     get_postgis_version_query, create_schema, create_db, alter_schema, \
-    alter_db, remove_schema, remove_db, get_dbs_query, \
-    set_postgis_connection_processing, remove_postgis_connection_processing
-from ..utils import project, iface, connection_key_names, \
-    create_pg_connecton, make_query, plugin_name, test_query, QMessageBox, \
-    create_progress_bar, QSqlDatabase, get_active_db_info, \
-    universal_db_check, unpack_nested_lists, tr, main_plugin_icon, \
-    get_schema_name_list, conn_key_string, delete_item_from_combo
+    alter_db, remove_schema, remove_db, get_dbs_query
+from ..utils import project, iface, make_query, plugin_name, ask_question, \
+    show_error, show_info, create_progress_bar, get_active_db_info, \
+    check_connection, tr, get_schema_names, \
+    delete_item_from_combo, get_connection_names, create_connection, \
+    connection_for_database, postgres_metadata
 
 
 class DBManager:
@@ -28,6 +24,8 @@ class DBManager:
         self.actual_crs = project.crs().postgisSrid()
         self.plugin_dir = self.main.plugin_dir
         self.db = self.main.db
+        self.server_connection = None
+        self.fetched_dbs = {}
 
     def run(self) -> None:
         self.dlg = DBManagerMenu_UI(self)
@@ -35,70 +33,43 @@ class DBManager:
         self.fetch_connections()
         self.dlg.run_dialog()
 
-    def fetch_connections(self) -> None:
-        self.connections_dict = {}
-        self.dummydb = None
-        base_group_name = 'PostgreSQL/connections'
-        settings_object = QSettings()
-        settings_object.beginGroup(base_group_name)
-        for connection_name in settings_object.childGroups():
-            tmp_dict = {}
-            settings_object = QSettings()
-            settings_object.beginGroup(f"{base_group_name}/{connection_name}")
-            connection_keys = settings_object.childKeys()
-            for connection_parameter in connection_key_names:
-                if connection_parameter in connection_keys:
-                    tmp_dict[connection_parameter] = \
-                        settings_object.value(connection_parameter)
-                elif connection_parameter == 'connection_name':
-                    tmp_dict[connection_parameter] = connection_name
-            self.connections_dict[connection_name] = tmp_dict
+    def fetch_connections(self, selected_name: str = None) -> None:
         self.dlg.connection_cbbx.clear()
-        self.dlg.connection_cbbx.addItems(list(self.connections_dict))
+        self.dlg.connection_cbbx.addItems(get_connection_names())
+        current_name = selected_name or self.main.connection_name
+        if current_name:
+            index = self.dlg.connection_cbbx.findText(current_name)
+            if index != -1:
+                self.dlg.connection_cbbx.setCurrentIndex(index)
 
     def add_connection(self) -> None:
         connection_dlg = NewPGConnectionDialog(parent=self.dlg)
-        result = connection_dlg.exec_()
-        if result:
-            result_conn_dict = connection_dlg.save_conn()
-            self.connections_dict.update(result_conn_dict)
-            self.dlg.connection_cbbx.addItem(list(result_conn_dict.keys())[0])
-            self.dlg.connection_cbbx.setCurrentIndex(
-                self.dlg.connection_cbbx.findText(
-                    list(result_conn_dict.keys())[0]))
+        if connection_dlg.exec():
+            self.fetch_connections(connection_dlg.save_conn())
 
     def edit_connection(self) -> None:
-        question = QMessageBox.question(
-            self.dlg, tr(f"PostGIS Toolbox - Edit connection"),
-            tr('Do you want to overwrite selected connection?'),
-            QMessageBox.Ok | QMessageBox.Cancel)
-        if question == QMessageBox.Ok:
-            choosen_conn_name = self.dlg.connection_cbbx.currentText()
-            connection_dlg = NewPGConnectionDialog(conn_name=choosen_conn_name)
-            result = connection_dlg.exec_()
-            if result:
-                result_conn_dict = connection_dlg.save_conn()
-                self.connections_dict.update(result_conn_dict)
-                delete_item_from_combo(choosen_conn_name,
-                                       self.dlg.connection_cbbx)
-                self.dlg.connection_cbbx.addItem(
-                    list(result_conn_dict.keys())[0])
-                self.dlg.connection_cbbx.setCurrentIndex(
-                    self.dlg.connection_cbbx.findText(
-                        list(result_conn_dict.keys())[0]))
+        chosen_name = self.dlg.connection_cbbx.currentText()
+        if not chosen_name:
+            return
+        question = ask_question(
+            self.dlg,
+            tr('Do you want to overwrite selected connection?'))
+        if not question:
+            return
+        connection_dlg = NewPGConnectionDialog(
+            conn_name=chosen_name, parent=self.dlg)
+        if connection_dlg.exec():
+            self.fetch_connections(connection_dlg.save_conn())
 
     def delete_connection(self) -> None:
-        question = QMessageBox.question(
-            self.dlg, tr(f"PostGIS Toolbox - Delete connection"),
-            tr('Should this connection be deleted?'),
-            QMessageBox.Ok | QMessageBox.Cancel)
-        if question == QMessageBox.Ok:
-            settings = QSettings()
-            conn_name = self.dlg.connection_cbbx.currentText()
-            settings.remove(f'{conn_key_string}{conn_name}')
-            settings.sync()
-            if conn_name in self.connections_dict.keys():
-                self.connections_dict.pop(conn_name)
+        conn_name = self.dlg.connection_cbbx.currentText()
+        if not conn_name:
+            return
+        question = ask_question(
+            self.dlg,
+            tr('Should this connection be deleted?'))
+        if question:
+            postgres_metadata().deleteConnection(conn_name)
             delete_item_from_combo(conn_name, self.dlg.connection_cbbx)
 
     def connect_server(self) -> None:
@@ -107,348 +78,250 @@ class DBManager:
         progressbar.open()
         self.fetched_dbs = {}
         current_server = self.dlg.connection_cbbx.currentText()
-        if not current_server or not self.connections_dict.get(current_server):
-            progressbar.close()
-            QMessageBox.critical(
-                self.dlg, plugin_name,
-                tr('Failed to connect.'), QMessageBox.Ok)
-            return
-        connection_parameters = self.connections_dict[current_server]
-        self.dummydb = create_pg_connecton(connection_parameters)
-        if self.dummydb.isValid() and self.dummydb.isOpen() and \
-                make_query(self.dummydb, test_query):
+        self.server_connection = create_connection(current_server) \
+            if current_server else None
+        if check_connection(self.server_connection):
             progressbar.close()
             self.fetched_dbs = self.dlg.load_server_structure()
         else:
             progressbar.close()
-            QMessageBox.critical(
-                self.dlg, plugin_name,
-                tr('Failed to connect.'), QMessageBox.Ok)
-            QgsMessageLog.logMessage(
-                self.dummydb.lastError().text(), level=Qgis.Critical,
-                tag=plugin_name)
+            self.server_connection = None
+            show_error(
+                self.dlg,
+                tr('Failed to connect.'))
+
+    def selected_tree_path(self) -> List[str]:
+        path = []
+        selected_items = self.dlg.db_obj_treeview.selectionModel().selectedRows()
+        if selected_items and selected_items[0]:
+            index = selected_items[0]
+            path.append(index.data())
+            while index.parent().data():
+                index = index.parent()
+                path.append(index.data())
+        return path
 
     def select_operative_database(
             self, silent: bool = False, db_name: str = None) -> None:
         self.db = None
-        db_treeview = self.dlg.db_obj_treeview
-        treeview_model = db_treeview.model()
-        if treeview_model.rowCount() > 1 or db_name:
-            if not db_name:
-                treeview_sel_model = db_treeview.selectionModel()
-                selected_items = treeview_sel_model.selectedRows()
-                if selected_items and selected_items[0]:
-                    db_name = selected_items[0]
-                    if db_name.parent().data():
-                        while db_name.parent().data():
-                            db_name = db_name.parent()
-                    db_name = db_name.data()
-            if db_name in self.fetched_dbs.keys():
-                self.db = QSqlDatabase(self.dummydb)
-                self.db.setDatabaseName(db_name)
-                self.db.open()
-                if universal_db_check(self.db):
-                    if not silent:
-                        QMessageBox.information(
-                            self.dlg, plugin_name,
-                            tr('Successfully selected "{0}" as '
-                               'active database.').format(db_name),
-                            QMessageBox.Ok)
-                    if self.main.added_processing_connection:
-                        self.main.added_processing_connection = \
-                            remove_postgis_connection_processing(self.main.db)
-                    self.main.db = self.db
-                    self.main.added_processing_connection = \
-                        set_postgis_connection_processing(self.main.db)
-                    get_active_db_info(
-                        self.main.db, self.dlg.active_db_label)
-                    get_active_db_info(
-                        self.main.db, self.main.connection_label, True)
-                else:
-                    if not silent:
-                        QMessageBox.critical(
-                            self.dlg, plugin_name,
-                            tr('Selection failed - db user permission error.'),
-                            QMessageBox.Ok
-                        )
-        else:
-            if not silent:
-                QMessageBox.critical(
-                    self.dlg, plugin_name,
-                    tr('Selection failed - '
-                       'connect to correct PostgreSQL server or '
-                       'no databases detected in server.'),
-                    QMessageBox.Ok
-                )
+        if not db_name:
+            path = self.selected_tree_path()
+            db_name = path[-1] if path else None
+        if self.server_connection and db_name in self.fetched_dbs:
+            self.db = connection_for_database(self.server_connection, db_name)
+            if check_connection(self.db):
+                if not silent:
+                    show_info(
+                        self.dlg,
+                        tr('Successfully selected "{0}" as '
+                           'active database.').format(db_name))
+                self.main.set_active_db(
+                    self.db, self.dlg.connection_cbbx.currentText())
+                get_active_db_info(self.main.db, self.dlg.active_db_label)
+            else:
+                self.db = None
+                if not silent:
+                    show_error(
+                        self.dlg,
+                        tr('Selection failed - db user permission error.'))
+        elif not silent:
+            show_error(
+                self.dlg,
+                tr('Selection failed - '
+                   'connect to correct PostgreSQL server or '
+                   'no databases detected in server.'))
         self.dlg.disconnect_btn.setEnabled(
-            True if tr('Not connected.') not in self.dlg.active_db_label.text()
-            else False
-        )
+            tr('Not connected.') not in self.dlg.active_db_label.text())
+
+    def sync_active_db(self) -> None:
+        self.db = self.main.db
+        get_active_db_info(self.main.db, self.dlg.active_db_label)
+        self.dlg.disconnect_btn.setEnabled(self.main.db is not None)
 
     def disconnect_db(self, silent: bool = False):
-        if hasattr(self.main, 'db') and self.main.db:
-            if self.main.added_processing_connection:
-                self.main.added_processing_connection = \
-                    remove_postgis_connection_processing(self.main.db)
-            self.db = None
-            self.main.db = None
-            get_active_db_info(
-                self.main.db, self.dlg.active_db_label)
-            get_active_db_info(
-                self.main.db, self.main.connection_label, True)
-            self.dlg.disconnect_btn.setEnabled(False)
+        if self.main.db:
+            self.main.disconnect_db()
             if not silent:
-                QMessageBox.information(
-                    self.dlg, plugin_name,
-                    tr('Successfully disconnected.'),
-                    QMessageBox.Ok)
-        else:
-            if not silent:
-                QMessageBox.information(
-                    self.dlg, plugin_name,
-                    tr('Already disconnected.'),
-                    QMessageBox.Ok)
+                show_info(
+                    self.dlg,
+                    tr('Successfully disconnected.'))
+        elif not silent:
+            show_info(
+                self.dlg,
+                tr('Already disconnected.'))
 
     def check_postgis_in_db(self) -> None:
-        if universal_db_check(self.db):
-            simple_pg_ver = unpack_nested_lists(make_query(
-                self.db, get_postgis_version_query))
-            extended_pg_ver = unpack_nested_lists(make_query(
-                self.db, get_postgis_version_extended_query))
-            if simple_pg_ver and extended_pg_ver:
-                postgis_str = tr("PostGIS extension was detected, version is:")
-                info_box = QMessageBox()
-                info_box.setIcon(QMessageBox.Information)
-                info_box.setText(f"{postgis_str} {', '.join(simple_pg_ver)}")
-                info_box.setWindowTitle(plugin_name)
-                info_box.setWindowIcon(main_plugin_icon)
-                info_box.setDetailedText(extended_pg_ver[0])
-                info_box.exec_()
-            else:
-                QMessageBox.critical(
-                    self.dlg, plugin_name,
-                    tr('No PostGIS extension was '
-                       'detected in the selected database!'),
-                    QMessageBox.Ok)
+        if not check_connection(self.db):
+            show_error(
+                self.dlg,
+                tr('PostGIS version check failed!\n'
+                   'Connect to correct PostgreSQL server and try again.'))
+            return
+        simple_pg_ver = make_query(self.db, get_postgis_version_query)
+        extended_pg_ver = make_query(self.db, get_postgis_version_extended_query)
+        if simple_pg_ver and extended_pg_ver:
+            show_info(
+                self.dlg,
+                tr('PostGIS extension was detected, version is: {0}').format(
+                    simple_pg_ver[0][0]),
+                str(extended_pg_ver[0][0]))
         else:
-            if tr('Not connected.') in self.dlg.active_db_label.text():
-                QMessageBox.critical(
-                    self.dlg, plugin_name,
-                    tr('PostGIS version check failed!\n'
-                       'Connect to correct PostgreSQL server and try again.'),
-                    QMessageBox.Ok)
-            else:
-                QMessageBox.critical(
-                    self.dlg, plugin_name,
-                    tr('No PostGIS extension was '
-                       'detected in the selected database!'),
-                    QMessageBox.Ok)
+            show_error(
+                self.dlg,
+                tr('No PostGIS extension was '
+                   'detected in the selected database!'))
 
     def add_db_object(self) -> None:
-        db = self.dummydb if universal_db_check(self.dummydb) else self.db
-        db_info_list = []
-        db_treeview = self.dlg.db_obj_treeview
-        treeview_selection_model = db_treeview.selectionModel()
-        selected_items = treeview_selection_model.selectedRows()
-        if selected_items and selected_items[0]:
-            db_name = selected_items[0]
-            db_info_list.append(db_name.data())
-            if db_name.parent().data():
-                while db_name.parent().data():
-                    db_name = db_name.parent()
-                    db_info_list.append(db_name.data())
-        if universal_db_check(db):
-            if len(db_info_list) > 0:
-                add_dialog = DBManagerAdd_UI(self)
-                add_dialog.setup_dialog(
-                    tr('Enter a name for the new schema'),
-                    tr('Schema name...')
-                )
-                add_dialog.run_dialog(
-                    self.save_schema, self.get_schema_list(db_info_list[-1]))
-            elif not db_info_list:
-                add_dialog = DBManagerAdd_UI(self)
-                add_dialog.setup_dialog(
-                    tr('Enter a name for the new database'),
-                    tr('Database name...')
-                )
-                add_dialog.run_dialog(self.save_database, self.get_db_list())
-        self.disconnect_db(True)
+        path = self.selected_tree_path()
+        if not check_connection(self.server_connection):
+            return
+        add_dialog = DBManagerAdd_UI(self)
+        if path:
+            add_dialog.setup_dialog(
+                tr('Enter a name for the new schema'),
+                tr('Schema name...')
+            )
+            add_dialog.run_dialog(
+                self.save_schema, self.get_schema_list(path[-1]))
+        else:
+            add_dialog.setup_dialog(
+                tr('Enter a name for the new database'),
+                tr('Database name...')
+            )
+            add_dialog.run_dialog(self.save_database, self.get_db_list())
 
     def edit_db_object(self) -> None:
-        db = self.dummydb if universal_db_check(self.dummydb) else self.db
-        db_info_list = []
-        db_treeview = self.dlg.db_obj_treeview
-        treeview_selection_model = db_treeview.selectionModel()
-        selected_items = treeview_selection_model.selectedRows()
-        if selected_items and selected_items[0]:
-            db_name = selected_items[0]
-            db_info_list.append(db_name.data())
-            if db_name.parent().data():
-                while db_name.parent().data():
-                    db_name = db_name.parent()
-                    db_info_list.append(db_name.data())
-        if universal_db_check(db) and db_info_list:
-            self.old_name = db_info_list[0]
-            if len(db_info_list) == 2:
-                add_dialog = DBManagerAdd_UI(self)
-                add_dialog.setup_dialog(
-                    tr('Enter a name for schema'),
-                    tr('Schema name...')
-                )
-                add_dialog.run_dialog(
-                    self.rename_schema, self.get_schema_list(db_info_list[-1]))
-            elif len(db_info_list) == 1:
-                add_dialog = DBManagerAdd_UI(self)
-                add_dialog.setup_dialog(
-                    tr('Enter a name for database'),
-                    tr('Database name...')
-                )
-                db_list = self.get_db_list()
-                response = QMessageBox.warning(
-                    self.dlg, plugin_name,
-                    tr('Rename database disconnects from her all active users.\n'
-                    'Do you want to continue?'),
-                    QMessageBox.Yes, QMessageBox.No)
-                if response == QMessageBox.Yes:
-                    add_dialog.run_dialog(self.rename_database, db_list)
-        self.disconnect_db(True)
+        path = self.selected_tree_path()
+        if not check_connection(self.server_connection) or not path:
+            return
+        self.old_name = path[0]
+        add_dialog = DBManagerAdd_UI(self)
+        if len(path) == 2:
+            add_dialog.setup_dialog(
+                tr('Enter a name for schema'),
+                tr('Schema name...')
+            )
+            add_dialog.run_dialog(
+                self.rename_schema, self.get_schema_list(path[-1]))
+        elif len(path) == 1:
+            add_dialog.setup_dialog(
+                tr('Enter a name for database'),
+                tr('Database name...')
+            )
+            response = ask_question(
+                self.dlg,
+                tr('Rename database disconnects from her all active users.\n'
+                   'Do you want to continue?'))
+            if response:
+                add_dialog.run_dialog(self.rename_database, self.get_db_list())
 
     def remove_db_object(self) -> None:
-        if hasattr(self.main, 'db') and self.main.db:
-            if self.main.added_processing_connection:
-                self.main.added_processing_connection = \
-                    remove_postgis_connection_processing(self.main.db)
-        db = self.dummydb if universal_db_check(self.dummydb) else self.db
-        db_info_list = []
-        db_treeview = self.dlg.db_obj_treeview
-        treeview_selection_model = db_treeview.selectionModel()
-        selected_items = treeview_selection_model.selectedRows()
-        if selected_items and selected_items[0]:
-            db_name = selected_items[0]
-            db_info_list.append(db_name.data())
-            if db_name.parent().data():
-                while db_name.parent().data():
-                    db_name = db_name.parent()
-                    db_info_list.append(db_name.data())
-        if universal_db_check(db) and db_info_list:
-            self.old_name = db_info_list[0]
-            if len(db_info_list) == 2:
-                response = QMessageBox.warning(
-                    self.dlg, plugin_name,
-                    tr('Deletion of the "%s" schema is irreversible!\n'
-                       'Do you want to continue?') % self.old_name,
-                    QMessageBox.Yes, QMessageBox.No)
-                if response == QMessageBox.Yes:
-                    self.remove_schema()
-            elif len(db_info_list) == 1:
-                response = QMessageBox.warning(
-                    self.dlg, plugin_name,
-                    tr('Deletion of the "%s" database is irreversible!\n'
-                       'Do you want to continue?') % self.old_name,
-                    QMessageBox.Yes, QMessageBox.No)
-                if response == QMessageBox.Yes:
-                    self.remove_database()
-            self.disconnect_db(True)
+        path = self.selected_tree_path()
+        if not check_connection(self.server_connection) or not path:
+            return
+        self.old_name = path[0]
+        if len(path) == 2:
+            response = ask_question(
+                self.dlg,
+                tr('Deletion of the "%s" schema is irreversible!\n'
+                   'Do you want to continue?') % self.old_name)
+            if response:
+                self.remove_schema()
+        elif len(path) == 1:
+            response = ask_question(
+                self.dlg,
+                tr('Deletion of the "%s" database is irreversible!\n'
+                   'Do you want to continue?') % self.old_name)
+            if response:
+                self.remove_database()
 
     def get_db_list(self) -> List[str]:
-        return unpack_nested_lists(make_query(
-            self.dummydb,
-            get_dbs_query
-        ))
+        rows = make_query(self.server_connection, get_dbs_query)
+        return [row[0] for row in rows] if rows else []
 
     def get_schema_list(self, db_name: str) -> List[str]:
-        schema_list, _ = get_schema_name_list(self.dummydb, db_name)
-        return schema_list
+        return get_schema_names(
+            connection_for_database(self.server_connection, db_name))
 
     def save_database(self, db_name: str) -> None:
-        create_db(self.dummydb, db_name)
-        if db_name in self.get_db_list():
-            QMessageBox.information(
-                self.dlg, plugin_name,
-                tr('Successfully added "%s".') % db_name,
-                QMessageBox.Ok)
+        if create_db(self.server_connection, db_name) \
+                and db_name in self.get_db_list():
+            show_info(
+                self.dlg,
+                tr('Successfully added "%s".') % db_name)
             self.connect_server()
             self.select_operative_database(True, db_name)
         else:
-            QMessageBox.critical(
-                self.dlg, plugin_name,
-                tr('An error occurred while adding a database!'),
-                QMessageBox.Ok)
+            show_error(
+                self.dlg,
+                tr('An error occurred while adding a database!'))
 
     def save_schema(self, schema_name: str) -> None:
         self.select_operative_database(True)
-        create_schema(self.db, schema_name)
-        if schema_name in self.get_schema_list(self.db.databaseName()):
-            QMessageBox.information(
-                self.dlg, plugin_name,
-                tr('Successfully added "%s".') % schema_name,
-                QMessageBox.Ok)
+        if self.db and create_schema(self.db, schema_name) \
+                and schema_name in get_schema_names(self.db):
+            show_info(
+                self.dlg,
+                tr('Successfully added "%s".') % schema_name)
             self.connect_server()
         else:
-            QMessageBox.critical(
-                self.dlg, plugin_name,
-                tr('An error occurred while adding a schema!'),
-                QMessageBox.Ok)
+            show_error(
+                self.dlg,
+                tr('An error occurred while adding a schema!'))
 
     def rename_database(self, db_name: str) -> None:
-        alter_db(self.dummydb, self.old_name, db_name)
-        if db_name in self.get_db_list():
-            QMessageBox.information(
-                self.dlg, plugin_name,
-                tr('Successfully renamed "{0}" to "{1}".').format(self.old_name, db_name),
-                QMessageBox.Ok)
+        if self.main.db and self.main.connection_name and \
+                self.old_name in self.fetched_dbs:
+            self.disconnect_db(True)
+        if alter_db(self.server_connection, self.old_name, db_name) \
+                and db_name in self.get_db_list():
+            show_info(
+                self.dlg,
+                tr('Successfully renamed "{0}" to "{1}".').format(
+                    self.old_name, db_name))
             self.connect_server()
             self.select_operative_database(True, db_name)
         else:
-            QMessageBox.critical(
-                self.dlg, plugin_name,
-                tr('An error occurred while renaming the database!'),
-                QMessageBox.Ok)
+            show_error(
+                self.dlg,
+                tr('An error occurred while renaming the database!'))
 
     def rename_schema(self, schema_name: str) -> None:
         self.select_operative_database(True)
-        alter_schema(self.db, self.old_name, schema_name)
-        if schema_name in self.get_schema_list(self.db.databaseName()):
-            QMessageBox.information(
-                self.dlg, plugin_name,
-                tr('Successfully renamed "{0}" to "{1}".').format(self.old_name, schema_name),
-                QMessageBox.Ok)
+        if self.db and alter_schema(self.db, self.old_name, schema_name) \
+                and schema_name in get_schema_names(self.db):
+            show_info(
+                self.dlg,
+                tr('Successfully renamed "{0}" to "{1}".').format(
+                    self.old_name, schema_name))
             self.connect_server()
         else:
-            QMessageBox.critical(
-                self.dlg, plugin_name,
-                tr('An error occurred while renaming the schema!'),
-                QMessageBox.Ok)
+            show_error(
+                self.dlg,
+                tr('An error occurred while renaming the schema!'))
 
     def remove_database(self) -> None:
-        remove_db(self.dummydb, self.old_name)
-        if self.old_name not in self.get_db_list():
-            QMessageBox.information(
-                self.dlg, plugin_name,
-                tr(f'Successfully removed "%s" database.') % self.old_name,
-                QMessageBox.Ok)
+        self.disconnect_db(True)
+        if remove_db(self.server_connection, self.old_name) \
+                and self.old_name not in self.get_db_list():
+            show_info(
+                self.dlg,
+                tr('Successfully removed "%s" database.') % self.old_name)
             self.connect_server()
-            if hasattr(self, 'db') and self.db and \
-                    self.db.databaseName() == self.old_name:
-                self.disconnect_db(True)
         else:
-            QMessageBox.critical(
-                self.dlg, plugin_name,
-                tr('An error occurred while removing the database!'),
-                QMessageBox.Ok)
+            show_error(
+                self.dlg,
+                tr('An error occurred while removing the database!'))
 
     def remove_schema(self) -> None:
         self.select_operative_database(True)
-        remove_schema(self.db, self.old_name)
-        if self.old_name not in self.get_schema_list(self.db.databaseName()):
-            QMessageBox.information(
-                self.dlg, plugin_name,
-                tr('Successfully removed "%s" schema.') % self.old_name,
-                QMessageBox.Ok)
+        if self.db and remove_schema(self.db, self.old_name) \
+                and self.old_name not in get_schema_names(self.db):
+            show_info(
+                self.dlg,
+                tr('Successfully removed "%s" schema.') % self.old_name)
             self.connect_server()
         else:
-            QMessageBox.critical(
-                self.dlg, plugin_name,
-                tr('An error occurred while removing the schema!'),
-                QMessageBox.Ok)
+            show_error(
+                self.dlg,
+                tr('An error occurred while removing the schema!'))

@@ -1,226 +1,87 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, Any
+from typing import List
 
-from qgis.PyQt.QtWidgets import QMessageBox
-from qgis.core import (QgsProcessingAlgorithm,
-                       QgsProcessingParameterBoolean,
-                       QgsProcessingParameterString, QgsDataSourceUri,
-                       QgsProcessingParameterEnum, QgsWkbTypes)
-from qgis.utils import iface
+from qgis.core import QgsProcessingParameterMultipleLayers, \
+    QgsProcessingParameterBoolean, QgsProcessingException, QgsProcessing, \
+    QgsVectorLayer
 
-from .vec_alg_utils import get_pg_table_name_from_uri, \
-    create_vector_geom_index, \
-    check_table_exists_in_schema, check_db_connection, get_table_columns, \
-    get_table_geom_columns
-from ..utils import get_plugin_object, make_query, test_query, tr, \
-    add_vectors_to_project, create_postgis_vector_layer, \
-    get_schema_name_list, PROCESSING_LAYERS_GROUP, \
-    get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
-    plugin_dir_name
+from ..postgis_toolbox_algorithm import PostGISToolboxAlgorithm, \
+    qualified_name, quote_identifier, select_columns
+from ..utils import tr
 
 
-class PostGISToolboxVectorMerge(QgsProcessingAlgorithm):
-    OUTPUT = 'OUTPUT'
+class PostGISToolboxVectorMerge(PostGISToolboxAlgorithm):
     INPUT = 'INPUT'
-    DEST_TABLE = 'DEST_TABLE'
-    DEST_SCHEMA = 'DEST_SCHEMA'
     SINGLE = 'SINGLE'
-    LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
-    OVERWRITE = 'OVERWRITE'
-    KEEP = 'KEEP'
-    OPTIONS = 'OPTIONS'
 
     def initAlgorithm(self, config=None):
-        self.input_layers_dict = get_all_vectors_from_project(True)
-        self.input_layers = list(self.input_layers_dict.keys()) \
-            if self.input_layers_dict else []
-
-        if not get_plugin_object().db or not self.input_layers_dict:
-            return
-
-        self.db = get_plugin_object().db
-        self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
-        default_schema = self.schemas_list[0] if self.schemas_list else None
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.INPUT,
-            tr('Input layers'),
-            options=self.input_layers,
-            allowMultiple=True))
-
+        self.addParameter(QgsProcessingParameterMultipleLayers(
+            self.INPUT, tr('Input layers'), QgsProcessing.TypeVector))
         self.addParameter(QgsProcessingParameterBoolean(
             self.SINGLE, tr('Force output as singlepart'), False))
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.DEST_SCHEMA,
-            tr("Output schema"),
-            options=self.schemas_list,
-            allowMultiple=False,
-            defaultValue=default_schema))
-
-        self.addParameter(QgsProcessingParameterString(
-            self.DEST_TABLE, tr('Output table name'), 'merge'))
-
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.OVERWRITE,
-            tr('Overwrite table if exists'),
-            True))
-
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.LOAD_TO_PROJECT,
-            tr('Add result layer to the project'),
-            True))
+        self.add_connection_parameter()
+        self.add_output_parameters('merge')
 
     def processAlgorithm(self, parameters, context, feedback):
-        if not self.input_layers:
-            QMessageBox.critical(
-                iface.mainWindow(), plugin_name,
-                tr('No PostGIS layers in the active project!'),
-                QMessageBox.Ok)
+        connection = self.get_connection(parameters, context)
+        layers = self.parameterAsLayerList(parameters, self.INPUT, context)
+        if not layers:
+            raise QgsProcessingException(
+                self.invalidSourceError(parameters, self.INPUT))
+        for layer in layers:
+            self.check_postgis_layer(layer, connection)
+        if len({layer.geometryType() for layer in layers}) > 1:
+            raise QgsProcessingException(
+                tr('Input layers must have the same geometry type.'))
+        single = self.parameterAsBool(parameters, self.SINGLE, context)
+        out_schema, out_table = self.get_output_target(parameters, context)
+
+        self.prepare_output_table(connection, parameters, context, feedback,
+                                  out_schema, out_table)
+        if feedback.isCanceled():
             return {}
-        elif not check_db_connection(self, 'schemas_list'):
-            return {}
-
-        layers_list = [self.input_layers_dict[self.input_layers[layer_id]]
-                       for layer_id in parameters[self.INPUT]]
-
-        first_layer_name = layers_list[0].name()
-
-        layers_dict = {}
-        geom_set = set()
-        srid_set = set()
-        for layer in layers_list:
-            tmp_dict = {
-                'schema_name': get_pg_table_name_from_uri(
-                    layer.dataProvider().dataSourceUri()).split('.')[0],
-                'table_name': get_pg_table_name_from_uri(
-                    layer.dataProvider().dataSourceUri()).split('.')[1],
-                'srid': layer.crs().postgisSrid(),
-                'uri': QgsDataSourceUri(layer.source())
-            }
-            tmp_dict['geom_col'] = tmp_dict['uri'].geometryColumn()
-            tmp_dict['geom_type'] = layer.geometryType()
-            geom_set.add(tmp_dict['geom_type'])
-            srid_set.add(tmp_dict['srid'])
-            layers_dict[layer.name()] = tmp_dict
-
-        if len(geom_set) > 1:
-            return {}
-        else:
-            geom_type = list(geom_set)[0]
-            base_srid = list(srid_set)[0]
-
-        q_single_type = self.parameterAsBool(parameters, self.SINGLE, context)
-        q_add_to_project = self.parameterAsBool(
-            parameters, self.LOAD_TO_PROJECT, context)
-        q_overwrite = self.parameterAsBool(parameters, self.OVERWRITE, context)
-        schema_enum = self.parameterAsEnum(
-            parameters, self.DEST_SCHEMA, context)
-        out_schema = self.schemas_list[schema_enum]
-        out_table = remove_unsupported_chars(
-            self.parameterAsString(parameters, self.DEST_TABLE, context))
-
+        self.execute_sql(connection, self.generate_merge_query(
+            out_schema, out_table, layers, layers[0].crs().postgisSrid(),
+            self.output_geometry_type(layers[0], single), single), feedback)
+        feedback.setProgress(80)
+        self.create_geometry_index(connection, out_schema, out_table, feedback)
         if feedback.isCanceled():
             return {}
 
-        if geom_type == QgsWkbTypes.PointGeometry:
-            out_geom_type = "POINT"
-        elif geom_type == QgsWkbTypes.LineGeometry:
-            out_geom_type = "LINESTRING"
-        else:
-            out_geom_type = "POLYGON"
-
-        if not q_single_type:
-            out_geom_type = f"MULTI{out_geom_type}"
-
-        if feedback.isCanceled():
-            return {}
-
-        if self.db.isOpen() and self.db.isValid() \
-                and make_query(self.db, test_query):
-            if q_overwrite:
-                make_query(self.db, f'DROP TABLE IF EXISTS '
-                                    f'"{out_schema}"."{out_table}";')
-            else:
-                if check_table_exists_in_schema(
-                        self.db, out_schema, out_table):
-                    return {}
-            if feedback.isCanceled():
-                return {}
-
-            make_query(
-                self.db,
-                self.generate_merge_query(
-                    out_table, out_schema,
-                    layers_dict, base_srid,
-                    q_single_type, out_geom_type
-                )
-            )
-            create_vector_geom_index(self.db, out_table, 'geom')
-            if feedback.isCanceled():
-                return {}
-
-        out_layer = create_postgis_vector_layer(
-            self.db,
-            out_schema,
-            out_table,
-            layer_name=f'{tr("Merged")} {first_layer_name}',
-            geom_col='geom'
-        )
-        if feedback.isCanceled():
-            return {}
-
-        if q_add_to_project:
-            add_vectors_to_project(PROCESSING_LAYERS_GROUP, [out_layer])
-
+        out_layer = self.create_output_vector_layer(
+            connection, out_schema, out_table,
+            f'{tr("Merged")} {layers[0].name()}')
         return {
-            self.OUTPUT: out_layer,
-            self.DEST_SCHEMA: schema_enum,
+            self.OUTPUT: self.register_output_layers(
+                [out_layer], parameters, context),
+            self.DEST_SCHEMA: out_schema,
             self.DEST_TABLE: out_table
         }
 
     def generate_merge_query(
-            self, out_table: str, out_schema: str,
-            layers_dict: Dict[str, Any], base_srid: int,
-            q_single_type: bool, out_geom_type: str) -> str:
-
-        query = f'CREATE TABLE "{out_schema}"."{out_table}" AS('
-        table_ord_number = 1
-        for layer_name, layer_info_dict in layers_dict.items():
-            schema, table, srid, uri, geom_col, geom_type = \
-                layer_info_dict.values()
-            columns = get_table_columns(
-                self.db,
-                schema,
-                table,
-                get_table_geom_columns(
-                    self.db,
-                    schema,
-                    table
-                )
-            )
-            geom_part = f'g{table_ord_number}."{geom_col}"'
-            if base_srid != srid:
+            self, out_schema: str, out_table: str,
+            layers: List[QgsVectorLayer], base_srid: int,
+            out_geom_type: str, single: bool) -> str:
+        selects = []
+        for position, layer in enumerate(layers, start=1):
+            schema, table, geom_column = self.layer_table(layer)
+            alias = f'g{position}'
+            columns = [field.name() for field in layer.fields()]
+            geom_part = f'{alias}.{quote_identifier(geom_column)}'
+            if layer.crs().postgisSrid() != base_srid:
                 geom_part = f'ST_Transform({geom_part}, {base_srid})'
-            geom_query_part = f'{geom_part} AS geom'
-
-            if q_single_type:
-                geom_query_part = \
-                    f'(ST_Dump({geom_part})).geom::geometry(' \
-                    f'{out_geom_type}, {base_srid}) AS geom'
-
-            query += f'''
-                SELECT g{table_ord_number}."{f'", g{table_ord_number}."'.join(columns)}", 
-                    {geom_query_part} 
-                FROM "{schema}"."{table}" AS g{table_ord_number}
-            '''
-            if list(layers_dict.keys()).index(layer_name) != \
-                    len(list(layers_dict.keys())) - 1:
-                query += " UNION "
-            table_ord_number += 1
-        query += ");"
-
-        return query
+            if single:
+                geom_part = f'(ST_Dump({geom_part})).geom::geometry(' \
+                            f'{out_geom_type}, {base_srid})'
+            selects.append(f'''
+                SELECT {select_columns(alias, columns)}{geom_part} AS "geom"
+                FROM {qualified_name(schema, table)} AS {alias}
+            ''')
+        return f'''
+            CREATE TABLE {qualified_name(out_schema, out_table)} AS (
+                {' UNION '.join(selects)}
+            );
+        '''
 
     def name(self):
         return 'vector_merge'
@@ -229,10 +90,10 @@ class PostGISToolboxVectorMerge(QgsProcessingAlgorithm):
         return tr('Merge')
 
     def group(self):
-        return tr(self.groupId())
+        return tr('Vector')
 
     def groupId(self):
-        return tr('Vector')
+        return 'vector'
 
     def createInstance(self):
         return PostGISToolboxVectorMerge()

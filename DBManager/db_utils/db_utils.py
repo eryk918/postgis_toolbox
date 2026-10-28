@@ -1,127 +1,89 @@
-from qgis.PyQt.QtCore import QSettings
-from qgis.core import QgsDataSourceUri
+from qgis.core import QgsDataSourceUri, QgsAbstractDatabaseProviderConnection
 
-from ...utils import make_query, QSqlDatabase, make_queries, tr
+from ...utils import make_query, tr, quote_identifier, quote_literal, \
+    connection_for_database, connection_uri
 
 get_postgis_version_query = 'SELECT PostGIS_Lib_Version();'
 get_postgis_version_extended_query = 'SELECT PostGIS_Full_Version();'
-
-create_schema_query = 'CREATE SCHEMA IF NOT EXISTS "{name}";'
-alter_schema_query = 'ALTER SCHEMA "{old_name}" RENAME TO "{name}";'
-drop_schema_query = 'DROP SCHEMA IF EXISTS "{name}" CASCADE;'
-create_db_query = 'CREATE DATABASE "{name}";'
-alter_db_query = 'ALTER DATABASE "{old_name}" RENAME TO "{name}";'
-drop_db_query = 'DROP DATABASE IF EXISTS "{name}";'
-create_postgis_vector_query = 'CREATE EXTENSION IF NOT EXISTS postgis;'
-create_postgis_raster_query = 'CREATE EXTENSION IF NOT EXISTS postgis_raster;'
-
-terminate_users_query = """SELECT pg_terminate_backend(pg_stat_activity.pid)
-                            FROM pg_stat_activity
-                            WHERE pg_stat_activity.datname = '{0}'
-                            AND pid <> pg_backend_pid();"""
-get_dbs_query = '''SELECT datname 
-                   FROM pg_database 
-                   WHERE datistemplate = false;'''
+get_dbs_query = '''SELECT datname
+                   FROM pg_database
+                   WHERE datistemplate = false
+                   ORDER BY datname;'''
 
 ssl_modes = {
-    tr('disable'):  'SslDisable',
-    tr('allow'):  'SslAllow',
-    tr('prefer'):  'SslPrefer',
-    tr('require'):  'SslRequire',
-    tr('verify-ca'): 'SslVerifyCa',
-    tr('verity-full'): 'SslVerifyFull'
-}
-
-ssl_modes_enum = {
-    QgsDataSourceUri.SslDisable: tr('disable'),
-    QgsDataSourceUri.SslAllow: tr('allow'),
-    QgsDataSourceUri.SslPrefer: tr('prefer'),
-    QgsDataSourceUri.SslRequire: tr('require'),
-    QgsDataSourceUri.SslVerifyCa: tr('verify-ca'),
-    QgsDataSourceUri.SslVerifyFull: tr('verity-full')
+    tr('disable'): QgsDataSourceUri.SslDisable,
+    tr('allow'): QgsDataSourceUri.SslAllow,
+    tr('prefer'): QgsDataSourceUri.SslPrefer,
+    tr('require'): QgsDataSourceUri.SslRequire,
+    tr('verify-ca'): QgsDataSourceUri.SslVerifyCa,
+    tr('verity-full'): QgsDataSourceUri.SslVerifyFull
 }
 
 
-def create_db(db: QSqlDatabase, name: str) -> None:
-    make_query(db, create_db_query.format(name=name))
-    db.setDatabaseName(name)
-    db.open()
-    make_queries(
-        db,
-        [
-            create_postgis_vector_query,
-            create_postgis_raster_query
-        ]
-    )
+def terminate_users_query(database_name: str) -> str:
+    return f'''SELECT pg_terminate_backend(pg_stat_activity.pid)
+               FROM pg_stat_activity
+               WHERE pg_stat_activity.datname = {quote_literal(database_name)}
+               AND pid <> pg_backend_pid();'''
 
 
-def create_schema(db: QSqlDatabase, name: str) -> None:
-    make_query(db, create_schema_query.format(name=name))
+def maintenance_connection(
+        server_connection: QgsAbstractDatabaseProviderConnection,
+        database_name: str) -> QgsAbstractDatabaseProviderConnection:
+    if connection_uri(server_connection).database() == database_name:
+        return connection_for_database(server_connection, 'postgres')
+    return server_connection
 
 
-def alter_db(db: QSqlDatabase, old_name: str, new_name: str) -> None:
-    make_query(db, terminate_users_query.format(old_name))
-    db.setDatabaseName('postgres')
-    db.open()
-    make_query(db, alter_db_query.format(old_name=old_name, name=new_name))
-    db.setDatabaseName(new_name)
-
-
-def alter_schema(db: QSqlDatabase, old_name: str, new_name: str) -> None:
-    make_query(db, alter_schema_query.format(old_name=old_name, name=new_name))
-
-
-def remove_db(db: QSqlDatabase, name: str) -> None:
-    make_query(db, terminate_users_query.format(name))
-    db_name = db.databaseName()
-    db.setDatabaseName('postgres')
-    db.open()
-    make_query(db, drop_db_query.format(name=name))
-    db.setDatabaseName(db_name)
-
-
-def remove_schema(db: QSqlDatabase, name: str) -> None:
-    make_query(db, drop_schema_query.format(name=name))
-
-
-def set_postgis_connection_processing(db: QSqlDatabase) -> bool:
-    connection_dict = {
-        'service': '',
-        'host': db.hostName(),
-        'port': db.port(),
-        'database': db.databaseName(),
-        'username': db.userName(),
-        'password': db.password(),
-        'authcfg': None,
-        'publicOnly': False,
-        'geometryColumnsOnly': False,
-        'dontResolveType': False,
-        'allowGeometrylessTables': True,
-        'sslmode': 1,
-        'savePassword': True,
-        'saveUsername': True,
-        'estimatedMetadata': False,
-        'projectsInDatabase': False,
-    }
-    base_group_name = 'PostgreSQL/connections'
-    settings_object = QSettings()
-    settings_object.beginGroup(base_group_name)
-    if db.databaseName() not in settings_object.childGroups():
-        settings_object = QSettings()
-        settings_object.beginGroup(
-            f"{base_group_name}/{db.databaseName()}")
-        for key, value in connection_dict.items():
-            settings_object.setValue(key, value)
-        settings_object.endGroup()
-        return True
-    else:
+def create_db(server_connection: QgsAbstractDatabaseProviderConnection,
+              name: str) -> bool:
+    if make_query(server_connection,
+                  f'CREATE DATABASE {quote_identifier(name)};') is None:
         return False
+    db_connection = connection_for_database(server_connection, name)
+    if make_query(db_connection,
+                  'CREATE EXTENSION IF NOT EXISTS postgis;') is None:
+        return False
+    make_query(db_connection, 'CREATE EXTENSION IF NOT EXISTS postgis_raster;')
+    return True
 
 
-def remove_postgis_connection_processing(db: QSqlDatabase) -> bool:
-    base_group_name = 'PostgreSQL/connections'
-    settings_object = QSettings()
-    settings_object.beginGroup(base_group_name)
-    if db and db.databaseName() in settings_object.childGroups():
-        settings_object.remove(db.databaseName())
-    return False
+def create_schema(connection: QgsAbstractDatabaseProviderConnection,
+                  name: str) -> bool:
+    return make_query(
+        connection,
+        f'CREATE SCHEMA IF NOT EXISTS {quote_identifier(name)};') is not None
+
+
+def alter_db(server_connection: QgsAbstractDatabaseProviderConnection,
+             old_name: str, new_name: str) -> bool:
+    connection = maintenance_connection(server_connection, old_name)
+    make_query(connection, terminate_users_query(old_name))
+    return make_query(
+        connection,
+        f'ALTER DATABASE {quote_identifier(old_name)} '
+        f'RENAME TO {quote_identifier(new_name)};') is not None
+
+
+def alter_schema(connection: QgsAbstractDatabaseProviderConnection,
+                 old_name: str, new_name: str) -> bool:
+    return make_query(
+        connection,
+        f'ALTER SCHEMA {quote_identifier(old_name)} '
+        f'RENAME TO {quote_identifier(new_name)};') is not None
+
+
+def remove_db(server_connection: QgsAbstractDatabaseProviderConnection,
+              name: str) -> bool:
+    connection = maintenance_connection(server_connection, name)
+    make_query(connection, terminate_users_query(name))
+    return make_query(
+        connection,
+        f'DROP DATABASE IF EXISTS {quote_identifier(name)};') is not None
+
+
+def remove_schema(connection: QgsAbstractDatabaseProviderConnection,
+                  name: str) -> bool:
+    return make_query(
+        connection,
+        f'DROP SCHEMA IF EXISTS {quote_identifier(name)} CASCADE;') is not None

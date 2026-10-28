@@ -1,27 +1,37 @@
 [general]
 name=PostGIS Toolbox
-qgisMinimumVersion=3.16
-description=Plugin for QGIS implementing selected PostGIS functions
-version=1.2
+qgisMinimumVersion=3.22
+description=Manage PostGIS databases, load and browse tables, write SQL and run PostGIS tools from Processing
+version=2.0
 author=Eryk Chełchowski
 email=erwinek1998@gmail.com
-about=The plugin implements:
- • database and schema management mechanism,
- • import of vector and raster data,
- • extended query editor,
- • several algorithms for vectors and rasters.
+about=Everyday PostGIS chores from inside QGIS.
+ - Manage databases: connections, databases, schemas, PostGIS check, pick the active database.
+ - Import vectors and rasters from the project or from files (rasters are tiled, with overviews if you want).
+ - Table registry: all tables, views and rasters of the active database with their geometry, SRID, columns, keys, indexes and overviews; add to project, rename or drop.
+ - Query editor: DB Manager SQL window with schema-qualified tables, PostGIS function help, create table / view from a query.
+ - 16 Processing algorithms (buffer, clip, intersection, difference, merge, aggregate, repair, nearest neighbour, point and polygon generation, raster clip, merge, reproject, resample, summary, tiling) that run in the database.
+ Needs PostgreSQL with PostGIS (postgis_raster for the raster tools). English and Polish.
 
 homepage=https://github.com/eryk918/postgis_toolbox
 tracker=https://github.com/eryk918/postgis_toolbox/issues
 repository=https://github.com/eryk918/postgis_toolbox
 
 hasProcessingProvider=yes
-# Uncomment the following line and add your changelog:
-# changelog=
+changelog=2.0
+ - QGIS provider connections instead of QSqlDatabase, no temporary connection entries
+ - Processing algorithms rebuilt on a common base with database, schema and table parameters
+ - query editor built on the DB Manager shipped with QGIS instead of a bundled copy
+ - new table registry: browse, inspect, load, rename and drop tables and rasters
+ - disconnect button on the toolbar
+ - redesigned dialogs with native QGIS widgets, dark theme support
+ - much faster loading of the server structure
+ - new scalable icons
+ - requires QGIS 3.22 or newer
 
 category=Database
 tags=processing, raster, database, postgis, postgres, postgresql, spatial, schema
-icon=icons/main.png
+icon=icons/main.svg
 experimental=False
 
 deprecated=False

@@ -23,17 +23,6 @@ none_geometry_types = (
 )
 
 
-def make_sql_set_geometry_srid(table: str, schema: str, layer_path: str,
-                               geom_column: str = 'geom') -> str:
-    layer = QgsVectorLayer(layer_path)
-    if layer.isValid() and layer.crs().postgisSrid():
-        crs = layer.crs().postgisSrid()
-        del layer
-        return f'UPDATE "{schema}"."{table}" ' \
-               f'SET {geom_column}=ST_SetSRID({geom_column}, {crs});'
-    return 'SELECT 1;'
-
-
 def check_for_duplicate_id_column(input_layer_path: str) -> str:
     out_file_path = input_layer_path
     tmp_layer = QgsVectorLayer(input_layer_path, 'temp', "ogr")
@@ -45,7 +34,7 @@ def check_for_duplicate_id_column(input_layer_path: str) -> str:
         out_file_path = f'{tempfile.NamedTemporaryFile().name}.gpkg'
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'GPKG'
-        QgsVectorFileWriter.writeAsVectorFormatV2(
+        QgsVectorFileWriter.writeAsVectorFormatV3(
             tmp_layer, out_file_path, QgsCoordinateTransformContext(),
             save_options
         )

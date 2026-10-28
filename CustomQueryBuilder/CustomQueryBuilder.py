@@ -1,427 +1,220 @@
 # -*- coding: utf-8 -*-
 import functools
 import os
-from functools import partial
-from typing import Tuple, Optional
+from typing import List, Optional
 
-from qgis.PyQt import QtCore
-from qgis.PyQt.QtCore import QAbstractItemModel, pyqtSignal, QModelIndex, Qt, \
-    QSize, QSettings
-from qgis.PyQt.QtGui import QIcon, QKeySequence
-from qgis.PyQt.QtWidgets import QTreeView, QApplication, QToolBar, QMenu, \
-    QStatusBar, QDockWidget, QSizePolicy, QSpacerItem, QGridLayout, QTabBar, \
-    QTabWidget, QMenuBar, QDialog, QMessageBox, QPushButton, QInputDialog, \
-    QComboBox, QLineEdit, QVBoxLayout, QLabel
-from qgis.core import QgsVectorLayer, QgsDataSourceUri, QgsApplication, Qgis
-from qgis.gui import QgsMessageBar, QgisInterface
+from db_manager.db_manager import DBManager
+from db_manager.db_plugins.plugin import BaseError, VectorTable
+from db_manager.dlg_db_error import DlgDbError
+from db_manager.dlg_query_builder import QueryBuilderDlg
+from db_manager.dlg_sql_window import DlgSqlWindow
+from qgis.PyQt.QtCore import QModelIndex
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QPushButton, QHBoxLayout
+from qgis.core import Qgis
+from qgis.gui import QgisInterface
 
-from .db_manager.db_manager import DBManager
-from .db_manager.db_manager_plugin import DBManagerPlugin
-from .db_manager.db_model import PluginItem, TreeItem, DBModel
-from .db_manager.db_plugins import supportedDbTypes, createDbPlugin
-from .db_manager.db_plugins.plugin import Database, VectorTable, BaseError
-from .db_manager.db_tree import DBTree
-from .db_manager.dlg_db_error import DlgDbError
-from .db_manager.dlg_query_builder import QueryBuilderDlg, FocusEventFilter
-from .db_manager.dlg_sql_window import DlgSqlWindow
-from .db_manager.info_viewer import InfoViewer
-from .db_manager.layer_preview import LayerPreview
-from .db_manager.table_viewer import TableViewer
-from ..CustomQueryBuilder.UI.CustomQueryBuilderDialog import CustomQueryBuilderDialog
+from .UI.new_object_dialog import NewObjectDialog
+from .UI.PostGISHelpDialog import PostGISHelpDialog
+from ..utils import tr, plugin_dir, plugin_name, Qt, ask_question
 
-from ..utils import tr, get_schema_name_list, get_plugin_object, plugin_dir
+QUERY_EDITOR_ICON = os.path.join(plugin_dir, 'icons', 'query_editor.svg')
 
 
 class CustomQueryBuilder(QueryBuilderDlg):
-    saveParameter = None
+    def __init__(self, iface: QgisInterface, db, parent=None,
+                 reset: bool = False) -> None:
+        super().__init__(iface, db, parent, reset)
+        self.setWindowTitle(f'{plugin_name} - {tr("SQL Query Builder")}')
+        self.setWindowIcon(QIcon(QUERY_EDITOR_ICON))
+        self.help_dialog = PostGISHelpDialog(self)
+        self.add_help_button()
 
-    def __init__(self, main_class, db, parent=None, reset=False) -> None:
-        QDialog.__init__(self, parent)
-        self.main_class = main_class
-        self.plugin_dir = main_class.plugin_dir
-        self.iface = main_class.iface
-        self.db = db
-        self.query = ''
-        self.ui = CustomQueryBuilderDialog(self.main_class)
-        self.ui.setupUi(self)
-        self.ui.group.setMaximumHeight(self.ui.tab.sizeHint().height())
-        self.ui.order.setMaximumHeight(self.ui.tab.sizeHint().height())
+    def add_help_button(self) -> None:
+        layout = self.ui.functions.parentWidget().layout()
+        position = layout.indexOf(self.ui.functions)
+        layout.removeWidget(self.ui.functions)
+        row = QHBoxLayout()
+        row.setContentsMargins(0, 0, 0, 0)
+        row.addWidget(self.ui.functions)
+        self.help_button = QPushButton('ℹ️', self.ui.functions.parentWidget())
+        self.help_button.setMaximumSize(22, 22)
+        self.help_button.setToolTip(
+            tr('Show information about PostGIS features.'))
+        self.help_button.clicked.connect(self.show_help)
+        row.addWidget(self.help_button)
+        layout.insertLayout(position, row)
 
-        self.evt = FocusEventFilter(self)
-        self.ui.col.installEventFilter(self.evt)
-        self.ui.where.installEventFilter(self.evt)
-        self.ui.group.installEventFilter(self.evt)
-        self.ui.order.installEventFilter(self.evt)
+    def function_names(self) -> List[str]:
+        return [self.ui.functions.itemText(index)
+                for index in range(1, self.ui.functions.count())]
 
-        connector_dict = self.db.connector.getQueryBuilderDictionary()
-        self.table = None
-        self.col_col = []
-        self.col_where = []
-        self.coltables = []
-        self.ui.extract.setChecked(True)
-        self.ui.functions.insertItems(1, connector_dict['function'])
-        self.ui.math.insertItems(1, connector_dict['math'])
-        self.ui.aggregates.insertItems(1, connector_dict['aggregate'])
-        self.ui.operators.insertItems(1, connector_dict['operator'])
-        self.ui.stringfct.insertItems(1, connector_dict['string'])
+    def show_help(self) -> None:
+        self.help_dialog.run(self.function_names())
 
-        if reset:
-            QueryBuilderDlg.saveParameter = None
-        if QueryBuilderDlg.saveParameter is not None:
-            self.restoreLastQuery()
+    def table_label(self, table) -> str:
+        if table.schema() is None:
+            return f'"{table.name}"'
+        return f'"{table.schema().name}"."{table.name}"'
 
-        self.show_tables()
-        self.ui.aggregates.currentIndexChanged.connect(self.add_aggregate)
-        self.ui.stringfct.currentIndexChanged.connect(self.add_stringfct)
-        self.ui.operators.currentIndexChanged.connect(self.add_operators)
-        self.ui.functions.currentIndexChanged.connect(self.add_functions)
-        self.ui.math.currentIndexChanged.connect(self.add_math)
-        self.ui.tables.currentIndexChanged.connect(self.add_tables)
-        self.ui.tables.currentIndexChanged.connect(self.list_cols)
-        self.ui.columns.currentIndexChanged.connect(self.add_columns)
-        self.ui.columns_2.currentIndexChanged.connect(self.list_values)
-        self.ui.reset.clicked.connect(self.reset)
-        self.ui.extract.stateChanged.connect(self.list_values)
-        self.ui.values.doubleClicked.connect(self.query_item)
-        self.ui.buttonBox.accepted.connect(self.validate)
-        self.ui.checkBox.stateChanged.connect(self.show_tables)
-
-        if self.db.explicitSpatialIndex():
-            self.tablesGeo = [table for table in self.tables if
-                              isinstance(table, VectorTable)]
-            tablesGeo = [f'"{table.name}"."{table.geomColumn}"' for table
-                         in self.tablesGeo]
-            self.idxTables = [table for table in self.tablesGeo if
-                              table.hasSpatialIndex()]
-            idxTables = [f'"{table.name}"."{table.geomColumn}"' for table
-                         in self.idxTables]
-            self.ui.table_target.insertItems(1, tablesGeo)
-            self.ui.table_idx.insertItems(1, idxTables)
-            self.ui.usertree.clicked.connect(self.use_rtree)
-        else:
-            self.ui.toolBox.setItemEnabled(2, False)
-        self.setup_window()
+    def show_tables(self) -> None:
+        self.update_table_list()
+        self.ui.tables.clear()
+        self.ui.tables.insertItems(0, [tr('Tables')])
+        self.ui.tables.insertItems(
+            1, [self.table_label(table) for table in self.tables])
 
     def add_tables(self) -> None:
         if self.ui.tables.currentIndex() <= 0:
             return
         selected_text = self.ui.tables.currentText()
-        table_objects = []
-        for table in self.tables:
-            if len(selected_text.upper().split('.')) > 1:
-                if f'"{table.schema().name.upper()}"."{table.name.upper()}"' \
-                        == selected_text.upper():
-                    table_objects.append(table)
-            elif table.name.upper() == selected_text.upper():
-                table_objects.append(table)
-        if len(table_objects) != 1:
+        tables = [table for table in self.tables
+                  if self.table_label(table) == selected_text]
+        if len(tables) != 1:
             return
-        self.table = table_objects[0]
-        if selected_text in self.coltables:
-            response = QMessageBox.question(
+        self.table = tables[0]
+        if self.table.name in self.coltables:
+            response = ask_question(
                 self,
-                tr("Table already used"),
-                tr(f"Do you want to add table {selected_text} again?"),
-                QMessageBox.Yes | QMessageBox.No
-            )
-            if response == QMessageBox.No:
+                tr('Do you want to add table {0} again?').format(
+                    selected_text))
+            if not response:
+                self.ui.tables.setCurrentIndex(0)
                 return
-        selected_text = self.table.quotedName()
-        txt = self.ui.tab.text()
-        if txt is None or txt in ("", " "):
-            self.ui.tab.setText(f'{selected_text}')
+        quoted_name = self.table.quotedName()
+        current_text = self.ui.tab.text().strip()
+        if current_text:
+            self.ui.tab.setText(f'{current_text}, {quoted_name}')
         else:
-            self.ui.tab.setText(f'{txt}, {selected_text}')
+            self.ui.tab.setText(quoted_name)
         self.ui.tables.setCurrentIndex(0)
-
-    def update_table_list(self) -> None:
-        self.tables = []
-        add_sys_tables = self.ui.checkBox.isChecked()
-        schemas = self.db.schemas()
-        if schemas is None:
-            self.tables = self.db.tables(None, add_sys_tables)
-        else:
-            for schema in schemas:
-                self.tables += self.db.tables(schema, add_sys_tables)
-
-    def show_tables(self) -> None:
-        self.update_table_list()
-        self.ui.tables.clear()
-        self.ui.tables.insertItems(
-            0, [QApplication.translate("DBManager", 'Tables')])
-        self.ui.tables.insertItems(
-            1, [f'"{table.schema().name}"."{table.name}"' for table in
-                self.tables])
-
-    def list_cols(self) -> None:
-        table = self.table
-        if table is None:
-            return
-        if table.name in self.coltables:
-            return
-        columns = [f'"{table.name}"."{col.name}"' for col in table.fields()]
-        columns = [f'"{table.name}".*'] + columns
-        self.coltables.append(table.name)
-        end = self.ui.columns.count()
-        self.ui.columns.insertItems(end, columns)
-        self.ui.columns_2.insertItems(end, columns)
-        end = self.ui.columns.count()
-        self.ui.columns.insertSeparator(end)
-        self.ui.columns_2.insertSeparator(end)
-
-    def setup_window(self) -> None:
-        icon = QIcon(os.path.join(self.plugin_dir, 'icons/query_editor.png'))
-        self.main_class.db_manager_plugin.dlg.setWindowIcon(icon)
-        self.setWindowIcon(icon)
-
-
-class PostGISDBModel(DBModel):
-    importVector = pyqtSignal(QgsVectorLayer, Database, QgsDataSourceUri,
-                              QModelIndex)
-    notPopulated = pyqtSignal(QModelIndex)
-
-    def __init__(self, parent=None) -> None:
-        global isImportVectorAvail
-        QAbstractItemModel.__init__(self, parent)
-        self.treeView = parent
-        self.header = [QApplication.translate("DBManager", '&Databases')]
-        self.hasSpatialiteSupport = "spatialite" in supportedDbTypes()
-        self.hasGPKGSupport = "gpkg" in supportedDbTypes()
-        self.rootItem = TreeItem(None, None)
-        for dbtype in ['postgis', 'vlayers']:
-            item = PluginItem(createDbPlugin(dbtype), self.rootItem)
-            item.changed.connect(partial(self.refreshItem, item))
-
-
-class FilteredDBTree(DBTree):
-    selectedItemChanged = pyqtSignal(object)
-
-    def __init__(self, mainWindow) -> None:
-        DBTree.__init__(self, mainWindow)
-        self.mainWindow = mainWindow
-        self.setModel(PostGISDBModel(self))
-        self.setHeaderHidden(True)
-        self.setEditTriggers(
-            QTreeView.EditKeyPressed | QTreeView.SelectedClicked)
-        self.setDragEnabled(True)
-        self.setAcceptDrops(True)
-        self.setDropIndicatorShown(True)
-        self.doubleClicked.connect(self.addLayer)
-        self.selectionModel().currentChanged.connect(self.currentItemChanged)
-        self.expanded.connect(self.itemChanged)
-        self.collapsed.connect(self.itemChanged)
-        self.model().dataChanged.connect(self.modelDataChanged)
-        self.model().notPopulated.connect(self.collapse)
-
-
-class FilteredDBManager(DBManager):
-    def __init__(self, parent) -> None:
-        super(FilteredDBManager, self).__init__(parent)
-
-    def setupUi(self) -> None:
-        self.setWindowTitle(tr("PostGIS Toolbox - Query editor"))
-        self.resize(QSize(700, 500).expandedTo(self.minimumSizeHint()))
-        self._create_tabs()
-        tabbar = self.tabs.tabBar()
-        for btn_idx in range(3):
-            btn = tabbar.tabButton(btn_idx, QTabBar.RightSide) \
-                if tabbar.tabButton(btn_idx, QTabBar.RightSide) \
-                else tabbar.tabButton(btn_idx, QTabBar.LeftSide)
-            btn.resize(0, 0)
-            btn.hide()
-        spacerItem = QSpacerItem(
-            20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        self.layout = QGridLayout(self.info)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.addItem(spacerItem, 1, 0, 1, 1)
-        self.infoBar = QgsMessageBar(self.info)
-        self.infoBar.setSizePolicy(sizePolicy)
-        self.layout.addWidget(self.infoBar, 0, 0, 1, 1)
-        self.dock = QDockWidget(
-            QApplication.translate("DBManager", "Providers"), self)
-        self.dock.setObjectName("DB_Manager_DBView")
-        self.dock.setFeatures(QDockWidget.DockWidgetMovable)
-        self.tree = FilteredDBTree(self)
-        self.dock.setWidget(self.tree)
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
-        self.statusBar = QStatusBar(self)
-        self.setStatusBar(self.statusBar)
-        self.menuBar = QMenuBar(self)
-        self.menuDb = QMenu(
-            QApplication.translate("DBManager", "&Database"), self)
-        self.menuBar.addMenu(self.menuDb)
-        self.menuSchema = QMenu(
-            QApplication.translate("DBManager", "&Schema"), self)
-        self.menuTable = QMenu(
-            QApplication.translate("DBManager", "&Table"), self)
-        self.menuHelp = None
-        self.setMenuBar(self.menuBar)
-        self.toolBar = QToolBar(
-            QApplication.translate("DBManager", "&Default"), self)
-        self.toolBar.setObjectName("DB_Manager_ToolBar")
-        self.addToolBar(self.toolBar)
-        self._create_actions()
-
-    def _create_tabs(self) -> None:
-        self.tabs = QTabWidget()
-        self.info = InfoViewer(self)
-        self.table = TableViewer(self)
-        self.preview = LayerPreview(self)
-        self.tabs.addTab(self.info,
-                         QApplication.translate("DBManager", "Info"))
-        self.tabs.addTab(self.table,
-                         QApplication.translate("DBManager", "Table"))
-        self.tabs.addTab(self.preview,
-                         QApplication.translate("DBManager", "Preview"))
-        self.tabs.setTabsClosable(True)
-        self.tabs.tabCloseRequested.connect(self.close_tab)
-        self.setCentralWidget(self.tabs)
-
-    def _create_actions(self) -> None:
-        sep = self.menuDb.addSeparator()
-        sep.setObjectName("DB_Manager_DbMenu_placeholder")
-        sep.setVisible(False)
-        actionMenuSchema = self.menuBar.addMenu(self.menuSchema)
-        actionMenuSchema.setVisible(False)
-        actionMenuTable = self.menuBar.addMenu(self.menuTable)
-        actionMenuTable.setVisible(False)
-        self.actionRefresh = self.menuDb.addAction(
-            QgsApplication.getThemeIcon("/mActionRefresh.svg"),
-            QApplication.translate("DBManager", "&Refresh"),
-            self.refreshActionSlot, QKeySequence("F5"))
-        self.actionSqlWindow = self.menuDb.addAction(
-            QIcon(":/db_manager/actions/sql_window"),
-            QApplication.translate("DBManager", "&SQL Window"),
-            self.runSqlWindow, QKeySequence("F2"))
-        self.menuDb.addSeparator()
-        self.actionClose = self.menuDb.addAction(
-            QIcon(), QApplication.translate("DBManager", "&Exit"),
-            self.close,
-            QKeySequence("CTRL+Q"))
-        sep = self.menuSchema.addSeparator()
-        sep.setObjectName("DB_Manager_SchemaMenu_placeholder")
-        sep.setVisible(False)
-        sep = self.menuTable.addSeparator()
-        sep.setObjectName("DB_Manager_TableMenu_placeholder")
-        sep.setVisible(False)
-        self.actionImport = self.menuTable.addAction(
-            QIcon(":/db_manager/actions/import"),
-            QApplication.translate("DBManager", "&Import Layer/File…"),
-            self.importActionSlot)
-        self.actionExport = self.menuTable.addAction(
-            QIcon(":/db_manager/actions/export"),
-            QApplication.translate("DBManager", "&Export to File…"),
-            self.exportActionSlot)
-        self.menuTable.addSeparator()
-        self.toolBar.addAction(self.actionRefresh)
-        self.toolBar.addAction(self.actionSqlWindow)
-        self.toolBar.addSeparator()
-        self.toolBar.addAction(self.actionImport)
-        self.toolBar.addAction(self.actionExport)
-
-    def runSqlWindow(self) -> None:
-        db = self.tree.currentDatabase()
-        if db is None:
-            self.infoBar.pushMessage(
-                QApplication.translate(
-                    "DBManager",
-                    "No database selected or you are not connected to it."
-                ),
-                Qgis.Info,
-                self.iface.messageTimeout()
-            )
-            self.tabs.setCurrentIndex(0)
-            return
-
-        query = CustomDbSqlWindow(self.iface, db, self)
-        dbname = db.connection().connectionName()
-        tabname = QApplication.translate("DBManager", "Query ({0})").format(
-            dbname)
-        index = self.tabs.addTab(query, tabname)
-        self.tabs.setTabIcon(index, db.connection().icon())
-        self.tabs.setCurrentIndex(index)
-        query.nameChanged.connect(
-            functools.partial(self.update_query_tab_name, index, dbname))
 
 
 class CustomDbSqlWindow(DlgSqlWindow):
     def __init__(self, iface: QgisInterface, db, parent=None) -> None:
-        super(CustomDbSqlWindow, self).__init__(iface, db, parent)
-        self.btnCreateTable = QPushButton(
-            QApplication.translate("DBManager", "Create a table"),
-            self.layoutWidget)
-        self.btnCreateTable.setObjectName("btnCreateTable")
-        self.buttonLayout.insertWidget(3, self.btnCreateTable)
+        super().__init__(iface, db, parent)
+        self.btnCreateTable = QPushButton(tr('Create a table'), self)
+        self.btnCreateTable.setObjectName('btnCreateTable')
+        self.buttonLayout.insertWidget(
+            self.buttonLayout.indexOf(self.btnCreateView) + 1,
+            self.btnCreateTable)
         self.btnCreateTable.clicked.connect(self.create_table)
-        if self._createViewAvailable:
-            self.btnCreateView.clicked.connect(self.create_view)
 
-    def loadAsLayerToggled(self, checked) -> None:
-        self.loadAsLayerGroup.setChecked(checked)
-        self.loadAsLayerWidget.setVisible(checked)
+    def schema_names(self) -> List[str]:
+        schemas = self.db.schemas()
+        if schemas is None:
+            return []
+        return [schema.name for schema in schemas]
 
-    def _create_add_object_window(
-            self, dialog_name: str) -> Tuple[Optional[str], Optional[str]]:
-        main_db = get_plugin_object().db
-        dlg = QDialog(None)
-        dlg.setWindowTitle(dialog_name)
-        dlg.setMaximumSize(350, 105)
-        dlg.setMinimumSize(320, 105)
-        dlg.setWindowIcon(
-            QIcon(os.path.join(plugin_dir, 'icons', 'query_editor.png')))
-        layout = QGridLayout()
-        schema_combo = QComboBox(dlg)
-        schema_list, _ = get_schema_name_list(main_db, main_db.databaseName())
-        schema_combo.addItems(schema_list)
-        name_line = QLineEdit(dlg)
-        accept_button = QPushButton(self.tr('Accept'), dlg)
-        accept_button.clicked.connect(dlg.accept)
-        cancel_button = QPushButton(self.tr('Cancel'), dlg)
-        cancel_button.clicked.connect(dlg.reject)
-        layout.addWidget(QLabel(f"{tr('Schema name')}:"), 0, 0)
-        layout.addWidget(schema_combo, 0, 1)
-        layout.addWidget(QLabel(f"{dialog_name}:"), 1, 0)
-        layout.addWidget(name_line, 1, 1)
-        btn_layout = QGridLayout()
-        btn_layout.addWidget(accept_button, 0, 0)
-        btn_layout.addWidget(cancel_button, 0, 1)
-        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
-        layout.addItem(btn_layout, 2, 0, 1, 2)
-        dlg.setLayout(layout)
-        res = dlg.exec()
-        return (schema_combo.currentText(), name_line.text()) if res == 1 \
-            else (None, None)
+    def ask_object_name(self, title: str, label: str) -> tuple:
+        dialog = NewObjectDialog(title, label, self.schema_names(), self)
+        if dialog.exec() != NewObjectDialog.Accepted:
+            return None, None
+        return dialog.schema_name(), dialog.object_name()
+
+    def execute_ddl(self, sql: str) -> None:
+        try:
+            self.db.connector._execute_and_commit(sql)
+            self.db.refresh()
+        except BaseError as error:
+            DlgDbError.showError(error, self)
 
     def create_table(self) -> None:
-        schema, table = self._create_add_object_window(self.tr("Table name"))
-        if schema and table:
-            try:
-                self.db.connector.create_table(
-                    schema, table, self._getExecutableSqlQuery())
-            except BaseError as e:
-                DlgDbError.showError(e, self)
+        schema, table = self.ask_object_name(
+            tr('Create a table'), tr('Table name'))
+        if not schema or not table:
+            return
+        self.execute_ddl(
+            f'CREATE TABLE {self.db.connector.quoteId((schema, table))} '
+            f'AS ({self._getExecutableSqlQuery()})')
 
-    def create_view(self) -> None:
-        schema, table = self._create_add_object_window(self.tr("View name"))
-        if schema and table:
-            try:
-                self.db.connector.createSpatialView(
-                    schema, table, self._getExecutableSqlQuery())
-            except BaseError as e:
-                DlgDbError.showError(e, self)
+    def createView(self) -> None:
+        schema, view = self.ask_object_name(
+            tr('Create a view'), tr('View name'))
+        if not schema or not view:
+            return
+        self.execute_ddl(
+            f'CREATE VIEW {self.db.connector.quoteId((schema, view))} '
+            f'AS {self._getExecutableSqlQuery()}')
+
+    def displayQueryBuilder(self) -> None:
+        dialog = CustomQueryBuilder(
+            self.iface, self.db, self, reset=self.queryBuilderFirst)
+        self.queryBuilderFirst = False
+        if dialog.exec() == CustomQueryBuilder.Accepted:
+            self.editSql.setText(dialog.query)
 
 
-class FilteredDBManagerPlugin(DBManagerPlugin):
+class FilteredDBManager(DBManager):
+    def __init__(self, iface: QgisInterface, parent=None) -> None:
+        super().__init__(iface, parent)
+        self.setWindowTitle(f'{plugin_name} - {tr("Query editor")}')
+        self.setWindowIcon(QIcon(QUERY_EDITOR_ICON))
+        self.keep_postgis_only()
+
+    def keep_postgis_only(self) -> None:
+        model = self.tree.model()
+        model.beginResetModel()
+        model.rootItem.childItems = [
+            item for item in model.rootItem.childItems
+            if item.getItemData().typeName() == 'postgis']
+        model.endResetModel()
+
+    def connection_index(self, connection_name: str) -> QModelIndex:
+        model = self.tree.model()
+        for row in range(model.rowCount(QModelIndex())):
+            plugin_index = model.index(row, 0, QModelIndex())
+            self.tree.setExpanded(plugin_index, True)
+            for child_row in range(model.rowCount(plugin_index)):
+                index = model.index(child_row, 0, plugin_index)
+                if index.data() == connection_name:
+                    return index
+        return QModelIndex()
+
+    def select_connection(self, connection_name: str) -> bool:
+        index = self.connection_index(connection_name)
+        if not index.isValid():
+            return False
+        self.tree.setExpanded(index, True)
+        self.tree.setCurrentIndex(index)
+        return self.tree.currentDatabase() is not None
+
+    def runSqlWindow(self) -> Optional[CustomDbSqlWindow]:
+        db = self.tree.currentDatabase()
+        if db is None:
+            self.infoBar.pushMessage(
+                tr('No database selected or you are not connected to it.'),
+                Qgis.Info, self.iface.messageTimeout())
+            self.tabs.setCurrentIndex(0)
+            return None
+        query = CustomDbSqlWindow(self.iface, db, self)
+        db_name = db.connection().connectionName()
+        index = self.tabs.addTab(query, tr('Query ({0})').format(db_name))
+        self.tabs.setTabIcon(index, db.connection().icon())
+        self.tabs.setCurrentIndex(index)
+        query.nameChanged.connect(
+            functools.partial(self.update_query_tab_name, index, db_name))
+        return query
+
+
+class FilteredDBManagerPlugin:
     def __init__(self, iface: QgisInterface) -> None:
         self.iface = iface
         self.dlg = None
 
-    def run(self) -> None:
+    def run(self) -> FilteredDBManager:
         if self.dlg is None:
             self.dlg = FilteredDBManager(self.iface)
-            self.dlg.destroyed.connect(self.onDestroyed)
+            self.dlg.destroyed.connect(self.on_destroyed)
         self.dlg.show()
         self.dlg.raise_()
         self.dlg.setWindowState(self.dlg.windowState() & ~Qt.WindowMinimized)
         self.dlg.activateWindow()
+        return self.dlg
+
+    def on_destroyed(self, obj=None) -> None:
+        self.dlg = None
+
+    def close(self) -> None:
+        if self.dlg is not None:
+            self.dlg.close()

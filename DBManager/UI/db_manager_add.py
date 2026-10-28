@@ -2,11 +2,11 @@
 from typing import List
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QRegExp
-from qgis.PyQt.QtGui import QRegExpValidator
-from qgis.PyQt.QtWidgets import QDialog, QMessageBox
+from qgis.PyQt.QtCore import QRegularExpression
+from qgis.PyQt.QtGui import QRegularExpressionValidator
+from qgis.PyQt.QtWidgets import QDialog
 
-from ...utils import repair_dialog, os, plugin_name, tr, \
+from ...utils import repair_dialog, os, plugin_name, tr, show_error, \
     remove_unsupported_chars
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -18,27 +18,25 @@ class DBManagerAdd_UI(QDialog, FORM_CLASS):
         super(DBManagerAdd_UI, self).__init__(parent)
         self.setupUi(self)
         self.dbManager = dbManager
-        repair_dialog(self, icon_file='manage_dbs.png')
+        repair_dialog(self, icon_file='manage_dbs.svg')
 
     def setup_dialog(self, label_text: str, placeholder_text: str) -> None:
         self.object_label.setText(label_text)
         self.object_lineEdit.setPlaceholderText(placeholder_text)
         self.object_lineEdit.setValidator(
-            QRegExpValidator(QRegExp('[A-Za-z0-9_-]{1,}')))
+            QRegularExpressionValidator(QRegularExpression('[A-Za-z0-9_-]{1,}')))
         self.buttonBox.accepted.connect(self.unsupported_text)
 
     def unsupported_text(self):
         input_text = remove_unsupported_chars(self.object_lineEdit.text())
         if not input_text:
-            QMessageBox.critical(
-                self, plugin_name,
-                tr('Invalid name entered!\nTry again.'),
-                QMessageBox.Ok)
+            show_error(
+                self,
+                tr('Invalid name entered!\nTry again.'))
         elif input_text in self.existing_obj_list:
-            QMessageBox.critical(
-                self, plugin_name,
-                tr('The name entered is already in use!\nTry again.'),
-                QMessageBox.Ok)
+            show_error(
+                self,
+                tr('The name entered is already in use!\nTry again.'))
         else:
             self.accept()
             self.run_func(input_text)

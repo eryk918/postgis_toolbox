@@ -6,26 +6,21 @@ import re
 import shutil
 import subprocess
 import sys
-from datetime import datetime
-from typing import List, Tuple, Any, Dict, Union
+from typing import List, Tuple, Any, Dict, Optional
 
 import qgis
 from PyQt5.QtCore import Qt
-from chardet import detect
-from qgis.PyQt.QtCore import QCoreApplication, NULL, QTimer, \
-    QSortFilterProxyModel, QItemSelectionModel
+from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtSql import QSqlDatabase
-from qgis.PyQt.QtSql import QSqlQuery
 from qgis.PyQt.QtWidgets import QComboBox, QProgressBar, QTreeWidgetItem, \
-    QDialog, QLineEdit, QRadioButton, QToolButton, QCheckBox, QFrame, \
-    QGroupBox, QWidget
+    QDialog, QRadioButton, QToolButton, QCheckBox, QWidget
 from qgis.PyQt.QtWidgets import QProgressDialog, QPushButton, QMessageBox, \
     QApplication, QLabel
-from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, \
-    QgsWkbTypes, QgsAuthMethodConfig, QgsProviderRegistry, QgsTask
+from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, QgsWkbTypes, \
+    QgsProviderRegistry, QgsProviderMetadata, QgsProviderConnectionException, \
+    QgsAbstractDatabaseProviderConnection
 from qgis.core import QgsProject, QgsVectorLayer, \
-    QgsRasterLayer, QgsApplication, QgsMapLayerType
+    QgsRasterLayer, QgsApplication
 from qgis.utils import iface
 
 project = QgsProject.instance()
@@ -35,19 +30,10 @@ main_window = iface.mainWindow()
 plugin_name = 'PostGIS Toolbox'
 plugin_dir = os.path.dirname(__file__)
 plugin_dir_name = 'postgis_toolbox'
-main_plugin_icon = QIcon(os.path.join(plugin_dir, 'icons', 'main.png'))
-
-connection_key_names = [
-    'authcfg', 'database', 'host', 'password', 'port', 'service',
-    'sslmode', 'username', 'connection_name'
-]
+main_plugin_icon = QIcon(os.path.join(plugin_dir, 'icons', 'main.svg'))
 
 system_tables = ['pg_catalog', 'pg_toast_temp_1', 'pg_temp_1', 'pg_toast',
                  'information_schema', 'public', 'topology']
-
-conn_key_string = '/PostgreSQL/connections/'
-
-test_query = 'SELECT version();'
 
 
 def tr(text: str):
@@ -59,15 +45,41 @@ RASTERS_LAYERS_GROUP = tr("IMPORTED RASTERS")
 VECTORS_LAYERS_GROUP = tr("IMPORTED VECTORS")
 
 
-class CreateTemporaryLayer(QgsVectorLayer):
-    parent_layer = None
+def message_box(parent: Optional[QWidget], text: str,
+                icon: int = QMessageBox.Information,
+                buttons: int = QMessageBox.Ok,
+                default: int = QMessageBox.NoButton,
+                details: str = None) -> int:
+    box = QMessageBox(icon, plugin_name, text, buttons, parent)
+    window_icon = parent.windowIcon() \
+        if parent is not None and parent is not iface.mainWindow() \
+        else QIcon()
+    box.setWindowIcon(
+        main_plugin_icon if window_icon.isNull() else window_icon)
+    if default != QMessageBox.NoButton:
+        box.setDefaultButton(default)
+    if details:
+        box.setDetailedText(details)
+    return box.exec()
 
-    def __init__(self, *args, **kwargs):
-        super(CreateTemporaryLayer, self).__init__(*args, **kwargs)
 
-    def set_layer_fields(self, fields):
-        self.dataProvider().addAttributes(fields)
-        self.updateFields()
+def show_info(parent: Optional[QWidget], text: str,
+              details: str = None) -> None:
+    message_box(parent, text, QMessageBox.Information, details=details)
+
+
+def show_warning(parent: Optional[QWidget], text: str) -> None:
+    message_box(parent, text, QMessageBox.Warning)
+
+
+def show_error(parent: Optional[QWidget], text: str) -> None:
+    message_box(parent, text, QMessageBox.Critical)
+
+
+def ask_question(parent: Optional[QWidget], text: str) -> bool:
+    return message_box(
+        parent, text, QMessageBox.Question,
+        QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes
 
 
 def repair_dialog(dlg: QDialog, icon_file: str = None,
@@ -86,14 +98,6 @@ def repair_dialog(dlg: QDialog, icon_file: str = None,
             os.path.join(plugin_dir, 'icons', icon_file)))
     else:
         dlg.setWindowIcon(main_plugin_icon)
-
-
-def get_project_setting(parameter, key, default=''):
-    return project.readEntry(parameter, key, default)[0]
-
-
-def set_project_setting(parameter, key, value):
-    return project.writeEntry(parameter, key, value)
 
 
 def create_progress_bar(
@@ -117,26 +121,9 @@ def create_progress_bar(
     return progress_bar
 
 
-def change_progressbar_value(progress, last_progress_value,
-                             value, last_step=False, silent=False):
-    if not silent:
-        progress.show()
-    QApplication.processEvents()
-    last_progress_value += value
-    if last_progress_value == 100 or last_step:
-        progress.setValue(100)
-        progress.close()
-    else:
-        progress.setValue(int(last_progress_value))
-
-
 def change_alg_progress(progress, last_progress_value, value):
-    QApplication.processEvents()
     last_progress_value += value
-    if last_progress_value == 100:
-        progress.setProgress(100)
-    else:
-        progress.setProgress(last_progress_value)
+    progress.setProgress(min(last_progress_value, 100))
     return last_progress_value
 
 
@@ -175,93 +162,6 @@ def add_rasters_to_project(group_name: str,
             iface.layerTreeView().refreshLayerSymbology(rlayer.id())
 
 
-def create_postgis_raster_layer(db: QSqlDatabase, schema_name: str,
-                                table_name: str, raster_name: str,
-                                rast_column: str = 'rast') -> QgsRasterLayer:
-    if "     ||  " in raster_name:
-        raster_name = raster_name.split('     ||  ')[0]
-
-    uri_config = {
-        'dbname': db.databaseName(),
-        'host': db.hostName(),
-        'port': db.port(),
-        'sslmode': QgsDataSourceUri.SslDisable,
-        'authcfg': 'QconfigId',
-        'username': db.userName(),
-        'password': db.password(),
-        'schema': schema_name,
-        'table': table_name,
-        'geometrycolumn': rast_column,
-        'estimatedmetadata': 'False',
-        'mode': '2',
-    }
-    meta = QgsProviderRegistry.instance().providerMetadata('postgresraster')
-    uri = QgsDataSourceUri(meta.encodeUri(uri_config))
-    return QgsRasterLayer(uri.uri(False), raster_name, "postgresraster")
-
-
-def fetch_all_wkb_types_from_postgis_column(
-        db: callable, schema_name: str, table_name: str,
-        geom_col: str = 'geom') -> List[QgsWkbTypes.Type]:
-    query_rs = unpack_nested_lists(make_query(db, f'''
-        WITH all_geoms AS(
-            SELECT DISTINCT ST_GeometryType("{geom_col}") AS geometry_type, 
-                ST_AsText("{geom_col}") AS wkt_geometry
-            FROM "{schema_name}"."{table_name}" 
-        )
-        SELECT geometry_type, wkt_geometry
-        FROM all_geoms
-        WHERE wkt_geometry = (
-            SELECT ST_AsText("{geom_col}") 
-            FROM "{schema_name}"."{table_name}" 
-            WHERE ST_GeometryType("{geom_col}") = geometry_type 
-            LIMIT 1
-        )
-    '''))
-    wkt_list = [wkt for wkt in query_rs if "ST_" not in wkt]
-    wkb_types = []
-    for wkt in wkt_list:
-        try:
-            wkb_types.append(QgsWkbTypes.parseType(wkt))
-        except:
-            pass
-    return wkb_types
-
-
-def create_postgis_vector_layer(
-        db, schema_name, table_name,
-        geom_col=None, layer_name='', ignore_validation=False,
-        test_wkbs: bool = False):
-    uri = QgsDataSourceUri()
-    uri.setConnection(db.hostName(), str(db.port()), db.databaseName(),
-                      db.userName(), db.password())
-
-    wkb_list = [None]
-    layers_list = []
-    if test_wkbs:
-        wkb_list = fetch_all_wkb_types_from_postgis_column(
-            db, schema_name, table_name, geom_col)
-        print(wkb_list)
-    for wkb_type in wkb_list:
-        if geom_col:
-            uri.setDataSource(schema_name, table_name, geom_col)
-        else:
-            uri.setSchema(schema_name)
-            uri.setTable(table_name)
-        if wkb_type is not None:
-            uri.setWkbType(wkb_type)
-
-        vlayer = QgsVectorLayer(uri.uri(), layer_name or table_name, "postgres")
-        if ignore_validation:
-            if vlayer.isValid():
-                layers_list.append(vlayer)
-        else:
-            layers_list.append(vlayer)
-
-    return layers_list if test_wkbs \
-        else (layers_list[0] if layers_list else None)
-
-
 def add_vectors_to_project(group_name: str,
                            list_of_vectors: List[str or QgsVectorLayer],
                            symbology: str = None) -> None:
@@ -289,10 +189,9 @@ def open_other_files(filepath: str) -> None:
             os.startfile(filepath)
         except WindowsError:
             ext = os.path.splitext(filepath)[-1]
-            QMessageBox.critical(
-                None, plugin_name,
-                f'''Error opening a file with the file extension *.{ext}.''',
-                QMessageBox.Ok)
+            show_error(
+                None,
+                tr('Error opening a file with the file extension *.{0}.').format(ext))
             return
     elif os.name == 'posix':
         subprocess.call(('xdg-open', filepath))
@@ -306,12 +205,12 @@ def get_all_rasters_from_project(only_postgis: bool = False) -> Dict[str, str]:
         if not predict_layer:
             continue
         if only_postgis and predict_layer.isValid() and \
-                predict_layer.type() == QgsMapLayerType.RasterLayer \
+                isinstance(predict_layer, QgsRasterLayer) \
                 and predict_layer.dataProvider().name() == 'postgresraster':
             uri = predict_layer.dataProvider().uri()
             rasters_dict[f'{predict_layer.name()}     ||  {uri.schema()}.{uri.table()}'] = predict_layer
         elif not only_postgis and predict_layer.isValid() and \
-                predict_layer.type() == QgsMapLayerType.RasterLayer and \
+                isinstance(predict_layer, QgsRasterLayer) and \
                 predict_layer.dataProvider().name() == 'gdal':
             rasters_dict[f'{predict_layer.name()}     ||  {predict_layer.id()}'] = predict_layer.source()
     return rasters_dict
@@ -326,7 +225,7 @@ def get_all_vectors_from_project(only_postgis: bool = False, wkb: bool = False) 
         if not predict_layer:
             continue
         if predict_layer.isValid() and \
-                predict_layer.type() == QgsMapLayerType.VectorLayer:
+                isinstance(predict_layer, QgsVectorLayer):
             if only_postgis and \
                     'postgres' in predict_layer.dataProvider().name():
                 name = f'{predict_layer.name()} '
@@ -349,42 +248,21 @@ def get_plugin_object() -> object:
     return qgis.utils.plugins[plugin_dir_name]
 
 
-def repair_encoding(tmp_dir: str, infile: str) -> None:
-    tmp_file = os.path.join(
-        tmp_dir,
-        f"{datetime.now().strftime('%H_%M_%S_%f')[:-3]}.{os.path.splitext(infile)[-1]}"
-    )
-    shutil.copyfile(infile, tmp_file)
-    os.remove(infile)
-    with open(tmp_file, 'rb') as file:
-        rawdata = rb''.join([file.readline() for _ in range(150)])
-    with open(tmp_file,
-              'r', encoding=detect(rawdata)['encoding']) as input_file, \
-            open(infile, 'w', encoding='utf-8') as output_file:
-        text = input_file.read()
-        output_file.write(text)
-
-
-def repair_path_for_exec(string: str) -> str:
-    return string.replace('\\', '\\\\')
-
-
 def remove_unsupported_chars(input_str: str) -> str:
     temp_str = input_str
     for char in [char for char in
-                 '"&<>)¡/\-{}[]\':>?</*~-,!@#$`%^&*()¢ł¤¥¦§¨©ª«¬­®¯°±²ł´' \
-                 'µ¶·¸ąº»¼½¾żàáâãäåæçèąćęłńóśźżéęëìíîïðńòóôõö×øùúûüýþßàáâã' \
+                 '"&<>)¡/\\-{}[]\':>?</*~-,!@#$`%^&*()¢ł¤¥¦§¨©ª«¬­®¯°±²ł´'
+                 'µ¶·¸ąº»¼½¾żàáâãäåæçèąćęłńóśźżéęëìíîïðńòóôõö×øùúûüýþßàáâã'
                  'äåæçèéęëìíîïðńòóôõö÷øùúûüýþÿœœššÿˆ˜–—‘’‚“”„†‡‰‹›€™+=|;. ']:
         temp_str = temp_str.replace(char, '')
     return temp_str
 
 
-def throw_log_message(mess: str) -> None:
-    QgsMessageLog.logMessage(mess, tag=plugin_name)
+def log(message: str, level: int = Qgis.Info) -> None:
+    QgsMessageLog.logMessage(message, tag=plugin_name, level=level)
 
 
 def clean_after_analysis(base_class) -> None:
-    QApplication.processEvents()
     if hasattr(base_class, 'temp_dir'):
         shutil.rmtree(base_class.temp_dir, ignore_errors=True)
 
@@ -410,149 +288,151 @@ def fill_item(item, value) -> None:
         new_item(item, str(value))
 
 
-def get_all_tables_from_schema(db: QSqlDatabase, schema_name: str) -> List:
-    tables_list = make_query(db, f'''
-        SELECT "table_name" 
-        FROM information_schema.tables 
-        WHERE table_schema = '{schema_name}' AND table_name NOT IN 
-            ('_ogr_other_metadata', '_ogr_fields_metadata', 
-            '_ogr_layers_metadata', '_ogr_layer_relationships');
-    ''')
-    return list(list(zip(*tables_list))[0]) if tables_list else []
+def quote_identifier(name: str) -> str:
+    return '"' + name.replace('"', '""') + '"'
 
 
-def get_schema_name_list(db: QSqlDatabase, db_name: str = '',
-                         change_db: bool = True) -> Tuple[list, QSqlDatabase]:
-    if change_db:
-        db.setDatabaseName(db_name)
-        db.open()
-    if db.isOpen() and db.isValid() and make_query(db, test_query):
-        schema_names_result = make_query(db, f'''
-            SELECT schema_name 
-            FROM information_schema.schemata
-            WHERE schema_name NOT IN 
-                ({','.join(f"'{name}'" for name in system_tables)});
-        ''')
-        list_to_cbbx = list(zip(*schema_names_result))[
-            0] if schema_names_result else []
-        return list(list_to_cbbx), db
-    else:
-        return [], db
+def quote_literal(value: str) -> str:
+    return "'" + value.replace("'", "''") + "'"
 
 
-def get_active_db_info(db: QSqlDatabase or None, label: QLabel,
-                       simple: bool = False) -> bool:
-    active_db_str = tr("Active database:")
-    if db and db.isOpen() and db.isValid():
-        db_hostname = db.hostName()
-        db_port = db.port()
-        db_database_name = db.databaseName()
-        if simple:
-            label.setText(
-                f'{active_db_str} {db_hostname}:{db_port}, '
-                f'{db_database_name}')
-        else:
-            label.setText(
-                f'{active_db_str} <span style=" font-size:9pt; '
-                f'font-weight:600; color:#32CD32;">{db_hostname}:{db_port}, '
-                f'{db_database_name}</span>')
-        return True
-    else:
-        if simple:
-            label.setText(f'{active_db_str} {tr("Not connected.")}')
-        else:
-            label.setText(
-                f'{active_db_str} <span style=" font-size:9pt; '
-                f'font-weight:600; color:#aa0000;">{tr("Not connected.")}</span>')
-        return False
+def qualified_name(schema: str, table: str) -> str:
+    return f'{quote_identifier(schema)}.{quote_identifier(table)}'
 
 
-def create_pg_connecton(db_params: dict) -> QSqlDatabase:
-    pg_connection = QSqlDatabase.addDatabase('QPSQL', db_params['connection_name'])
-    QApplication.processEvents()
-    pg_connection.setHostName(db_params['host'])
-    pg_connection.setDatabaseName(db_params['database'])
-    pg_connection.setPort(int(db_params['port']))
-    if db_params.get('authcfg'):
-        conf = QgsAuthMethodConfig()
-        auth_manager = QgsApplication.authManager()
-        auth_manager.loadAuthenticationConfig(db_params['authcfg'], conf, True)
-        pg_connection.setUserName(conf.config('username', ''))
-        pg_connection.setPassword(conf.config('password', ''))
-    else:
-        if db_params.get('username') and db_params.get('password'):
-            pg_connection.setUserName(db_params['username'])
-            pg_connection.setPassword(db_params['password'])
-    pg_connection.open()
-    return pg_connection
+def postgres_metadata() -> QgsProviderMetadata:
+    return QgsProviderRegistry.instance().providerMetadata('postgres')
 
 
-def make_query(db: QSqlDatabase, query: str, schema_name: str = '',
-               bind_value: Any = None, postgis_raster: bool = False) -> list:
-    response = []
-    if not db:
+def get_connection_names() -> List[str]:
+    return sorted(postgres_metadata().connections(False).keys())
+
+
+def create_connection(
+        name: str) -> Optional[QgsAbstractDatabaseProviderConnection]:
+    try:
+        return postgres_metadata().createConnection(name)
+    except QgsProviderConnectionException as error:
+        log(str(error), Qgis.Critical)
+        return None
+
+
+def create_connection_from_uri(
+        uri: str) -> Optional[QgsAbstractDatabaseProviderConnection]:
+    try:
+        return postgres_metadata().createConnection(uri, {})
+    except QgsProviderConnectionException as error:
+        log(str(error), Qgis.Critical)
+        return None
+
+
+def connection_for_database(
+        connection: QgsAbstractDatabaseProviderConnection,
+        database_name: str) -> Optional[QgsAbstractDatabaseProviderConnection]:
+    uri = QgsDataSourceUri(connection.uri())
+    uri.setDatabase(database_name)
+    return create_connection_from_uri(uri.uri(False))
+
+
+def connection_uri(
+        connection: QgsAbstractDatabaseProviderConnection) -> QgsDataSourceUri:
+    return QgsDataSourceUri(connection.uri())
+
+
+def make_query(connection: QgsAbstractDatabaseProviderConnection,
+               query: str) -> Optional[list]:
+    if not connection:
+        return None
+    try:
+        return connection.executeSql(query)
+    except QgsProviderConnectionException as error:
+        log(f'{error}\n{query}', Qgis.Critical)
+        return None
+
+
+def check_connection(
+        connection: QgsAbstractDatabaseProviderConnection) -> bool:
+    return bool(connection) and make_query(connection, 'SELECT 1;') is not None
+
+
+def get_schema_names(
+        connection: QgsAbstractDatabaseProviderConnection) -> List[str]:
+    if not connection:
         return []
-    if not db.isOpen():
-        db.open()
-    query_obj = QSqlQuery(db)
-    if schema_name:
-        query_obj.exec_(f'SET search_path TO "{schema_name}",public;')
-    if postgis_raster:
-        query_obj.exec_('''SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';''')
-    if bind_value is not None:
-        query_obj.prepare(query)
-        query_obj.addBindValue(bind_value)
-    request = query_obj.exec_(query) if bind_value is None else query_obj.exec()
-    if request:
-        object_amount = query_obj.record().count()
-        while query_obj.next():
-            row = []
-            for object_id in range(0, object_amount):
-                val = query_obj.value(object_id)
-                row.append(None if val == NULL else val)
-            response.append(row)
-    else:
-        response = [query_obj.lastError().databaseText()]
-    return response
+    try:
+        schemas = connection.schemas()
+    except QgsProviderConnectionException as error:
+        log(str(error), Qgis.Warning)
+        return []
+    return [schema for schema in schemas if schema not in system_tables]
 
 
-def make_queries(db: QSqlDatabase, sql_list: Union[List[str], List[Tuple[str, Any]]],
-                 schema_name: str = '', postgis_raster: bool = False,
-                 bind_value: bool = False, base_class=None,
-                 percent_amount: int = None) -> bool:
-    query = QSqlQuery(db)
-    if db.driverName() == "QPSQL":
-        query.exec_(f"SET search_path TO {schema_name},public;")
-    query.exec_('BEGIN;')
-    if postgis_raster:
-        query.exec_('''SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';''')
-    for exp in sql_list:
-        if bind_value:
-            query.prepare(exp[0])
-            query.addBindValue((exp[1]))
-            query.exec()
+def get_schema_tables(
+        connection: QgsAbstractDatabaseProviderConnection
+) -> Dict[str, List[str]]:
+    excluded = ', '.join(quote_literal(name) for name in system_tables)
+    rows = make_query(connection, f'''
+        SELECT n.nspname, c.relname
+        FROM pg_namespace n
+        LEFT JOIN pg_class c
+            ON c.relnamespace = n.oid
+            AND c.relkind IN ('r', 'v', 'm', 'p', 'f')
+            AND position('_ogr_' IN c.relname) <> 1
+        WHERE n.nspname NOT IN ({excluded})
+        ORDER BY n.nspname, c.relname;
+    ''') or []
+    structure = {}
+    for schema_name, table_name in rows:
+        tables = structure.setdefault(schema_name, [])
+        if table_name:
+            tables.append(table_name)
+    return structure
+
+
+def get_active_db_info(
+        connection: Optional[QgsAbstractDatabaseProviderConnection],
+        label: QLabel, simple: bool = False) -> bool:
+    active_db_str = tr("Active database:")
+    if connection:
+        uri = connection_uri(connection)
+        db_info = f'{uri.host() or uri.service()}:{uri.port()}, ' \
+                  f'{uri.database()}'
+        if simple:
+            label.setText(f'{active_db_str} {db_info}')
         else:
-            query.exec_(exp)
-        if base_class and hasattr(base_class, 'cancel_detection'):
-            if base_class.cancel_detection():
-                return False
-        if base_class and hasattr(base_class, 'last_progress_value'):
-            base_class.last_progress_value = \
-                change_alg_progress(base_class, base_class.last_progress_value,
-                                    percent_amount / len(sql_list))
-
-    query.exec_('COMMIT;')
-    return True
-
-
-def unpack_nested_lists(n_list: List[List[Any]]) -> List[Any] or str:
-    return [elem for nested_list in n_list for elem in nested_list
-            if not isinstance(nested_list, str)]
+            label.setText(
+                f'{active_db_str} <span style="font-weight:600; '
+                f'color:#2ea043;">{db_info}</span>')
+        return True
+    if simple:
+        label.setText(f'{active_db_str} {tr("Not connected.")}')
+    else:
+        label.setText(
+            f'{active_db_str} <span style="font-weight:600; '
+            f'color:#e5534b;">{tr("Not connected.")}</span>')
+    return False
 
 
-def universal_db_check(db: QSqlDatabase) -> bool:
-    return True if db and db.isOpen() and db.isValid() and \
-                   make_query(db, test_query) else False
+def create_postgis_raster_layer(
+        connection: QgsAbstractDatabaseProviderConnection, schema_name: str,
+        table_name: str, raster_name: str,
+        rast_column: str = 'rast') -> QgsRasterLayer:
+    if "     ||  " in raster_name:
+        raster_name = raster_name.split('     ||  ')[0]
+    uri = connection_uri(connection)
+    uri.setSchema(schema_name)
+    uri.setTable(table_name)
+    uri.setGeometryColumn(rast_column)
+    return QgsRasterLayer(uri.uri(False), raster_name, 'postgresraster')
+
+
+def create_postgis_vector_layer(
+        connection: QgsAbstractDatabaseProviderConnection, schema_name: str,
+        table_name: str, geom_col: str = None,
+        layer_name: str = '') -> QgsVectorLayer:
+    uri = connection_uri(connection)
+    uri.setDataSource(schema_name, table_name, geom_col or None)
+    return QgsVectorLayer(uri.uri(False), layer_name or table_name, 'postgres')
 
 
 def invert_dict(input_dict: dict) -> dict:
@@ -560,7 +440,7 @@ def invert_dict(input_dict: dict) -> dict:
 
 
 def get_dialog_label_values(dlg_obj: QWidget) -> Any:
-    if isinstance(dlg_obj, (QLabel, QPushButton, QToolButton, QCheckBox, 
+    if isinstance(dlg_obj, (QLabel, QPushButton, QToolButton, QCheckBox,
                             QRadioButton)):
         return dlg_obj.text()
     elif not dlg_obj:
@@ -571,7 +451,7 @@ def set_dialog_labels(dlg_obj: QWidget, value: str) -> None:
     value = value if value.upper() not in ('NULL', 'NONE') else ''
     if not dlg_obj or not value:
         return
-    if isinstance(dlg_obj, (QLabel, QPushButton, QToolButton, QCheckBox, 
+    if isinstance(dlg_obj, (QLabel, QPushButton, QToolButton, QCheckBox,
                             QRadioButton)):
         dlg_obj.setText(value)
 
@@ -598,15 +478,12 @@ class NewThreadAlg:
             lambda: iface.messageBar().pushWidget(self.msg, Qgis.Info))
         self.task.progressChanged.connect(
             lambda: self.prog.setValue(int(self.task.progress())))
-        self.task.taskCompleted.connect(lambda: self.task_ended_info())
-        self.task.taskTerminated.connect(lambda: self.task_ended_info(False))
+        self.task.taskCompleted.connect(self.task_ended_info)
+        self.task.taskTerminated.connect(self.task_ended_info)
         QgsApplication.taskManager().addTask(self.task)
 
-    def task_ended_info(self, successfully: bool = True) -> None:
+    def task_ended_info(self) -> None:
         iface.messageBar().clearWidgets()
-        self.task.finished(True) if successfully \
-            else self.task.finished('canceled')
-        del self.task
 
     def cancel(self) -> None:
         self.task.cancel()
