@@ -6,9 +6,10 @@ from qgis.core import QgsTask, Qgis
 from .UI.import_raster_ui import ImportRaster_UI
 from .utils.raster_utils import make_sql_create_raster_table, \
     make_sql_create_raster_gist, create_raster_overviews, \
-    make_sql_add_raster_constraints, make_sql_insert_raster, \
+    make_sql_add_raster_constraints, make_sql_insert_rasters, \
     count_raster_tiles, iter_raster_tiles, iter_whole_raster, \
-    log_raster_table_info, drop_raster_table
+    iter_tile_batches, \
+    log_raster_table_info, drop_raster_table, ensure_gdal_drivers
 from ..utils import project, iface, make_query, tr, add_rasters_to_project, \
     create_postgis_raster_layer, change_alg_progress, RASTERS_LAYERS_GROUP, \
     create_connection_from_uri
@@ -76,6 +77,8 @@ class RasterImporter(QgsTask):
 
     def raster_insert(self) -> bool:
         schema, table = self.destination_schema, self.destination_table
+        if not ensure_gdal_drivers(self.connection):
+            return False
         if self.q_overwrite and not drop_raster_table(
                 self.connection, schema, table):
             return False
@@ -88,21 +91,23 @@ class RasterImporter(QgsTask):
             tiles_amount = count_raster_tiles(
                 self.input_file, self.tile_width, self.tile_height)
             tiles = iter_raster_tiles(
-                self.input_file, self.tile_width, self.tile_height)
+                self.input_file, self.tile_width, self.tile_height,
+                self.q_compress)
         else:
             tiles_amount = 1
             tiles = iter_whole_raster(self.input_file)
         if not tiles_amount:
             return False
 
-        for tile in tiles:
-            if make_query(self.connection, make_sql_insert_raster(
-                    schema, table, self.srid, tile)) is None:
+        for batch in iter_tile_batches(tiles):
+            if make_query(self.connection, make_sql_insert_rasters(
+                    schema, table, self.srid, batch)) is None:
                 return False
             if self.cancel_detection():
                 return False
             self.last_progress_value = change_alg_progress(
-                self, self.last_progress_value, 70 / tiles_amount)
+                self, self.last_progress_value,
+                70 * len(batch) / tiles_amount)
 
         if make_query(self.connection,
                       make_sql_create_raster_gist(schema, table)) is None:

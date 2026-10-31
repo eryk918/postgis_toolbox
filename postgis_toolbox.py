@@ -15,10 +15,11 @@ from .CustomQueryBuilder.CustomQueryBuilder import FilteredDBManagerPlugin
 from .DBManager.DBManager import DBManager
 from .ImportRaster.ImportRaster import ImportRaster
 from .ImportVector.ImportVector import ImportVector
+from .SqlLog.SqlLog import SqlLog
 from .TableRegistry.TableRegistry import TableRegistry
 from .postgis_toolbox_provider import PostGISToolboxProvider
 from .utils import tr, plugin_dir, get_active_db_info, plugin_name, \
-    show_error, connection_uri
+    show_error, connection_uri, save_setting
 
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
@@ -42,6 +43,7 @@ class PostGISToolboxPlugin(object):
         self.toolbar.setObjectName(plugin_name)
         self.db_manager_plugin = FilteredDBManagerPlugin(self.iface)
         self.table_registry = TableRegistry(self)
+        self.sql_log = SqlLog(self)
 
     def initGui(self):
         self._initProcessing()
@@ -70,6 +72,11 @@ class PostGISToolboxPlugin(object):
             text=tr('Query editor'),
             callback=self.run_query_editor,
             parent=self.iface.mainWindow())
+        self._add_action(
+            os.path.join(self.plugin_dir, 'icons', 'sql_log.svg'),
+            text=tr('SQL log'),
+            callback=self.sql_log.run,
+            parent=self.iface.mainWindow())
         self.connection_label = self._add_connection_label()
         self.disconnect_action = self._add_action(
             os.path.join(self.plugin_dir, 'icons', 'disconnect_db.svg'),
@@ -81,6 +88,7 @@ class PostGISToolboxPlugin(object):
     def unload(self):
         self.db_manager_plugin.close()
         self.table_registry.close()
+        self.sql_log.close()
         self.db = None
         self.connection_name = None
         QgsApplication.processingRegistry().removeProvider(self.provider)
@@ -152,6 +160,9 @@ class PostGISToolboxPlugin(object):
     def set_active_db(self, db, connection_name: Optional[str]) -> None:
         self.db = db
         self.connection_name = connection_name
+        if self.db is not None and connection_name:
+            save_setting('last/connection', connection_name)
+            save_setting('last/database', connection_uri(self.db).database())
         get_active_db_info(self.db, self.connection_label, True)
         self.disconnect_action.setEnabled(self.db is not None)
         self.provider.refreshAlgorithms()

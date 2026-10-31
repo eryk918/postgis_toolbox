@@ -16,17 +16,37 @@ PostGIS operations from the Processing toolbox.
   options for spatial index, lower-case column names, single-part geometries
   and overwriting.
 * **Import raster data** – load GeoTIFF rasters as PostGIS raster tables,
-  tiled on the fly with optional overviews.
+  tiled on the fly (preset or custom tile size, optional LZW compression)
+  with optional overviews.
+  Imports run in the background
+  with a progress bar on the QGIS message bar, and several can run at once.
+  Imported layers land in the "IMPORTED VECTORS" / "IMPORTED RASTERS"
+  groups of the layer tree.
 * **Query editor** – the QGIS DB Manager SQL window limited to PostGIS, with
   schema-qualified table names in the query builder, PostGIS function help and
   one-click "create table / create view" from the current query.
 * **Table registry** – every table, view and raster in the active database in
-  one list, with type, geometry type and SRID. Pick one to see its columns,
-  primary key, indexes and raster overviews, add it to the project with a
-  double click, rename it or drop it. Raster overviews are renamed and dropped
-  together with their raster.
+  one list, with type, geometry type and SRID. Pick one to see its size, last
+  vacuum, owner, privileges, columns, primary key, indexes and raster
+  overviews. Add it to the project with a double click or drag it onto the
+  map, export it (QGIS save-as dialogs), rename, move, copy or drop it. The
+  Tools menu covers the usual upkeep: vacuum, spatial index, primary key,
+  SRID update, geometry type change, geometry validity report, raster
+  overviews, raster constraints and retiling. The Privileges dialog grants and
+  revokes table rights per role and changes the owner. Raster overviews follow
+  renames, moves and drops of their raster. Long operations run in the
+  background with a progress bar (real percentages for vacuum and index
+  builds, taken from `pg_stat_progress_*`), so QGIS stays responsive.
+  Right-click a row for the same actions in a context menu.
+* **SQL log** – every statement the plugin ran, with timing and errors, ready
+  to copy or save as a .txt / .log file for a bug report.
+* The database manager remembers the last active database: one click on
+  "Last used" connects to it again, also after a QGIS restart. A filter box
+  above the tree narrows it down to matching databases, schemas or tables.
 * The active database is shown on the toolbar; the icon next to it disconnects
-  from it.
+  from it. Import dialogs remember the last schema and options, and the
+  database manager shows server version, database sizes and installed
+  extensions.
 
 **Processing algorithms** (group *PostGIS Toolbox*)
 

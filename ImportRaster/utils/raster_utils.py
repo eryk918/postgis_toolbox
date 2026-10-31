@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import math
-from typing import Iterator, Optional
+from typing import Iterator, List, Optional
 from uuid import uuid4
 
 from osgeo import gdal
@@ -13,7 +13,24 @@ raster_extensions = ['tif', 'tiff']
 
 max_raster_untiled_size = 104857600
 
+insert_batch_bytes = 16777216
+
+tile_creation_options = ['COMPRESS=LZW']
+
 enable_gdal_drivers_query = "SET postgis.gdal_enabled_drivers = 'ENABLE_ALL';"
+
+
+def ensure_gdal_drivers(
+        connection: QgsAbstractDatabaseProviderConnection) -> bool:
+    rows = make_query(
+        connection,
+        "SELECT current_setting('postgis.gdal_enabled_drivers', true);")
+    if rows is None:
+        return False
+    drivers = (rows[0][0] or '').split()
+    if 'ENABLE_ALL' in drivers or 'GTiff' in drivers:
+        return True
+    return make_query(connection, enable_gdal_drivers_query) is not None
 
 
 def open_raster_dataset(raster_path: str) -> Optional[gdal.Dataset]:
@@ -43,7 +60,8 @@ def read_vsimem_file(mem_path: str) -> bytes:
 
 
 def iter_raster_tiles(raster_path: str, tile_width: int,
-                      tile_height: int) -> Iterator[bytes]:
+                      tile_height: int,
+                      compress: bool = True) -> Iterator[bytes]:
     dataset = open_raster_dataset(raster_path)
     if dataset is None:
         return
@@ -53,6 +71,7 @@ def iter_raster_tiles(raster_path: str, tile_width: int,
             mem_path = f'/vsimem/{uuid4().hex}.tif'
             tile_dataset = gdal.Translate(
                 mem_path, dataset, format='GTiff',
+                creationOptions=tile_creation_options if compress else [],
                 srcWin=[x_offset, y_offset,
                         min(tile_width, x_size - x_offset),
                         min(tile_height, y_size - y_offset)])
@@ -158,15 +177,31 @@ def make_sql_create_raster_table(schema: str, table: str,
     '''
 
 
-def make_sql_insert_raster(schema: str, table: str, srid: int,
-                           raster_data: bytes,
-                           rast_column: str = 'rast') -> str:
+def make_sql_insert_rasters(schema: str, table: str, srid: int,
+                            tiles: List[bytes],
+                            rast_column: str = 'rast') -> str:
+    values = ',\n'.join(
+        f"(ST_FromGDALRaster('\\x{tile.hex()}'::bytea, {srid}))"
+        for tile in tiles)
     return f'''
-        {enable_gdal_drivers_query}
         INSERT INTO {qualified_name(schema, table)}
             ({quote_identifier(rast_column)})
-        VALUES (ST_FromGDALRaster('\\x{raster_data.hex()}'::bytea, {srid}));
+        VALUES {values};
     '''
+
+
+def iter_tile_batches(tiles: Iterator[bytes],
+                      max_bytes: int = insert_batch_bytes
+                      ) -> Iterator[List[bytes]]:
+    batch, size = [], 0
+    for tile in tiles:
+        batch.append(tile)
+        size += len(tile)
+        if size >= max_bytes:
+            yield batch
+            batch, size = [], 0
+    if batch:
+        yield batch
 
 
 def make_sql_add_raster_constraints(schema: str, table: str,

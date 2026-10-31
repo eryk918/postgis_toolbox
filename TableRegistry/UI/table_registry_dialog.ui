@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>960</width>
-    <height>600</height>
+    <width>1000</width>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,7 +59,7 @@
      <property name="childrenCollapsible">
       <bool>false</bool>
      </property>
-     <widget class="QTableWidget" name="tables_table">
+     <widget class="TableRegistryView" name="tables_table">
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
@@ -137,11 +137,39 @@
     </widget>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="progress_layout">
+     <item>
+      <widget class="QLabel" name="progress_label">
+       <property name="text">
+        <string notr="true"/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="progress_bar">
+       <property name="maximum">
+        <number>0</number>
+       </property>
+       <property name="textVisible">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="buttons_layout">
      <item>
       <widget class="QPushButton" name="add_layer_btn">
        <property name="text">
         <string>Add to project</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="export_btn">
+       <property name="text">
+        <string>Export</string>
        </property>
       </widget>
      </item>
@@ -156,6 +184,26 @@
       <widget class="QPushButton" name="delete_btn">
        <property name="text">
         <string>Delete</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="privileges_btn">
+       <property name="text">
+        <string>Privileges</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="tools_btn">
+       <property name="text">
+        <string>Tools</string>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::InstantPopup</enum>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextOnly</enum>
        </property>
       </widget>
      </item>
@@ -188,6 +236,11 @@
    <class>QgsFilterLineEdit</class>
    <extends>QLineEdit</extends>
    <header>qgsfilterlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TableRegistryView</class>
+   <extends>QTableWidget</extends>
+   <header>postgis_toolbox.TableRegistry.UI.registry_view</header>
   </customwidget>
  </customwidgets>
  <resources/>

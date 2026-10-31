@@ -45,6 +45,16 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="last_db_btn">
+          <property name="toolTip">
+           <string>Connect to the database used last time</string>
+          </property>
+          <property name="text">
+           <string>Last used</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -85,6 +95,16 @@
         </item>
        </layout>
       </item>
+      <item>
+       <widget class="QLabel" name="server_info_label">
+        <property name="text">
+         <string notr="true"/>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -94,6 +114,9 @@
       <string>Database objects</string>
      </property>
      <layout class="QVBoxLayout" name="objects_layout">
+      <item>
+       <widget class="QgsFilterLineEdit" name="filter_lineedit"/>
+      </item>
       <item>
        <widget class="QTreeWidget" name="db_obj_treeview">
         <column>
@@ -191,6 +214,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFilterLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>qgsfilterlineedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -198,6 +228,16 @@
    <signal>currentIndexChanged(int)</signal>
    <receiver>db_obj_treeview</receiver>
    <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>

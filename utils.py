@@ -6,10 +6,13 @@ import re
 import shutil
 import subprocess
 import sys
+from datetime import datetime
+from time import perf_counter
 from typing import List, Tuple, Any, Dict, Optional
 
 import qgis
 from PyQt5.QtCore import Qt
+from qgis.PyQt import sip
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QComboBox, QProgressBar, QTreeWidgetItem, \
@@ -20,7 +23,7 @@ from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, QgsWkbTypes, \
     QgsProviderRegistry, QgsProviderMetadata, QgsProviderConnectionException, \
     QgsAbstractDatabaseProviderConnection
 from qgis.core import QgsProject, QgsVectorLayer, \
-    QgsRasterLayer, QgsApplication
+    QgsRasterLayer, QgsApplication, QgsSettings, QgsLayerTreeGroup
 from qgis.utils import iface
 
 project = QgsProject.instance()
@@ -28,6 +31,9 @@ root = project.layerTreeRoot()
 main_window = iface.mainWindow()
 
 plugin_name = 'PostGIS Toolbox'
+settings_prefix = 'PostGISToolbox'
+sql_log = []
+SQL_LOG_LIMIT = 500
 plugin_dir = os.path.dirname(__file__)
 plugin_dir_name = 'postgis_toolbox'
 main_plugin_icon = QIcon(os.path.join(plugin_dir, 'icons', 'main.svg'))
@@ -127,23 +133,34 @@ def change_alg_progress(progress, last_progress_value, value):
     return last_progress_value
 
 
-def add_layer_into_map(layer, group_name, parent_name=None, position=0,
-                       raster: bool = False):
-    if raster:
+def ensure_layer_group(group_name: str) -> Optional[QgsLayerTreeGroup]:
+    if not group_name:
+        return None
+    tree_root = project.layerTreeRoot()
+    group = tree_root.findGroup(group_name)
+    if group is None:
+        group = tree_root.insertGroup(0, group_name)
+    return group
+
+
+def add_layer_into_map(layer, group_name: str, position: int = 0) -> None:
+    group = ensure_layer_group(group_name)
+    if group is None:
         project.addMapLayer(layer)
-    else:
-        if parent_name and root.findGroup(parent_name):
-            group = root.findGroup(parent_name).findGroup(group_name)
-        else:
-            group = root.findGroup(group_name)
-        if not group:
-            project.addMapLayer(layer)
-            return
-        QApplication.processEvents()
-        project.addMapLayer(layer, False)
-        if group_name:
-            group.insertLayer(position, layer)
+        return
+    project.addMapLayer(layer, False)
+    group.insertLayer(position, layer)
     QApplication.processEvents()
+
+
+def set_raster_alpha_band(layer: QgsRasterLayer) -> None:
+    renderer = layer.renderer()
+    provider = layer.dataProvider()
+    if renderer is None or provider is None or layer.bandCount() != 4:
+        return
+    if any(provider.dataType(band) != Qgis.Byte for band in range(1, 5)):
+        return
+    renderer.setAlphaBand(4)
 
 
 def add_rasters_to_project(group_name: str,
@@ -155,7 +172,12 @@ def add_rasters_to_project(group_name: str,
         QApplication.processEvents()
         rlayer = raster if postgis_raster \
             else QgsRasterLayer(raster, os.path.basename(raster))
-        add_layer_into_map(rlayer, group_name, raster=True)
+        if not rlayer.isValid():
+            log(f'Invalid raster layer skipped: {rlayer.name()}',
+                Qgis.Warning)
+            continue
+        set_raster_alpha_band(rlayer)
+        add_layer_into_map(rlayer, group_name)
         if symbology:
             rlayer.loadNamedStyle(symbology)
             rlayer.triggerRepaint()
@@ -166,14 +188,15 @@ def add_vectors_to_project(group_name: str,
                            list_of_vectors: List[str or QgsVectorLayer],
                            symbology: str = None) -> None:
     QApplication.processEvents()
-    group_import = project.layerTreeRoot().findGroup(group_name)
-    if not group_import:
-        project.layerTreeRoot().addGroup(group_name)
     for vector_path in list_of_vectors:
         QApplication.processEvents()
         vlayer = vector_path if isinstance(vector_path, QgsVectorLayer) \
             else QgsVectorLayer(vector_path, os.path.basename(vector_path),
                                 "ogr")
+        if not vlayer.isValid():
+            log(f'Invalid vector layer skipped: {vlayer.name()}',
+                Qgis.Warning)
+            continue
         add_layer_into_map(vlayer, group_name)
         if symbology:
             vlayer.loadNamedStyle(symbology)
@@ -191,7 +214,8 @@ def open_other_files(filepath: str) -> None:
             ext = os.path.splitext(filepath)[-1]
             show_error(
                 None,
-                tr('Error opening a file with the file extension *.{0}.').format(ext))
+                tr('Error opening a file with the file extension *.{0}.').format(
+                    ext))
             return
     elif os.name == 'posix':
         subprocess.call(('xdg-open', filepath))
@@ -208,11 +232,13 @@ def get_all_rasters_from_project(only_postgis: bool = False) -> Dict[str, str]:
                 isinstance(predict_layer, QgsRasterLayer) \
                 and predict_layer.dataProvider().name() == 'postgresraster':
             uri = predict_layer.dataProvider().uri()
-            rasters_dict[f'{predict_layer.name()}     ||  {uri.schema()}.{uri.table()}'] = predict_layer
+            rasters_dict[
+                f'{predict_layer.name()}     ||  {uri.schema()}.{uri.table()}'] = predict_layer
         elif not only_postgis and predict_layer.isValid() and \
                 isinstance(predict_layer, QgsRasterLayer) and \
                 predict_layer.dataProvider().name() == 'gdal':
-            rasters_dict[f'{predict_layer.name()}     ||  {predict_layer.id()}'] = predict_layer.source()
+            rasters_dict[
+                f'{predict_layer.name()}     ||  {predict_layer.id()}'] = predict_layer.source()
     return rasters_dict
 
 
@@ -339,15 +365,47 @@ def connection_uri(
     return QgsDataSourceUri(connection.uri())
 
 
+def record_sql(query: str, started: float, error: str = '') -> None:
+    sql_log.append({
+        'time': datetime.now().strftime('%H:%M:%S'),
+        'duration': round((perf_counter() - started) * 1000),
+        'sql': '\n'.join(line.strip() for line in query.strip().splitlines()
+                         if line.strip()),
+        'error': error,
+    })
+    del sql_log[:-SQL_LOG_LIMIT]
+
+
+def clear_sql_log() -> None:
+    sql_log.clear()
+
+
 def make_query(connection: QgsAbstractDatabaseProviderConnection,
                query: str) -> Optional[list]:
     if not connection:
         return None
+    started = perf_counter()
     try:
-        return connection.executeSql(query)
+        result = connection.executeSql(query)
     except QgsProviderConnectionException as error:
+        record_sql(query, started, str(error))
         log(f'{error}\n{query}', Qgis.Critical)
         return None
+    record_sql(query, started)
+    return result
+
+
+def read_setting(key: str, default: Any = None) -> Any:
+    return QgsSettings().value(f'{settings_prefix}/{key}', default)
+
+
+def save_setting(key: str, value: Any) -> None:
+    QgsSettings().setValue(f'{settings_prefix}/{key}', value)
+
+
+def read_bool_setting(key: str, default: bool) -> bool:
+    return QgsSettings().value(
+        f'{settings_prefix}/{key}', default, type=bool)
 
 
 def check_connection(
@@ -423,6 +481,7 @@ def create_postgis_raster_layer(
     uri.setSchema(schema_name)
     uri.setTable(table_name)
     uri.setGeometryColumn(rast_column)
+    uri.setParam('mode', '2')
     return QgsRasterLayer(uri.uri(False), raster_name, 'postgresraster')
 
 
@@ -476,14 +535,18 @@ class NewThreadAlg:
         self.task = self.func_to_run
         self.task.begun.connect(
             lambda: iface.messageBar().pushWidget(self.msg, Qgis.Info))
-        self.task.progressChanged.connect(
-            lambda: self.prog.setValue(int(self.task.progress())))
+        self.task.progressChanged.connect(self.update_progress)
         self.task.taskCompleted.connect(self.task_ended_info)
         self.task.taskTerminated.connect(self.task_ended_info)
         QgsApplication.taskManager().addTask(self.task)
 
+    def update_progress(self) -> None:
+        if not sip.isdeleted(self.prog):
+            self.prog.setValue(int(self.task.progress()))
+
     def task_ended_info(self) -> None:
-        iface.messageBar().clearWidgets()
+        if not sip.isdeleted(self.msg):
+            iface.messageBar().popWidget(self.msg)
 
     def cancel(self) -> None:
         self.task.cancel()

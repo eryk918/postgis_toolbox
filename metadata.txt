@@ -8,7 +8,7 @@ email=erwinek1998@gmail.com
 about=Everyday PostGIS chores from inside QGIS.
  - Manage databases: connections, databases, schemas, PostGIS check, pick the active database.
  - Import vectors and rasters from the project or from files (rasters are tiled, with overviews if you want).
- - Table registry: all tables, views and rasters of the active database with their geometry, SRID, columns, keys, indexes and overviews; add to project, rename or drop.
+ - Table registry: all tables, views and rasters of the active database with their geometry, SRID, size, owner, privileges, columns, keys, indexes and overviews; add to project or drag onto the map, export, rename, move, copy, drop, vacuum, index, fix SRID or geometry type, rebuild overviews, grant privileges.
  - Query editor: DB Manager SQL window with schema-qualified tables, PostGIS function help, create table / view from a query.
  - 16 Processing algorithms (buffer, clip, intersection, difference, merge, aggregate, repair, nearest neighbour, point and polygon generation, raster clip, merge, reproject, resample, summary, tiling) that run in the database.
  Needs PostgreSQL with PostGIS (postgis_raster for the raster tools). English and Polish.
@@ -22,7 +22,8 @@ changelog=2.0
  - QGIS provider connections instead of QSqlDatabase, no temporary connection entries
  - Processing algorithms rebuilt on a common base with database, schema and table parameters
  - query editor built on the DB Manager shipped with QGIS instead of a bundled copy
- - new table registry: browse, inspect, load, rename and drop tables and rasters
+ - new table registry: browse, inspect, load, export, rename, move, copy and drop tables and rasters, maintenance tools, privileges
+ - SQL log of everything the plugin runs, import dialogs remember their settings, server info in the database manager
  - disconnect button on the toolbar
  - redesigned dialogs with native QGIS widgets, dark theme support
  - much faster loading of the server structure

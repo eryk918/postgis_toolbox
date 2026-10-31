@@ -892,6 +892,392 @@ Tej operacji nie można cofnąć.</translation>
         <source>PostGIS extension was detected, version is: {0}</source>
         <translation>Wykryto rozszerzenie PostGIS w wersji: {0}</translation>
     </message>
+    <message>
+        <source>&quot;{0}&quot; is now {1}.{2}.</source>
+        <translation>&quot;{0}&quot; to teraz {1}.{2}.</translation>
+    </message>
+    <message>
+        <source>Add primary key</source>
+        <translation>Dodaj klucz główny</translation>
+    </message>
+    <message>
+        <source>Add raster constraints</source>
+        <translation>Dodaj ograniczenia rastra</translation>
+    </message>
+    <message>
+        <source>Adding raster constraints failed!</source>
+        <translation>Dodanie ograniczeń rastra nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>Adding the primary key failed!</source>
+        <translation>Dodanie klucza głównego nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>All geometries are valid.</source>
+        <translation>Wszystkie geometrie są poprawne.</translation>
+    </message>
+    <message>
+        <source>All spatial columns already have an index.</source>
+        <translation>Wszystkie kolumny przestrzenne mają już indeks.</translation>
+    </message>
+    <message>
+        <source>An error occurred while counting rows!</source>
+        <translation>Wystąpił błąd podczas liczenia wierszy!</translation>
+    </message>
+    <message>
+        <source>Build overviews</source>
+        <translation>Zbuduj przeglądy</translation>
+    </message>
+    <message>
+        <source>Building overviews failed!</source>
+        <translation>Budowanie przeglądów nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>Change the geometry type of &quot;{0}&quot; to {1}?
+Rows that cannot be converted will make the operation fail.</source>
+        <translation>Zmienić typ geometrii &quot;{0}&quot; na {1}?
+Wiersze, których nie da się przekonwertować, przerwą operację.</translation>
+    </message>
+    <message>
+        <source>Changing the geometry type failed!</source>
+        <translation>Zmiana typu geometrii nie powiodła się!</translation>
+    </message>
+    <message>
+        <source>Check geometries</source>
+        <translation>Sprawdź geometrie</translation>
+    </message>
+    <message>
+        <source>Copied &quot;{0}&quot; to {1}.{2}.</source>
+        <translation>Skopiowano &quot;{0}&quot; do {1}.{2}.</translation>
+    </message>
+    <message>
+        <source>Copy &quot;{0}&quot; to schema</source>
+        <translation>Kopiuj &quot;{0}&quot; do schematu</translation>
+    </message>
+    <message>
+        <source>Copy to schema...</source>
+        <translation>Kopiuj do schematu...</translation>
+    </message>
+    <message>
+        <source>Copying the table failed!</source>
+        <translation>Kopiowanie tabeli nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>Count rows</source>
+        <translation>Policz wiersze</translation>
+    </message>
+    <message>
+        <source>Create spatial index</source>
+        <translation>Utwórz indeks przestrzenny</translation>
+    </message>
+    <message>
+        <source>Creating the spatial index failed!</source>
+        <translation>Utworzenie indeksu przestrzennego nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>ERROR</source>
+        <translation>BŁĄD</translation>
+    </message>
+    <message>
+        <source>Existing overviews of &quot;{0}&quot; will be dropped and built again. Continue?</source>
+        <translation>Istniejące przeglądy &quot;{0}&quot; zostaną usunięte i zbudowane od nowa. Kontynuować?</translation>
+    </message>
+    <message>
+        <source>Extensions</source>
+        <translation>Rozszerzenia</translation>
+    </message>
+    <message>
+        <source>Force geometry type</source>
+        <translation>Wymuś typ geometrii</translation>
+    </message>
+    <message>
+        <source>Geometry check failed!</source>
+        <translation>Sprawdzenie geometrii nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>Geometry type of &quot;{0}&quot; changed to {1}.</source>
+        <translation>Typ geometrii &quot;{0}&quot; zmieniony na {1}.</translation>
+    </message>
+    <message>
+        <source>Materialized view &quot;{0}&quot; refreshed.</source>
+        <translation>Widok zmaterializowany &quot;{0}&quot; odświeżony.</translation>
+    </message>
+    <message>
+        <source>Move or rename &quot;{0}&quot;</source>
+        <translation>Przenieś lub zmień nazwę &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Move or rename...</source>
+        <translation>Przenieś lub zmień nazwę...</translation>
+    </message>
+    <message>
+        <source>Moving the table failed!</source>
+        <translation>Przeniesienie tabeli nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>Overviews of &quot;{0}&quot; built.</source>
+        <translation>Przeglądy &quot;{0}&quot; zbudowane.</translation>
+    </message>
+    <message>
+        <source>Primary key column &quot;{0}&quot; added.</source>
+        <translation>Dodano kolumnę klucza głównego &quot;{0}&quot;.</translation>
+    </message>
+    <message>
+        <source>Privileges of &quot;{0}&quot; updated.</source>
+        <translation>Uprawnienia do &quot;{0}&quot; zaktualizowane.</translation>
+    </message>
+    <message>
+        <source>Raster constraints added to &quot;{0}&quot;.</source>
+        <translation>Dodano ograniczenia rastra do &quot;{0}&quot;.</translation>
+    </message>
+    <message>
+        <source>Refresh materialized view</source>
+        <translation>Odśwież widok zmaterializowany</translation>
+    </message>
+    <message>
+        <source>Refreshing the materialized view failed!</source>
+        <translation>Odświeżenie widoku zmaterializowanego nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>Retile into a new table</source>
+        <translation>Przekafluj do nowej tabeli</translation>
+    </message>
+    <message>
+        <source>Retiled &quot;{0}&quot; into &quot;{1}&quot;.</source>
+        <translation>Przekaflowano &quot;{0}&quot; do &quot;{1}&quot;.</translation>
+    </message>
+    <message>
+        <source>Retiling failed!</source>
+        <translation>Przekaflowanie nie powiodło się!</translation>
+    </message>
+    <message>
+        <source>SQL log</source>
+        <translation>Dziennik SQL</translation>
+    </message>
+    <message>
+        <source>SRID of &quot;{0}&quot; set to {1}.</source>
+        <translation>SRID &quot;{0}&quot; ustawiony na {1}.</translation>
+    </message>
+    <message>
+        <source>Shown</source>
+        <translation>Pokazano</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Rozmiar</translation>
+    </message>
+    <message>
+        <source>Spatial index created on {0}.</source>
+        <translation>Utworzono indeks przestrzenny na {0}.</translation>
+    </message>
+    <message>
+        <source>Table &quot;{0}&quot; already exists.</source>
+        <translation>Tabela &quot;{0}&quot; już istnieje.</translation>
+    </message>
+    <message>
+        <source>The selected CRS has no SRID.</source>
+        <translation>Wybrany układ nie ma SRID.</translation>
+    </message>
+    <message>
+        <source>The table already has a primary key.</source>
+        <translation>Tabela ma już klucz główny.</translation>
+    </message>
+    <message>
+        <source>Total</source>
+        <translation>Razem</translation>
+    </message>
+    <message>
+        <source>Up to 1:{0}</source>
+        <translation>Do 1:{0}</translation>
+    </message>
+    <message>
+        <source>Update SRID...</source>
+        <translation>Zmień SRID...</translation>
+    </message>
+    <message>
+        <source>Updating privileges failed!</source>
+        <translation>Aktualizacja uprawnień nie powiodła się!</translation>
+    </message>
+    <message>
+        <source>Updating the SRID failed!</source>
+        <translation>Zmiana SRID nie powiodła się!</translation>
+    </message>
+    <message>
+        <source>Vacuum and analyze</source>
+        <translation>Vacuum i analyze</translation>
+    </message>
+    <message>
+        <source>Vacuum and analyze failed!</source>
+        <translation>Vacuum i analyze nie powiodły się!</translation>
+    </message>
+    <message>
+        <source>Vacuum and analyze of &quot;{0}&quot; finished.</source>
+        <translation>Vacuum i analyze &quot;{0}&quot; zakończone.</translation>
+    </message>
+    <message>
+        <source>{0} statements, {1} errors</source>
+        <translation>Instrukcji: {0}, błędów: {1}</translation>
+    </message>
+    <message>
+        <source>{0}, {1} database(s)</source>
+        <translation>{0}, baz danych: {1}</translation>
+    </message>
+    <message>
+        <source>Row count</source>
+        <translation>Liczba wierszy</translation>
+    </message>
+    <message>
+        <source>Size on disk</source>
+        <translation>Rozmiar na dysku</translation>
+    </message>
+    <message>
+        <source>Maintenance</source>
+        <translation>Konserwacja</translation>
+    </message>
+    <message>
+        <source>Owner</source>
+        <translation>Właściciel</translation>
+    </message>
+    <message>
+        <source>Privileges</source>
+        <translation>Uprawnienia</translation>
+    </message>
+    <message>
+        <source>Invalid geometries</source>
+        <translation>Nieprawidłowe geometrie</translation>
+    </message>
+    <message>
+        <source>Last vacuum</source>
+        <translation>Ostatni vacuum</translation>
+    </message>
+    <message>
+        <source>Last analyze</source>
+        <translation>Ostatni analyze</translation>
+    </message>
+    <message>
+        <source>Dead rows</source>
+        <translation>Martwe wiersze</translation>
+    </message>
+    <message>
+        <source>Export failed: {0}</source>
+        <translation>Eksport nie powiódł się: {0}</translation>
+    </message>
+    <message>
+        <source>Exported &quot;{0}&quot; to {1}.</source>
+        <translation>Wyeksportowano &quot;{0}&quot; do {1}.</translation>
+    </message>
+    <message>
+        <source>Add to project</source>
+        <translation>Dodaj do projektu</translation>
+    </message>
+    <message>
+        <source>Export...</source>
+        <translation>Eksportuj...</translation>
+    </message>
+    <message>
+        <source>Rename...</source>
+        <translation>Zmień nazwę...</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>Usuń</translation>
+    </message>
+    <message>
+        <source>Privileges...</source>
+        <translation>Uprawnienia...</translation>
+    </message>
+    <message>
+        <source>Counting rows of &quot;{0}&quot;</source>
+        <translation>Liczenie wierszy &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Vacuum and analyze of &quot;{0}&quot;</source>
+        <translation>Vacuum i analyze &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Refreshing &quot;{0}&quot;</source>
+        <translation>Odświeżanie &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Adding primary key to &quot;{0}&quot;</source>
+        <translation>Dodawanie klucza głównego do &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Creating spatial index on &quot;{0}&quot;</source>
+        <translation>Tworzenie indeksu przestrzennego na &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Copying &quot;{0}&quot;</source>
+        <translation>Kopiowanie &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Checking geometries of &quot;{0}&quot;</source>
+        <translation>Sprawdzanie geometrii &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Updating SRID of &quot;{0}&quot;</source>
+        <translation>Aktualizacja SRID &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Changing geometry type of &quot;{0}&quot;</source>
+        <translation>Zmiana typu geometrii &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Building overviews of &quot;{0}&quot;</source>
+        <translation>Budowanie przeglądów &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Adding raster constraints to &quot;{0}&quot;</source>
+        <translation>Dodawanie ograniczeń rastra do &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Retiling &quot;{0}&quot;</source>
+        <translation>Dzielenie na kafle &quot;{0}&quot;</translation>
+    </message>
+    <message>
+        <source>Text files (*.txt)</source>
+        <translation>Pliki tekstowe (*.txt)</translation>
+    </message>
+    <message>
+        <source>Log files (*.log)</source>
+        <translation>Pliki dziennika (*.log)</translation>
+    </message>
+    <message>
+        <source>Save SQL log</source>
+        <translation>Zapisz dziennik SQL</translation>
+    </message>
+    <message>
+        <source>Saving the SQL log failed: {0}</source>
+        <translation>Zapis dziennika SQL nie powiódł się: {0}</translation>
+    </message>
+    <message>
+        <source>SQL log saved to {0}.</source>
+        <translation>Dziennik SQL zapisany do {0}.</translation>
+    </message>
+    <message>
+        <source>No previous connection was recorded.</source>
+        <translation>Brak zapisanego poprzedniego połączenia.</translation>
+    </message>
+    <message>
+        <source>Connection &quot;{0}&quot; no longer exists.</source>
+        <translation>Połączenie &quot;{0}&quot; już nie istnieje.</translation>
+    </message>
+    <message>
+        <source>Database &quot;{0}&quot; was not found on the server.</source>
+        <translation>Nie znaleziono bazy &quot;{0}&quot; na serwerze.</translation>
+    </message>
+    <message>
+        <source>Filter databases, schemas and tables</source>
+        <translation>Filtruj bazy, schematy i tabele</translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation>Własny</translation>
+    </message>
 </context>
 <context>
     <name>QgsPgNewConnectionBase</name>
@@ -958,6 +1344,14 @@ Tej operacji nie można cofnąć.</translation>
 </context>
 <context>
     <name>db_dialog</name>
+    <message>
+        <source>Last used</source>
+        <translation>Ostatnio używana</translation>
+    </message>
+    <message>
+        <source>Connect to the database used last time</source>
+        <translation>Połącz z bazą używaną ostatnim razem</translation>
+    </message>
     <message>
         <location filename="../DBManager/UI/db_manager_menu.ui" line="391"/>
         <source>Remove</source>
@@ -1109,6 +1503,14 @@ Tej operacji nie można cofnąć.</translation>
         <translation>Dodaj raster do projektu</translation>
     </message>
     <message>
+        <source>Compress tiles</source>
+        <translation>Kompresuj kafle</translation>
+    </message>
+    <message>
+        <source>Compress tiles with LZW before sending them to the server</source>
+        <translation>Kompresuj kafle LZW przed wysłaniem na serwer</translation>
+    </message>
+    <message>
         <location filename="../ImportRaster/UI/import_raster_ui.ui" line="436"/>
         <source>Raster layer</source>
         <translation>Warstwa rastrowa</translation>
@@ -1221,6 +1623,76 @@ Tej operacji nie można cofnąć.</translation>
     <message>
         <source>Delete</source>
         <translation>Usuń</translation>
+    </message>
+    <message>
+        <source>Export</source>
+        <translation>Eksportuj</translation>
+    </message>
+    <message>
+        <source>Privileges</source>
+        <translation>Uprawnienia</translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation>Narzędzia</translation>
+    </message>
+</context>
+<context>
+    <name>privileges_dialog</name>
+    <message>
+        <source>PostGIS Toolbox - Privileges</source>
+        <translation>PostGIS Toolbox - Uprawnienia</translation>
+    </message>
+    <message>
+        <source>Object</source>
+        <translation>Obiekt</translation>
+    </message>
+    <message>
+        <source>Owner</source>
+        <translation>Właściciel</translation>
+    </message>
+    <message>
+        <source>Role</source>
+        <translation>Rola</translation>
+    </message>
+    <message>
+        <source>Privileges of the selected role</source>
+        <translation>Uprawnienia wybranej roli</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation>Wszystkie</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>Żadne</translation>
+    </message>
+</context>
+<context>
+    <name>sql_log_dialog</name>
+    <message>
+        <source>PostGIS Toolbox - SQL log</source>
+        <translation>PostGIS Toolbox - Dziennik SQL</translation>
+    </message>
+    <message>
+        <source>Save to file...</source>
+        <translation>Zapisz do pliku...</translation>
+    </message>
+    <message>
+        <source>Errors only</source>
+        <translation>Tylko błędy</translation>
+    </message>
+    <message>
+        <source>Refresh</source>
+        <translation>Odśwież</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>Kopiuj</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Wyczyść</translation>
     </message>
 </context>
 </TS>

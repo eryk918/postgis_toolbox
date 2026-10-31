@@ -12,7 +12,7 @@ from ..utils import project, iface, make_query, plugin_name, ask_question, \
     show_error, show_info, create_progress_bar, get_active_db_info, \
     check_connection, tr, get_schema_names, \
     delete_item_from_combo, get_connection_names, create_connection, \
-    connection_for_database, postgres_metadata
+    connection_for_database, postgres_metadata, read_setting
 
 
 class DBManager:
@@ -89,6 +89,32 @@ class DBManager:
             show_error(
                 self.dlg,
                 tr('Failed to connect.'))
+
+    def reconnect_last(self) -> None:
+        connection_name = read_setting('last/connection', '') or ''
+        db_name = read_setting('last/database', '') or ''
+        if not connection_name or not db_name:
+            show_info(self.dlg, tr('No previous connection was recorded.'))
+            return
+        index = self.dlg.connection_cbbx.findText(connection_name)
+        if index == -1:
+            show_error(
+                self.dlg,
+                tr('Connection "{0}" no longer exists.').format(
+                    connection_name))
+            return
+        self.dlg.connection_cbbx.setCurrentIndex(index)
+        self.connect_server()
+        if not self.server_connection:
+            return
+        if db_name not in self.fetched_dbs:
+            show_error(
+                self.dlg,
+                tr('Database "{0}" was not found on the server.').format(
+                    db_name))
+            return
+        self.dlg.select_database_item(db_name)
+        self.select_operative_database(db_name=db_name)
 
     def selected_tree_path(self) -> List[str]:
         path = []

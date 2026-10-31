@@ -10,7 +10,8 @@ from .. import ImportVector
 from ..utils.vector_utils import vector_extensions, simple_vector_extensions
 from ...utils import repair_dialog, os, QDialog, get_all_vectors_from_project, \
     plugin_name, get_active_db_info, get_schema_names, standardize_path, \
-    NewThreadAlg, tr, remove_unsupported_chars, get_plugin_object, project
+    NewThreadAlg, tr, remove_unsupported_chars, get_plugin_object, project, \
+    read_setting, save_setting, read_bool_setting
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_vector_ui.ui'))
@@ -40,6 +41,30 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         self.vector_layer_cbbx.checkedItemsChanged.connect(
             self.add_layer_table_names)
         self.change_conn_btn.clicked.connect(self.change_db)
+        self.restore_settings()
+
+    def restore_settings(self) -> None:
+        schema = read_setting('import_vector/schema', '')
+        if schema and self.schema_cbbx.findText(schema) != -1:
+            self.schema_cbbx.setCurrentText(schema)
+        for name, checkbox in self.option_checkboxes().items():
+            checkbox.setChecked(read_bool_setting(
+                f'import_vector/{name}', checkbox.isChecked()))
+
+    def save_settings(self) -> None:
+        save_setting('import_vector/schema', self.schema_cbbx.currentText())
+        for name, checkbox in self.option_checkboxes().items():
+            save_setting(f'import_vector/{name}', checkbox.isChecked())
+
+    def option_checkboxes(self) -> dict:
+        return {
+            'add_project': self.add_project_chkbox,
+            'overwrite': self.overwrite_chkbox,
+            'create_index': self.create_index_chkbox,
+            'drop_length': self.drop_length_chkbox,
+            'force_singlepart': self.force_singlepart_chkbox,
+            'lower_case': self.lower_case_chkbox,
+        }
 
     def run_dialog(self) -> None:
         self.show()
@@ -117,6 +142,7 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         if self.vector_layer_cbbx.checkedItems() and \
                 self.tablename_lineedit.text() and \
                 self.schema_cbbx.currentText():
+            self.save_settings()
             self.accept()
             self.info_dict = {
                 'plugin_name': plugin_name,

@@ -10,13 +10,15 @@ from .. import ImportRaster
 from ..utils.raster_utils import raster_extensions, max_raster_untiled_size
 from ...utils import repair_dialog, os, QDialog, get_all_rasters_from_project, \
     plugin_name, get_active_db_info, get_schema_names, standardize_path, \
-    NewThreadAlg, tr, remove_unsupported_chars, get_plugin_object
+    NewThreadAlg, tr, remove_unsupported_chars, get_plugin_object, \
+    read_setting, save_setting, read_bool_setting
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_raster_ui.ui'))
 
 OVERVIEW_LEVELS = \
     ['2', '4', '8', '16', '32', '64', '128', '256', '512', '1024', '2048']
+TILE_PRESETS = [64, 128, 256, 512, 1024, 2048]
 
 
 class ImportRaster_UI(QDialog, FORM_CLASS):
@@ -45,6 +47,71 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
         self.overview_combobox.addItems(OVERVIEW_LEVELS)
         self.overview_combobox.setCheckedItems(OVERVIEW_LEVELS)
         self.change_conn_btn.clicked.connect(self.change_db)
+        self.tile_preset_cbbx.addItems(
+            [f'{size} x {size}' for size in TILE_PRESETS])
+        self.tile_preset_cbbx.addItem(tr('Custom'))
+        self.tile_preset_cbbx.currentIndexChanged.connect(
+            self.apply_tile_preset)
+        self.restore_settings()
+
+    def restore_settings(self) -> None:
+        schema = read_setting('import_raster/schema', '')
+        if schema and self.schema_cbbx.findText(schema) != -1:
+            self.schema_cbbx.setCurrentText(schema)
+        for name, checkbox in self.option_checkboxes().items():
+            checkbox.setChecked(read_bool_setting(
+                f'import_raster/{name}', checkbox.isChecked()))
+        self.raster_tile_width_spinbox.setValue(int(read_setting(
+            'import_raster/tile_width', self.raster_tile_width_spinbox.value())))
+        self.raster_tile_height_spinbox.setValue(int(read_setting(
+            'import_raster/tile_height',
+            self.raster_tile_height_spinbox.value())))
+        levels = read_setting('import_raster/overview_levels', None)
+        if levels:
+            self.overview_combobox.setCheckedItems(
+                [level for level in levels if level in OVERVIEW_LEVELS])
+        self.sync_tile_preset()
+
+    def apply_tile_preset(self, index: int) -> None:
+        custom = index >= len(TILE_PRESETS)
+        self.raster_tile_width_spinbox.setEnabled(custom)
+        self.raster_tile_height_spinbox.setEnabled(custom)
+        if custom or index < 0:
+            return
+        size = TILE_PRESETS[index]
+        self.raster_tile_width_spinbox.setValue(size)
+        self.raster_tile_height_spinbox.setValue(size)
+
+    def sync_tile_preset(self) -> None:
+        width = self.raster_tile_width_spinbox.value()
+        height = self.raster_tile_height_spinbox.value()
+        index = TILE_PRESETS.index(width) \
+            if width == height and width in TILE_PRESETS \
+            else len(TILE_PRESETS)
+        self.tile_preset_cbbx.blockSignals(True)
+        self.tile_preset_cbbx.setCurrentIndex(index)
+        self.tile_preset_cbbx.blockSignals(False)
+        self.apply_tile_preset(index)
+
+    def save_settings(self) -> None:
+        save_setting('import_raster/schema', self.schema_cbbx.currentText())
+        for name, checkbox in self.option_checkboxes().items():
+            save_setting(f'import_raster/{name}', checkbox.isChecked())
+        save_setting('import_raster/tile_width',
+                     self.raster_tile_width_spinbox.value())
+        save_setting('import_raster/tile_height',
+                     self.raster_tile_height_spinbox.value())
+        save_setting('import_raster/overview_levels',
+                     self.overview_combobox.checkedItems())
+
+    def option_checkboxes(self) -> dict:
+        return {
+            'tiling': self.tiling_groupbox,
+            'pyramids': self.pyramids_chkbox,
+            'overwrite': self.overwrite_chkbox,
+            'compress': self.compress_chkbox,
+            'add_project': self.add_project_chkbox,
+        }
 
     def change_dest_raster_table_name(self, raster_name: str) -> None:
         new_raster_name = raster_name
@@ -146,6 +213,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
             srid = self.get_raster_srid(input_file)
             if srid is None:
                 return
+            self.save_settings()
             self.accept()
             self.info_dict = {
                 'plugin_name': plugin_name,
@@ -163,6 +231,7 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
                 'q_overwrite': self.overwrite_chkbox.isChecked(),
                 'q_pyramids': self.pyramids_chkbox.isChecked(),
                 'q_make_tiles': self.tiling_groupbox.isChecked(),
+                'q_compress': self.compress_chkbox.isChecked(),
                 'q_add_to_project': self.add_project_chkbox.isChecked(),
                 'checked_overview':
                     [int(ov) for ov in self.overview_combobox.checkedItems()]

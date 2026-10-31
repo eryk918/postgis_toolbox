@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>520</width>
-    <height>520</height>
+    <height>531</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,7 +83,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QgsFileWidget" name="layer_file_widget" native="true"/>
+       <widget class="QgsFileWidget" name="layer_file_widget"/>
       </item>
      </layout>
     </widget>
@@ -134,48 +134,52 @@
         <property name="checked">
          <bool>true</bool>
         </property>
-        <layout class="QHBoxLayout" name="tiling_layout">
-         <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="2" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QSpinBox" name="raster_tile_width_spinbox">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>999999999</number>
+             </property>
+             <property name="value">
+              <number>256</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="tile_separator_label">
+             <property name="text">
+              <string notr="true">x</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="raster_tile_height_spinbox">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>999999999</number>
+             </property>
+             <property name="value">
+              <number>256</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="0" rowspan="2">
           <widget class="QLabel" name="tile_size_label">
            <property name="text">
             <string>Tile size</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QSpinBox" name="raster_tile_width_spinbox">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>999999999</number>
-           </property>
-           <property name="value">
-            <number>256</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="tile_separator_label">
-           <property name="text">
-            <string notr="true">x</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="raster_tile_height_spinbox">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>999999999</number>
-           </property>
-           <property name="value">
-            <number>256</number>
-           </property>
-          </widget>
-         </item>
-         <item>
+         <item row="1" column="6">
           <spacer name="tiling_spacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -187,6 +191,22 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="0" column="1" rowspan="2">
+          <widget class="QComboBox" name="tile_preset_cbbx"/>
+         </item>
+         <item row="3" column="0">
+          <widget class="QCheckBox" name="compress_chkbox">
+           <property name="toolTip">
+            <string>Compress tiles with LZW before sending them to the server</string>
+           </property>
+           <property name="text">
+            <string>Compress tiles</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -281,6 +301,16 @@
    <signal>rejected()</signal>
    <receiver>db_dialog</receiver>
    <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>
