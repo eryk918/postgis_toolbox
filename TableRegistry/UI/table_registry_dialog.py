@@ -232,30 +232,38 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
         if info.is_vector() or info.is_raster():
             menu.addAction(tr('Layer styles...'), registry.manage_styles)
         if info.is_vector():
-            menu.addSeparator()
-            menu.addAction(tr('Check geometries'), registry.check_geometries)
-            menu.addAction(tr('Update SRID...'), registry.update_srid)
-            type_menu = menu.addMenu(tr('Force geometry type'))
-            for geometry_type in GEOMETRY_TYPES:
-                type_menu.addAction(
-                    geometry_type,
-                    lambda checked=False, value=geometry_type:
-                    registry.force_geometry_type(value))
+            self.fill_vector_tools(menu)
         if info.is_raster():
-            menu.addSeparator()
-            overview_menu = menu.addMenu(tr('Build overviews'))
-            for limit in OVERVIEW_LIMITS:
-                overview_menu.addAction(
-                    tr('Up to 1:{0}').format(limit),
-                    lambda checked=False, value=limit:
-                    registry.build_overviews(value))
-            menu.addAction(tr('Add raster constraints'),
-                           registry.add_raster_constraints)
-            tile_menu = menu.addMenu(tr('Retile into a new table'))
-            for size in TILE_SIZES:
-                tile_menu.addAction(
-                    f'{size} x {size}',
-                    lambda checked=False, value=size: registry.retile(value))
+            self.fill_raster_tools(menu)
+
+    def fill_vector_tools(self, menu: QMenu) -> None:
+        registry = self.registry
+        menu.addSeparator()
+        menu.addAction(tr('Check geometries'), registry.check_geometries)
+        menu.addAction(tr('Update SRID...'), registry.update_srid)
+        type_menu = menu.addMenu(tr('Force geometry type'))
+        for geometry_type in GEOMETRY_TYPES:
+            type_menu.addAction(
+                geometry_type,
+                lambda checked=False, value=geometry_type:
+                registry.force_geometry_type(value))
+
+    def fill_raster_tools(self, menu: QMenu) -> None:
+        registry = self.registry
+        menu.addSeparator()
+        overview_menu = menu.addMenu(tr('Build overviews'))
+        for limit in OVERVIEW_LIMITS:
+            overview_menu.addAction(
+                tr('Up to 1:{0}').format(limit),
+                lambda checked=False, value=limit:
+                registry.build_overviews(value))
+        menu.addAction(tr('Add raster constraints'),
+                       registry.add_raster_constraints)
+        tile_menu = menu.addMenu(tr('Retile into a new table'))
+        for size in TILE_SIZES:
+            tile_menu.addAction(
+                f'{size} x {size}',
+                lambda checked=False, value=size: registry.retile(value))
 
     def fill_details(
             self, details: Dict[str, List[Tuple[str, str]]]) -> None:

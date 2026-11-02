@@ -150,7 +150,8 @@ class DBManager:
 
     def selected_tree_path(self) -> List[str]:
         path = []
-        selected_items = self.dlg.db_obj_treeview.selectionModel().selectedRows()
+        selection = self.dlg.db_obj_treeview.selectionModel()
+        selected_items = selection.selectedRows()
         if selected_items and selected_items[0]:
             index = selected_items[0]
             path.append(index.data())
@@ -213,7 +214,8 @@ class DBManager:
                    'again.'))
             return
         simple_pg_ver = make_query(self.db, get_postgis_version_query)
-        extended_pg_ver = make_query(self.db, get_postgis_version_extended_query)
+        extended_pg_ver = make_query(
+            self.db, get_postgis_version_extended_query)
         if simple_pg_ver and extended_pg_ver:
             show_info(
                 self.dlg,

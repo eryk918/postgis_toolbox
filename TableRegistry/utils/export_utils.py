@@ -8,8 +8,9 @@ from qgis.core import QgsVectorLayer, QgsRasterLayer, QgsVectorFileWriter, \
 from qgis.gui import QgsVectorLayerSaveAsDialog, QgsRasterLayerSaveAsDialog
 
 
-def export_vector(layer: QgsVectorLayer,
-                  parent: QWidget) -> Tuple[Optional[bool], str, Optional[QgsMapLayer]]:
+def export_vector(
+        layer: QgsVectorLayer,
+        parent: QWidget) -> Tuple[Optional[bool], str, Optional[QgsMapLayer]]:
     dialog = QgsVectorLayerSaveAsDialog(
         layer, QgsVectorLayerSaveAsDialog.Options(
             QgsVectorLayerSaveAsDialog.Option.AllOptions), parent)
@@ -49,8 +50,9 @@ def export_vector(layer: QgsVectorLayer,
                                           or layer.name(), 'ogr')
 
 
-def export_raster(layer: QgsRasterLayer,
-                  parent: QWidget) -> Tuple[Optional[bool], str, Optional[QgsMapLayer]]:
+def export_raster(
+        layer: QgsRasterLayer,
+        parent: QWidget) -> Tuple[Optional[bool], str, Optional[QgsMapLayer]]:
     provider = layer.dataProvider()
     dialog = QgsRasterLayerSaveAsDialog(
         layer, provider, layer.extent(), layer.crs(),

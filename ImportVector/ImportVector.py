@@ -7,7 +7,8 @@ from qgis.core import QgsTask, Qgis, QgsVectorLayer, QgsDataSourceUri, \
 from .UI.import_vector_ui import ImportVector_UI
 from .utils.vector_utils import none_geometry_types, \
     check_for_duplicate_id_column
-from ..utils import project, iface, change_alg_progress, clean_after_analysis, \
+from ..utils import project, iface, change_alg_progress, \
+    clean_after_analysis, \
     tr, add_vectors_to_project, create_postgis_vector_layer, \
     VECTORS_LAYERS_GROUP, make_query, log, create_connection_from_uri, \
     qualified_name, quote_identifier
@@ -95,8 +96,9 @@ class VectorImporter(QgsTask):
             log(f'{message}\n{vector_path}', Qgis.Critical)
             return False
         if self.q_create_index and geom_column:
+            index_name = quote_identifier(f'{table_name}_{geom_column}_idx')
             make_query(self.connection, f'''
-                CREATE INDEX {quote_identifier(f'{table_name}_{geom_column}_idx')}
+                CREATE INDEX {index_name}
                 ON {qualified_name(self.destination_schema, table_name)}
                 USING GIST ({quote_identifier(geom_column)});
             ''')

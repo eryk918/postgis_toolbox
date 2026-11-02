@@ -4,14 +4,12 @@ import os
 import os.path
 import re
 import shutil
-import subprocess
-import sys
 from datetime import datetime
 from time import perf_counter
 from typing import List, Tuple, Any, Dict, Optional
 
 import qgis
-from PyQt5.QtCore import Qt
+from PyQt5 import QtCore
 from qgis.PyQt import sip
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
@@ -26,6 +24,7 @@ from qgis.core import QgsProject, QgsVectorLayer, \
     QgsRasterLayer, QgsApplication, QgsSettings, QgsLayerTreeGroup
 from qgis.utils import iface
 
+Qt = QtCore.Qt
 project = QgsProject.instance()
 root = project.layerTreeRoot()
 main_window = iface.mainWindow()
@@ -204,23 +203,6 @@ def add_vectors_to_project(group_name: str,
             iface.layerTreeView().refreshLayerSymbology(vlayer.id())
 
 
-def open_other_files(filepath: str) -> None:
-    if sys.platform.startswith('darwin'):
-        subprocess.call(('open', filepath))
-    elif os.name == 'nt':
-        try:
-            os.startfile(filepath)
-        except WindowsError:
-            ext = os.path.splitext(filepath)[-1]
-            show_error(
-                None,
-                tr('Error opening a file with the file extension *.{0}.').format(
-                    ext))
-            return
-    elif os.name == 'posix':
-        subprocess.call(('xdg-open', filepath))
-
-
 def get_all_rasters_from_project(only_postgis: bool = False) -> Dict[str, str]:
     rasters_dict = {}
     all_layers = root.findLayers()
@@ -232,18 +214,20 @@ def get_all_rasters_from_project(only_postgis: bool = False) -> Dict[str, str]:
                 isinstance(predict_layer, QgsRasterLayer) \
                 and predict_layer.dataProvider().name() == 'postgresraster':
             uri = predict_layer.dataProvider().uri()
-            rasters_dict[
-                f'{predict_layer.name()}     ||  {uri.schema()}.{uri.table()}'] = predict_layer
+            key = f'{predict_layer.name()}     ||  ' \
+                  f'{uri.schema()}.{uri.table()}'
+            rasters_dict[key] = predict_layer
         elif not only_postgis and predict_layer.isValid() and \
                 isinstance(predict_layer, QgsRasterLayer) and \
                 predict_layer.dataProvider().name() == 'gdal':
-            rasters_dict[
-                f'{predict_layer.name()}     ||  {predict_layer.id()}'] = predict_layer.source()
+            key = f'{predict_layer.name()}     ||  {predict_layer.id()}'
+            rasters_dict[key] = predict_layer.source()
     return rasters_dict
 
 
-def get_all_vectors_from_project(only_postgis: bool = False, wkb: bool = False) \
-        -> Dict[str, Tuple[str, int]]:
+def get_all_vectors_from_project(
+        only_postgis: bool = False,
+        wkb: bool = False) -> Dict[str, Tuple[str, int]]:
     vectors_dict = {}
     all_layers = root.findLayers()
     for layer in all_layers:
@@ -256,7 +240,9 @@ def get_all_vectors_from_project(only_postgis: bool = False, wkb: bool = False) 
                     'postgres' in predict_layer.dataProvider().name():
                 name = f'{predict_layer.name()} '
                 if wkb:
-                    name += f'[{QgsWkbTypes.geometryDisplayString(predict_layer.geometryType())}] '
+                    geometry_type = QgsWkbTypes.geometryDisplayString(
+                        predict_layer.geometryType())
+                    name += f'[{geometry_type}] '
                 name += f'[EPSG:{predict_layer.crs().postgisSrid()}]'
                 vectors_dict[name] = predict_layer
             elif not only_postgis and \

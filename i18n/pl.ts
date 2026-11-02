@@ -942,10 +942,6 @@ Tej operacji nie można cofnąć.</translation>
         <translation>Wystąpił błąd podczas usuwania tabeli.</translation>
     </message>
     <message>
-        <source>Error opening a file with the file extension *.{0}.</source>
-        <translation>Błąd otwierania pliku z rozszerzeniem *.{0}.</translation>
-    </message>
-    <message>
         <source>PostGIS extension was detected, version is: {0}</source>
         <translation>Wykryto rozszerzenie PostGIS w wersji: {0}</translation>
     </message>

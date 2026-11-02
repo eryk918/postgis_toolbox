@@ -12,7 +12,8 @@ get_dbs_query = '''SELECT datname
 server_version_query = "SELECT split_part(version(), ' on ', 1);"
 database_info_query = '''
     SELECT pg_size_pretty(
-               (SELECT sum(relpages)::bigint * current_setting('block_size')::bigint
+               (SELECT sum(relpages)::bigint
+                       * current_setting('block_size')::bigint
                 FROM pg_class)),
            (SELECT string_agg(extname || ' ' || extversion, ', '
                               ORDER BY extname)

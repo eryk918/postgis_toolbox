@@ -50,12 +50,12 @@ def style_qml(connection: QgsAbstractDatabaseProviderConnection,
 def set_default_style(connection: QgsAbstractDatabaseProviderConnection,
                       info: TableInfo, style_id: int,
                       geometry_column: str) -> bool:
+    column = quote_literal(geometry_column) if geometry_column else 'NULL'
     return make_query(connection, f'''
         UPDATE {STYLE_TABLE}
         SET useasdefault = (id = {int(style_id)})
         WHERE {style_filter(info)}
-            AND f_geometry_column IS NOT DISTINCT FROM
-                {quote_literal(geometry_column) if geometry_column else 'NULL'};
+            AND f_geometry_column IS NOT DISTINCT FROM {column};
     ''') is not None
 
 

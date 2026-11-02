@@ -23,8 +23,8 @@ class DBManagerAdd_UI(QDialog, FORM_CLASS):
     def setup_dialog(self, label_text: str, placeholder_text: str) -> None:
         self.object_label.setText(label_text)
         self.object_lineEdit.setPlaceholderText(placeholder_text)
-        self.object_lineEdit.setValidator(
-            QRegularExpressionValidator(QRegularExpression('[A-Za-z0-9_-]{1,}')))
+        self.object_lineEdit.setValidator(QRegularExpressionValidator(
+            QRegularExpression('[A-Za-z0-9_-]{1,}')))
         self.buttonBox.accepted.connect(self.unsupported_text)
 
     def unsupported_text(self):

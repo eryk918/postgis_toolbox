@@ -444,9 +444,10 @@ class TableRegistry:
         if not check_connection(target):
             show_error(self.dlg, tr('Failed to connect.'))
             return
-        same_database = connection_uri(target).database() == \
-            connection_uri(self.main.db).database() and \
-            connection_uri(target).host() == connection_uri(self.main.db).host()
+        target_uri, source_uri = connection_uri(target), \
+            connection_uri(self.main.db)
+        same_database = target_uri.database() == source_uri.database() \
+            and target_uri.host() == source_uri.host()
         if same_database and dialog.schema() == info.schema \
                 and dialog.table_name() == info.name:
             show_error(self.dlg,

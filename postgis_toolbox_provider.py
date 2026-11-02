@@ -4,19 +4,32 @@ import os
 
 from qgis.core import QgsProcessingProvider
 
-from .VectorAlgorithms.PostGISToolboxVectorMakeValid import PostGISToolboxVectorMakeValid
-from .VectorAlgorithms.PostGISToolboxVectorGeneraterPolygonByPoints import PostGISToolboxVectorGeneratePolygonFromPoints
-from .VectorAlgorithms.PostGISToolboxVectorAggregate import PostGISToolboxVectorAggregate
-from .VectorAlgorithms.PostGISToolboxVectorGeneratePoints import PostGISToolboxVectorGeneratePoints
-from .VectorAlgorithms.PostGISToolboxVectorIntersect import PostGISToolboxVectorIntersects
-from .VectorAlgorithms.PostGISToolboxVectorBuffer import PostGISToolboxVectorBuffer
-from .RasterAlgorithms.PostGISToolboxRasterClip import PostGISToolboxRasterClip
-from .RasterAlgorithms.PostGISToolboxRasterSummary import PostGISToolboxRasterSummary
-from .RasterAlgorithms.PostGISToolboxRasterTile import PostGISToolboxRasterTile
-from .RasterAlgorithms.PostGISToolboxRasterMerge import PostGISToolboxRasterMerge
-from .RasterAlgorithms.PostGISToolboxRasterResample import PostGISToolboxRasterResample
-from .RasterAlgorithms.PostGISToolboxRasterReproject import PostGISToolboxRasterReproject
-from .VectorAlgorithms.PostGISToolboxVectorClip import PostGISToolboxVectorClip
+from .VectorAlgorithms.PostGISToolboxVectorMakeValid import \
+    PostGISToolboxVectorMakeValid
+from .VectorAlgorithms.PostGISToolboxVectorGeneraterPolygonByPoints import \
+    PostGISToolboxVectorGeneratePolygonFromPoints
+from .VectorAlgorithms.PostGISToolboxVectorAggregate import \
+    PostGISToolboxVectorAggregate
+from .VectorAlgorithms.PostGISToolboxVectorGeneratePoints import \
+    PostGISToolboxVectorGeneratePoints
+from .VectorAlgorithms.PostGISToolboxVectorIntersect import \
+    PostGISToolboxVectorIntersects
+from .VectorAlgorithms.PostGISToolboxVectorBuffer import \
+    PostGISToolboxVectorBuffer
+from .RasterAlgorithms.PostGISToolboxRasterClip import \
+    PostGISToolboxRasterClip
+from .RasterAlgorithms.PostGISToolboxRasterSummary import \
+    PostGISToolboxRasterSummary
+from .RasterAlgorithms.PostGISToolboxRasterTile import \
+    PostGISToolboxRasterTile
+from .RasterAlgorithms.PostGISToolboxRasterMerge import \
+    PostGISToolboxRasterMerge
+from .RasterAlgorithms.PostGISToolboxRasterResample import \
+    PostGISToolboxRasterResample
+from .RasterAlgorithms.PostGISToolboxRasterReproject import \
+    PostGISToolboxRasterReproject
+from .VectorAlgorithms.PostGISToolboxVectorClip import \
+    PostGISToolboxVectorClip
 from .VectorAlgorithms.PostGISToolboxVectorDifference import \
     PostGISToolboxVectorDifference
 from .VectorAlgorithms.PostGISToolboxVectorMerge import \

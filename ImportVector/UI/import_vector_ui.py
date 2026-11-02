@@ -8,7 +8,8 @@ from qgis.core import QgsVectorLayer
 
 from .. import ImportVector
 from ..utils.vector_utils import vector_extensions, simple_vector_extensions
-from ...utils import repair_dialog, os, QDialog, get_all_vectors_from_project, \
+from ...utils import repair_dialog, os, QDialog, \
+    get_all_vectors_from_project, \
     plugin_name, get_active_db_info, get_schema_names, standardize_path, \
     NewThreadAlg, tr, remove_unsupported_chars, get_plugin_object, \
     read_setting, save_setting, read_bool_setting
@@ -111,12 +112,14 @@ class ImportVector_UI(QDialog, FORM_CLASS):
             filename, ext = os.path.splitext(os.path.basename(filepath))
             filenames = []
             if ext.lower() not in simple_vector_extensions:
-                for filename, filepath in self.get_layers_from_container(filepath).items():
+                layers = self.get_layers_from_container(filepath)
+                for filename, filepath in layers.items():
                     tmp_layer = QgsVectorLayer(filepath, filename, "ogr")
                     if not tmp_layer.isValid():
                         self.bar.pushWarning(
                             plugin_name,
-                            tr('The selected file is not a vector format file.'))
+                            tr('The selected file is not a vector format '
+                               'file.'))
                         return
                     self.vector_dict[filename] = (
                         filepath, int(tmp_layer.wkbType()))
@@ -128,7 +131,8 @@ class ImportVector_UI(QDialog, FORM_CLASS):
                         plugin_name,
                         tr('The selected file is not a vector format file.'))
                     return
-                self.vector_dict[filename] = (filepath, int(tmp_layer.wkbType()))
+                self.vector_dict[filename] = (
+                    filepath, int(tmp_layer.wkbType()))
                 filenames = [filename]
             self.vector_layer_cbbx.clear()
             self.vector_layer_cbbx.addItems(list(self.vector_dict.keys()))
@@ -177,7 +181,8 @@ class ImportVector_UI(QDialog, FORM_CLASS):
             thread = NewThreadAlg(
                 self.info_dict,
                 ImportVector.VectorImporter(
-                    f"{self.info_dict['plugin_name']}: {self.info_dict['alg_name']}",
+                    f"{self.info_dict['plugin_name']}: "
+                    f"{self.info_dict['alg_name']}",
                     self.import_vector.main, self.param_dict),
                 True)
             thread.start()

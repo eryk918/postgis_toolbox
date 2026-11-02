@@ -88,8 +88,9 @@ def role_privileges(connection: QgsAbstractDatabaseProviderConnection,
     return {row[0] for row in rows or []}
 
 
-def schema_role_privileges(connection: QgsAbstractDatabaseProviderConnection,
-                           schema: str, role: str) -> Tuple[Set[str], Set[str]]:
+def schema_role_privileges(
+        connection: QgsAbstractDatabaseProviderConnection, schema: str,
+        role: str) -> Tuple[Set[str], Set[str]]:
     grantee = '0' if role == 'PUBLIC' else \
         f'{quote_literal(role)}::regrole::oid'
     total = make_query(connection, f'''
@@ -167,9 +168,9 @@ def primary_key_columns(connection: QgsAbstractDatabaseProviderConnection,
     return [row[0] for row in rows or []]
 
 
-def invalid_geometries(connection: QgsAbstractDatabaseProviderConnection,
-                       info: TableInfo,
-                       column: str) -> Tuple[Optional[int], List[Tuple[str, str]]]:
+def invalid_geometries(
+        connection: QgsAbstractDatabaseProviderConnection, info: TableInfo,
+        column: str) -> Tuple[Optional[int], List[Tuple[str, str]]]:
     keys = primary_key_columns(connection, info)
     key = quote_identifier(keys[0]) if len(keys) == 1 else 'ctid'
     geometry = quote_identifier(column)
@@ -198,8 +199,10 @@ def vacuum_progress_sql(info: TableInfo) -> str:
 
 def index_progress_sql(info: TableInfo) -> str:
     return f'''
-        SELECT CASE WHEN blocks_total > 0 THEN blocks_done ELSE tuples_done END,
-               CASE WHEN blocks_total > 0 THEN blocks_total ELSE tuples_total END
+        SELECT CASE WHEN blocks_total > 0 THEN blocks_done
+                    ELSE tuples_done END,
+               CASE WHEN blocks_total > 0 THEN blocks_total
+                    ELSE tuples_total END
         FROM pg_stat_progress_create_index
         WHERE relid = {regclass(info)};
     '''
@@ -300,7 +303,8 @@ def copy_table(connection: QgsAbstractDatabaseProviderConnection,
             INSERT INTO {target} SELECT * FROM {info.qualified_name()};
         '''
     else:
-        sql = f'CREATE TABLE {target} AS SELECT * FROM {info.qualified_name()};'
+        sql = f'CREATE TABLE {target} AS ' \
+              f'SELECT * FROM {info.qualified_name()};'
     return make_query(connection, sql) is not None
 
 
@@ -364,8 +368,8 @@ def copy_raster_to_database(
         if not rows:
             break
         for batch in iter_tile_batches(row[0].encode() for row in rows):
-            values = ',\n'.join(f"('{tile.decode()}'::raster)"
-                                 for tile in batch)
+            values = ',\n'.join(
+                f"('{tile.decode()}'::raster)" for tile in batch)
             if make_query(target, f'''
                 INSERT INTO {qualified_name(schema, name)} ("rast")
                 VALUES {values};
@@ -441,7 +445,8 @@ def retile(connection: QgsAbstractDatabaseProviderConnection,
         SELECT ST_Tile(ST_Union({column}), {tile_size}, {tile_size})
         FROM {info.qualified_name()};
         {make_sql_create_raster_gist(info.schema, name, info.raster_column)}
-        {make_sql_add_raster_constraints(info.schema, name, info.raster_column)}
+        {make_sql_add_raster_constraints(
+            info.schema, name, info.raster_column)}
     '''
     return make_query(connection, sql) is not None
 

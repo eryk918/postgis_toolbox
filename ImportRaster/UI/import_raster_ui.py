@@ -8,7 +8,8 @@ from qgis.gui import QgsProjectionSelectionDialog, QgsFileWidget
 
 from .. import ImportRaster
 from ..utils.raster_utils import raster_extensions, max_raster_untiled_size
-from ...utils import repair_dialog, os, QDialog, get_all_rasters_from_project, \
+from ...utils import repair_dialog, os, QDialog, \
+    get_all_rasters_from_project, \
     plugin_name, get_active_db_info, get_schema_names, standardize_path, \
     NewThreadAlg, tr, remove_unsupported_chars, get_plugin_object, \
     read_setting, save_setting, read_bool_setting
@@ -72,7 +73,8 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
             checkbox.setChecked(read_bool_setting(
                 f'import_raster/{name}', checkbox.isChecked()))
         self.raster_tile_width_spinbox.setValue(int(read_setting(
-            'import_raster/tile_width', self.raster_tile_width_spinbox.value())))
+            'import_raster/tile_width',
+            self.raster_tile_width_spinbox.value())))
         self.raster_tile_height_spinbox.setValue(int(read_setting(
             'import_raster/tile_height',
             self.raster_tile_height_spinbox.value())))

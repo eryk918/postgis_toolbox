@@ -1,71 +1,54 @@
 # PostGIS Toolbox
 
-A QGIS plugin for everyday work with PostGIS databases: managing databases and
-schemas, loading vector and raster data, writing SQL, and running a handful of
-PostGIS operations from the Processing toolbox.
+A QGIS plugin for the everyday PostGIS stuff: databases and schemas, loading
+vectors and rasters, keeping tables in shape, writing SQL and running a bunch
+of PostGIS operations straight from the Processing toolbox. Everything runs
+in the database, QGIS just drives.
 
-## What it does
+## What's in the box
 
 **Toolbar**
 
-* **Manage databases** – pick a saved PostgreSQL connection (new ones are
-  added and edited with the QGIS connection dialog), browse its
-  databases, schemas and tables, create, rename or drop databases and schemas,
-  check the PostGIS version and choose the database the other tools work on.
-  "Sessions" shows who is connected to the server, what they run, how long
-  and who blocks whom, and lets you cancel a query or terminate a session.
-* **Import vector data** – load layers from the project or vector files
-  (Shapefile, GeoPackage and other OGR formats) into a chosen schema, with
-  options for spatial index, lower-case column names, single-part geometries
-  and overwriting.
-* **Import raster data** – load GeoTIFF rasters, several at once from the
-  project or from files, as PostGIS raster tables, tiled on the fly (preset
-  or custom tile size, optional LZW compression) with optional overviews.
-  Imports run in the background
-  with a progress bar on the QGIS message bar, and several can run at once.
-  Imported layers land in the "Imported vectors" / "Imported rasters"
-  groups of the layer tree.
-* **Query editor** – the QGIS DB Manager SQL window limited to PostGIS, with
-  schema-qualified table names in the query builder, PostGIS function help and
-  one-click "create table / create view" from the current query.
-* **Table registry** – every table, view and raster in the active database in
-  one list, with type, geometry type and SRID. Pick one to see its size, last
-  vacuum, owner, privileges, columns, primary key, indexes and raster
-  overviews. Add it to the project with a double click or drag it onto the
-  map, export it (QGIS save-as dialogs), rename, move, copy or drop it. The
-  Tools menu covers the usual upkeep: vacuum, spatial index, primary key,
-  SRID update, geometry type change, geometry validity report, raster
-  overviews, raster constraints and retiling. The Privileges dialog grants and
-  revokes table rights per role and changes the owner. Raster overviews follow
-  renames, moves and drops of their raster. Comments on tables and columns
-  are shown and editable, and the CREATE statement of a table or view can
-  be copied to the clipboard. "Layer styles" lists the QGIS styles saved in
-  `layer_styles` for a table: apply one to a project layer, save the style
-  of a project layer, set the default, rename or delete. "Copy to another
-  database" moves a table or raster to any saved connection, with the same
-  exporter that the import uses. The Privileges dialog can also work on a
-  whole schema (all tables and views, optionally default privileges for
-  tables created later). "Health check" lists tables without a
-  primary key or spatial index, bloated or never analysed tables, unused
-  indexes and rasters without constraints, with a Fix button that runs the
-  matching registry tool. Long operations run in the
-  background with a progress bar (real percentages for vacuum and index
-  builds, taken from `pg_stat_progress_*`), so QGIS stays responsive.
-  Right-click a row for the same actions in a context menu, or press
-  Delete to drop the selected object.
-* **Projects in database** – the QGIS projects stored in the active
-  database, per schema, through the same PostgreSQL project storage that
-  QGIS uses in *Project → Open from / Save to*: open one, save the current
-  project under a name, delete old ones.
-* **SQL log** – every statement the plugin ran, with timing and errors, ready
-  to copy or save as a .txt / .log file for a bug report.
-* The database manager remembers the last active database: one click on
-  "Last used" connects to it again, also after a QGIS restart. A filter box
-  above the tree narrows it down to matching databases, schemas or tables.
-* The active database is shown on the toolbar; the icon next to it disconnects
-  from it. Import dialogs remember the last schema and options, and the
-  database manager shows server version, database sizes and installed
-  extensions.
+* **Manage databases** – pick a saved PostgreSQL connection (new ones go
+  through the regular QGIS connection dialog), see what's on the server,
+  add / rename / drop databases and schemas, check PostGIS, and choose the
+  database the rest of the plugin works on. "Last used" gets you back to
+  yesterday's database in one click, the filter box narrows the tree down.
+  "Sessions" shows who's connected, what they run, for how long and who
+  blocks whom, with buttons to cancel a query or kick a session.
+* **Import vector data** – project layers or files (Shapefile, GeoPackage,
+  anything OGR reads) into a schema of your choice, with spatial index,
+  lower-case column names, single-part geometries and overwrite options.
+* **Import raster data** – GeoTIFFs from the project or from disk, many at
+  once. Tiled on the fly (presets or your own tile size), LZW-compressed,
+  overviews if you want them. Imports run in the background with a progress
+  bar on the message bar, and a few can run side by side. Loaded layers land
+  in the "Imported vectors" / "Imported rasters" groups.
+* **Table registry** – every table, view and raster of the active database in
+  one list with type, geometry and SRID. Click one and you get its size, last
+  vacuum, owner, privileges, comments, columns, keys, indexes, raster
+  resolution and overviews. Double-click to add it to the project or drag it
+  onto the map. From there you can export it (the QGIS save-as dialogs),
+  rename, move, copy (also to another database), drop, vacuum, index, add a
+  primary key, fix the SRID or geometry type, check geometries, rebuild
+  overviews, add raster constraints, retile, edit comments, grab the CREATE
+  statement, and manage styles saved in `layer_styles`. Privileges can be set
+  per table or for a whole schema, default privileges for future tables
+  included. "Health check" lists tables without a key or spatial index,
+  bloated or never analysed tables, unused indexes and rasters without
+  constraints, each with a Fix button. Long jobs run in the background with
+  real progress where Postgres gives it (vacuum, index builds). Right-click
+  for the same menu, Delete key drops the selected object.
+* **Projects in database** – QGIS projects stored in the database, per
+  schema, through the same project storage QGIS uses in *Project → Open
+  from / Save to*. Open, save the current project, delete the old ones.
+* **Query editor** – the QGIS DB Manager SQL window trimmed to PostGIS, with
+  schema-qualified table names in the builder, PostGIS function help and
+  "create table / view" from the current query.
+* **SQL log** – everything the plugin ran, with timing and errors, ready to
+  copy or save as .txt / .log when something goes wrong.
+* The active database sits on the toolbar, the icon next to it disconnects.
+  Import dialogs remember the last schema and options.
 
 **Processing algorithms** (group *PostGIS Toolbox*)
 
@@ -75,14 +58,12 @@ PostGIS operations from the Processing toolbox.
 * Raster: clip, merge tiles, reproject, resample, summary, tiles, terrain
   analysis (slope, aspect, hillshade), raster to polygons, zonal statistics.
 
-All algorithms run inside the database and can load the result back into the
-project.
+Results can be loaded back into the project right away.
 
 ## Requirements
 
-* QGIS 3.22 or newer (developed and tested on QGIS 3.44 LTR).
-* A PostgreSQL server with the PostGIS extension (and `postgis_raster` for the
-  raster tools).
+* QGIS 3.34.9 or newer (developed and tested on QGIS 3.44 LTR).
+* PostgreSQL with PostGIS, plus `postgis_raster` for the raster tools.
 
 The query editor builds on the DB Manager plugin that ships with QGIS, so no
 extra Python packages are needed.
@@ -91,13 +72,12 @@ extra Python packages are needed.
 
 Copy the `postgis_toolbox` folder into your QGIS plugin directory
 (`Settings → User Profiles → Open Active Profile Folder`, then
-`python/plugins`) or install it as a ZIP from *Plugins → Manage and Install
+`python/plugins`) or install the ZIP from *Plugins → Manage and Install
 Plugins*. Then enable *PostGIS Toolbox* in the plugin manager.
 
 ## Languages
 
-English and Polish. The Polish translation follows the QGIS interface
-language.
+English and Polish, following the QGIS interface language.
 
 ## License
 

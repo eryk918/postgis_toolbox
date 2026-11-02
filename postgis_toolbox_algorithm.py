@@ -3,7 +3,8 @@ from typing import List, Tuple, Optional
 
 from qgis.core import QgsProcessingAlgorithm, QgsProcessingException, \
     QgsProcessingParameterProviderConnection, \
-    QgsProcessingParameterDatabaseSchema, QgsProcessingParameterDatabaseTable, \
+    QgsProcessingParameterDatabaseSchema, \
+    QgsProcessingParameterDatabaseTable, \
     QgsProcessingParameterBoolean, QgsProcessingOutputVectorLayer, \
     QgsProcessingOutputRasterLayer, QgsProcessingContext, \
     QgsProcessingFeedback, QgsProviderConnectionException, \
@@ -74,8 +75,8 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
                 self.OUTPUT, tr('Output layer')))
 
     def get_connection(
-            self, parameters: dict,
-            context: QgsProcessingContext) -> QgsAbstractDatabaseProviderConnection:
+            self, parameters: dict, context: QgsProcessingContext
+    ) -> QgsAbstractDatabaseProviderConnection:
         connection_name = self.parameterAsConnectionName(
             parameters, self.CONNECTION, context)
         if not connection_name:
@@ -125,9 +126,9 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
                     AND r_table_name = {quote_literal(table)};
             ''', feedback)
             for overview_schema, overview_table in overviews:
-                self.execute_sql(connection, f'DROP TABLE IF EXISTS '
-                                 f'{qualified_name(overview_schema, overview_table)};',
-                                 feedback)
+                overview = qualified_name(overview_schema, overview_table)
+                self.execute_sql(
+                    connection, f'DROP TABLE IF EXISTS {overview};', feedback)
         self.execute_sql(connection, f'DROP TABLE IF EXISTS '
                          f'{qualified_name(schema, table)} CASCADE;',
                          feedback)
@@ -281,8 +282,10 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
                 ALTER TABLE {qualified_name(schema, overview_table)}
                 ADD COLUMN rid bigserial PRIMARY KEY;
             ''', feedback)
+            index_name = quote_identifier(
+                f'{overview_table}_{column}_gist_idx')
             self.execute_sql(connection, f'''
-                CREATE INDEX {quote_identifier(f'{overview_table}_{column}_gist_idx')}
+                CREATE INDEX {index_name}
                 ON {qualified_name(schema, overview_table)}
                 USING GIST (ST_ConvexHull({quote_identifier(column)}));
             ''', feedback)
