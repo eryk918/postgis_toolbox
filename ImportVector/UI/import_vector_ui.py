@@ -95,16 +95,13 @@ class ImportVector_UI(QDialog, FORM_CLASS):
             not len(self.vector_layer_cbbx.checkedItems()) > 1)
 
     def change_db(self):
-        get_plugin_object().run_db_config()
+        get_plugin_object().run_db_config(self)
         self.import_vector.db = get_plugin_object().db
-        self.close()
-        self.manage_vectors()
         con_status = \
             get_active_db_info(self.import_vector.db, self.active_db_label)
         if con_status:
             self.get_schemas()
         self.set_object_visibility(con_status)
-        self.run_dialog()
 
     def select_vector_file(self, filepath: str) -> None:
         filepath = standardize_path(filepath)

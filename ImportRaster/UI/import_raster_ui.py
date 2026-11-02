@@ -176,16 +176,13 @@ class ImportRaster_UI(QDialog, FORM_CLASS):
         self.button_box.button(QDialogButtonBox.Ok).setEnabled(visible)
 
     def change_db(self):
-        get_plugin_object().run_db_config()
+        get_plugin_object().run_db_config(self)
         self.importRaster.db = get_plugin_object().db
-        self.close()
-        self.manage_rasters()
         con_status = \
             get_active_db_info(self.importRaster.db, self.active_db_label)
         if con_status:
             self.get_schemas()
         self.set_object_visibility(con_status)
-        self.run_dialog()
 
     def select_raster_files(self, value: str) -> None:
         added = []

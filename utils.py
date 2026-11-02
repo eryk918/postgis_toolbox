@@ -19,12 +19,13 @@ from qgis.PyQt.QtWidgets import QProgressDialog, QPushButton, QMessageBox, \
     QApplication, QLabel
 from qgis.core import QgsMessageLog, Qgis, QgsDataSourceUri, QgsWkbTypes, \
     QgsProviderRegistry, QgsProviderMetadata, QgsProviderConnectionException, \
-    QgsAbstractDatabaseProviderConnection
+    QgsAbstractDatabaseProviderConnection, QgsCredentials
 from qgis.core import QgsProject, QgsVectorLayer, \
     QgsRasterLayer, QgsApplication, QgsSettings, QgsLayerTreeGroup
 from qgis.utils import iface
 
 Qt = QtCore.Qt
+credentials_cache = {}
 project = QgsProject.instance()
 root = project.layerTreeRoot()
 main_window = iface.mainWindow()
@@ -338,11 +339,30 @@ def create_connection_from_uri(
         return None
 
 
+def server_credentials(uri: QgsDataSourceUri) -> Optional[Tuple[str, str]]:
+    if uri.password() or uri.authConfigId() or uri.service():
+        return None
+    realm = uri.connectionInfo(False)
+    if realm in credentials_cache:
+        return credentials_cache[realm]
+    ok, user, password = QgsCredentials.instance().get(
+        realm, uri.username(), '')
+    credentials = (user, password) if ok and password else None
+    if credentials:
+        QgsCredentials.instance().put(realm, user, password)
+    credentials_cache[realm] = credentials
+    return credentials
+
+
 def connection_for_database(
         connection: QgsAbstractDatabaseProviderConnection,
         database_name: str) -> Optional[QgsAbstractDatabaseProviderConnection]:
     uri = QgsDataSourceUri(connection.uri())
+    credentials = server_credentials(uri)
     uri.setDatabase(database_name)
+    if credentials:
+        QgsCredentials.instance().put(
+            uri.connectionInfo(False), credentials[0], credentials[1])
     return create_connection_from_uri(uri.uri(False))
 
 

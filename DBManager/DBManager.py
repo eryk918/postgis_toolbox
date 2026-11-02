@@ -21,8 +21,9 @@ from ..utils import project, iface, make_query, ask_question, \
 
 
 class DBManager:
-    def __init__(self, parent):
+    def __init__(self, parent, dialog_parent: Optional[QWidget] = None):
         self.main = parent
+        self.dialog_parent = dialog_parent
         self.iface = iface
         self.project_path = os.path.dirname(
             os.path.abspath(project.fileName()))
@@ -37,7 +38,7 @@ class DBManager:
     def run(self) -> None:
         self.source_widget = None
         self.sessions_dialog = None
-        self.dlg = DBManagerMenu_UI(self)
+        self.dlg = DBManagerMenu_UI(self, self.dialog_parent)
         self.dlg.setup_dialog()
         self.fetch_connections()
         self.dlg.run_dialog()

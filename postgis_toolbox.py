@@ -7,7 +7,7 @@ from typing import Optional
 
 from qgis.PyQt.QtCore import QSettings, QCoreApplication, QTranslator
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QLabel
+from qgis.PyQt.QtWidgets import QAction, QLabel, QWidget
 from qgis.core import QgsApplication, Qgis
 from qgis.utils import iface
 
@@ -52,7 +52,7 @@ class PostGISToolboxPlugin(object):
         self._add_action(
             os.path.join(self.plugin_dir, 'icons', 'manage_dbs.svg'),
             text=tr('Manage databases'),
-            callback=self.run_db_config,
+            callback=lambda: self.run_db_config(),
             parent=self.iface.mainWindow())
         self._add_action(
             os.path.join(self.plugin_dir, 'icons', 'import_vector_layer.svg'),
@@ -158,8 +158,8 @@ class PostGISToolboxPlugin(object):
         self.import_raster = ImportRaster(self)
         self.import_raster.run()
 
-    def run_db_config(self) -> None:
-        self.db_manager = DBManager(self)
+    def run_db_config(self, parent: Optional[QWidget] = None) -> None:
+        self.db_manager = DBManager(self, parent)
         self.db_manager.run()
 
     def run_table_registry(self) -> None:
