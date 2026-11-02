@@ -1,201 +1,77 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, Any, Tuple
+from qgis.core import QgsProcessingParameterRasterLayer, \
+    QgsProcessingParameterBoolean, QgsProcessingParameterNumber
 
-from qgis.PyQt.QtWidgets import QMessageBox
-from qgis.core import (QgsProcessingAlgorithm,
-                       QgsProcessingParameterBoolean,
-                       QgsProcessingParameterString,
-                       QgsProcessingParameterEnum,
-                       QgsProcessingParameterNumber)
-from qgis.utils import iface
-
-from ..ImportRaster.utils.raster_utils import make_sql_create_raster_gist, \
-    make_sql_addr_raster_column, create_raster_overviews
-from ..VectorAlgorithms.vec_alg_utils import check_db_connection, \
-    get_pg_table_name_from_raster_uri, check_table_exists_in_schema, \
-    get_pg_table_name_from_uri
-from ..utils import get_plugin_object, make_query, test_query, tr, \
-    get_schema_name_list, PROCESSING_LAYERS_GROUP, \
-    get_all_vectors_from_project, remove_unsupported_chars, plugin_name, \
-    get_all_rasters_from_project, \
-    create_postgis_raster_layer, add_rasters_to_project, plugin_dir_name
+from ..postgis_toolbox_algorithm import PostGISToolboxAlgorithm, \
+    qualified_name
+from ..utils import tr
 
 
-class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
-    OUTPUT = 'OUTPUT'
+class PostGISToolboxRasterTile(PostGISToolboxAlgorithm):
     INPUT = 'INPUT'
     SIZE_X = 'SIZE_X'
     SIZE_Y = 'SIZE_Y'
-    DEST_TABLE = 'DEST_TABLE'
-    DEST_SCHEMA = 'DEST_SCHEMA'
-    LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
-    OVERWRITE = 'OVERWRITE'
     OVERVIEWS = 'OVERVIEWS'
-    KEEP = 'KEEP'
-    OPTIONS = 'OPTIONS'
 
     def initAlgorithm(self, config=None):
-        self.input_raster_layers_dict = get_all_rasters_from_project(True)
-        self.input_raster_layers = list(self.input_raster_layers_dict.keys()) \
-            if self.input_raster_layers_dict else []
-        self.all_layers_dict = {**self.input_raster_layers_dict,
-                                **get_all_vectors_from_project(True)}
-        self.all_layers_list = list(self.all_layers_dict.keys()) \
-            if self.all_layers_dict else []
-        if not get_plugin_object().db or not self.input_raster_layers_dict:
-            return
-        self.db = get_plugin_object().db
-        self.schemas_list, _ = get_schema_name_list(self.db, change_db=False)
-        default_schema = self.schemas_list[0] if self.schemas_list else None
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.INPUT,
-            tr('Input raster layer'),
-            options=self.input_raster_layers,
-            allowMultiple=False,
-            defaultValue=self.input_raster_layers[0]))
-
+        self.addParameter(QgsProcessingParameterRasterLayer(
+            self.INPUT, tr('Input raster layer')))
         self.addParameter(QgsProcessingParameterNumber(
-            self.SIZE_X,
-            tr('Tile size X'), minValue=1, defaultValue=100))
-
+            self.SIZE_X, tr('Tile size X'), minValue=1, defaultValue=100))
         self.addParameter(QgsProcessingParameterNumber(
-            self.SIZE_Y,
-            tr('Tile size Y'), minValue=1, defaultValue=100))
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.DEST_SCHEMA,
-            tr("Output schema"),
-            options=self.schemas_list,
-            allowMultiple=False,
-            defaultValue=default_schema))
-
-        self.addParameter(QgsProcessingParameterString(
-            self.DEST_TABLE, tr('Output table name'), 'tiled_raster'))
-
+            self.SIZE_Y, tr('Tile size Y'), minValue=1, defaultValue=100))
         self.addParameter(QgsProcessingParameterBoolean(
-            self.OVERWRITE,
-            tr('Overwrite table if exists'),
-            True))
-
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.OVERVIEWS,
-            tr('Create raster overviews'),
-            True))
-
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.LOAD_TO_PROJECT,
-            tr('Add result layer to the project'),
-            True))
+            self.OVERVIEWS, tr('Create raster overviews'), True))
+        self.add_connection_parameter()
+        self.add_output_parameters('tiled_raster', raster=True)
 
     def processAlgorithm(self, parameters, context, feedback):
-        if not self.input_raster_layers:
-            QMessageBox.critical(
-                iface.mainWindow(), plugin_name,
-                tr('No PostGIS layers in the active project!'),
-                QMessageBox.Ok)
-            return {}
-        elif not check_db_connection(self, 'schemas_list'):
-            return {}
-
-        raster_layer_name = self.input_raster_layers[self.parameterAsEnum(
-            parameters, self.INPUT, context)]
-        raster_layer = self.input_raster_layers_dict[raster_layer_name]
-        uri_dict = get_pg_table_name_from_raster_uri(
-            raster_layer.dataProvider().dataSourceUri())
-
-        if not uri_dict.get('TABLE'):
-            schema_name, table_name = get_pg_table_name_from_uri(
-                raster_layer.dataProvider().dataSourceUri()).split('.')
-            if schema_name and table_name:
-                uri_dict = {
-                    'TABLE': table_name,
-                    'SCHEMA': schema_name
-                }
-        if not uri_dict.get('TABLE'):
-            return {}
-
-        q_add_to_project = self.parameterAsBool(
-            parameters, self.LOAD_TO_PROJECT, context)
-        q_overwrite = self.parameterAsBool(parameters, self.OVERWRITE, context)
-        q_overview = self.parameterAsBool(parameters, self.OVERVIEWS, context)
+        connection = self.get_connection(parameters, context)
+        raster_layer = self.get_postgis_layer(
+            parameters, self.INPUT, context, connection, raster=True)
+        schema, table, rast_column = self.layer_table(raster_layer)
         size_x = self.parameterAsInt(parameters, self.SIZE_X, context)
         size_y = self.parameterAsInt(parameters, self.SIZE_Y, context)
-        schema_enum = self.parameterAsEnum(parameters, self.DEST_SCHEMA,
-                                           context)
-        out_schema = self.schemas_list[schema_enum]
-        out_table = remove_unsupported_chars(
-            self.parameterAsString(parameters, self.DEST_TABLE, context))
+        overviews = self.parameterAsBool(parameters, self.OVERVIEWS, context)
+        out_schema, out_table = self.get_output_target(parameters, context)
+
+        self.prepare_output_table(connection, parameters, context, feedback,
+                                  out_schema, out_table, raster=True)
+        if feedback.isCanceled():
+            return {}
+        self.execute_sql(connection, self.generate_raster_tiles_query(
+            out_schema, out_table, schema, table, rast_column, size_x,
+            size_y), feedback)
+        feedback.setProgress(70)
+        self.finish_raster_table(connection, out_schema, out_table, overviews,
+                                 feedback, rast_column)
         if feedback.isCanceled():
             return {}
 
-        if self.db.isOpen() and self.db.isValid() \
-                and make_query(self.db, test_query):
-            if q_overwrite:
-                make_query(self.db, f'DROP TABLE IF EXISTS '
-                                    f'"{out_schema}"."{out_table}";')
-            else:
-                if check_table_exists_in_schema(self.db, out_schema,
-                                                out_table):
-                    return {}
-            if feedback.isCanceled():
-                return {}
-
-            create_raster_table_query, insert_raster_data_query = \
-                self.generate_raster_tiles_queries(
-                    out_table, out_schema, uri_dict, size_x, size_y
-                )
-            make_query(self.db, create_raster_table_query)
-            make_query(self.db, insert_raster_data_query)
-            make_query(self.db, make_sql_create_raster_gist(out_table, out_table),
-                       out_schema)
-            make_query(self.db,
-                       make_sql_addr_raster_column(out_table, out_schema))
-            if q_overview:
-                create_raster_overviews(self.db, out_schema, out_table)
-            if feedback.isCanceled():
-                make_query(self.db, f'DROP TABLE IF EXISTS '
-                                    f'"{out_schema}"."{out_table}";')
-                return {}
-
-        out_layer = create_postgis_raster_layer(
-            self.db, out_schema, out_table, raster_layer_name
-        )
-
-        if feedback.isCanceled():
-            return {}
-
-        if q_add_to_project:
-            add_rasters_to_project(PROCESSING_LAYERS_GROUP, [out_layer],
-                                   postgis_raster=True)
-
+        out_layer = self.create_output_raster_layer(
+            connection, out_schema, out_table,
+            f'{tr("Tiles")} {raster_layer.name()}')
         return {
-            self.OUTPUT: out_layer,
-            self.DEST_SCHEMA: schema_enum,
+            self.OUTPUT: self.register_output_layers(
+                [out_layer], parameters, context),
+            self.DEST_SCHEMA: out_schema,
             self.DEST_TABLE: out_table
         }
 
-    def generate_raster_tiles_queries(
-            self, out_table: str, out_schema: str,
-            uri_dict: Dict[str, Any],
-            size_x: int, size_y: int) -> Tuple[str, str]:
-
-        create_raster_table = f'''
-            CREATE TABLE "{out_schema}"."{out_table}" (
-                rid serial PRIMARY KEY,
-                rast raster
+    def generate_raster_tiles_query(
+            self, out_schema: str, out_table: str, schema: str, table: str,
+            rast_column: str, size_x: int, size_y: int) -> str:
+        return f'''
+            CREATE TABLE {qualified_name(out_schema, out_table)} AS (
+                WITH merged_raster AS (
+                    SELECT ST_Union("{rast_column}") AS merged
+                    FROM {qualified_name(schema, table)}
+                )
+                SELECT row_number() OVER () AS "rid",
+                    ST_Tile(merged, {size_x}, {size_y}) AS "{rast_column}"
+                FROM merged_raster
             );
         '''
-        insert_tiled_rasters_data = f'''    
-            WITH all_raster AS (
-                SELECT ST_UNION("rast") AS merged
-                FROM "{uri_dict['SCHEMA']}"."{uri_dict['TABLE']}"
-            )
-            INSERT INTO "{out_schema}"."{out_table}" ("rast")
-            SELECT ST_Tile(merged, {size_x}, {size_y}) AS rast
-            FROM all_raster;
-        '''
-        return create_raster_table, insert_tiled_rasters_data
 
     def name(self):
         return 'raster_tiles'
@@ -204,10 +80,10 @@ class PostGISToolboxRasterTile(QgsProcessingAlgorithm):
         return tr('Tiles')
 
     def group(self):
-        return tr(self.groupId())
+        return tr('Raster')
 
     def groupId(self):
-        return tr('Raster')
+        return 'raster'
 
     def createInstance(self):
         return PostGISToolboxRasterTile()

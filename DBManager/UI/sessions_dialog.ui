@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>sessions_dialog</class>
+ <widget class="QDialog" name="sessions_dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>520</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PostGIS Toolbox - Sessions and locks</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="header_layout">
+     <item>
+      <widget class="QLabel" name="summary_label">
+       <property name="text">
+        <string notr="true"/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="header_spacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="active_chkbox">
+       <property name="text">
+        <string>Hide idle sessions</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="auto_chkbox">
+       <property name="text">
+        <string>Refresh every 5 s</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="childrenCollapsible">
+      <bool>false</bool>
+     </property>
+     <widget class="QTableWidget" name="sessions_table">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="sortingEnabled">
+       <bool>true</bool>
+      </property>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>PID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>User</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Database</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Application</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Client</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>State</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Duration</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Waiting on</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Blocked by</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Query</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QPlainTextEdit" name="query_text">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+      <property name="placeholderText">
+       <string>Query of the selected session</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttons_layout">
+     <item>
+      <widget class="QPushButton" name="refresh_btn">
+       <property name="text">
+        <string>Refresh</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancel_btn">
+       <property name="toolTip">
+        <string>Stops the running query, the session stays connected</string>
+       </property>
+       <property name="text">
+        <string>Cancel query</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="terminate_btn">
+       <property name="toolTip">
+        <string>Disconnects the session and rolls back its transaction</string>
+       </property>
+       <property name="text">
+        <string>Terminate session</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="buttons_spacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="button_box">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Close</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>button_box</sender>
+   <signal>rejected()</signal>
+   <receiver>sessions_dialog</receiver>
+   <slot>reject()</slot>
+  </connection>
+ </connections>
+</ui>
