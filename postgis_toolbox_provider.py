@@ -1,57 +1,57 @@
 # -*- coding: utf-8 -*-
 
-"""
-/***************************************************************************
- PostGISToolbox
-                                 A QGIS plugin
- Development of a QGIS plugin implementing selected PostGIS functions
-                              -------------------
-        begin                : 2022-05-12
-        copyright            : (C) 2022 by Eryk Chełchowski
-        email                : erwinek1998@gmail.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-"""
-
-__author__ = 'Eryk Chełchowski'
-__date__ = '2022-05-12'
-__copyright__ = '(C) 2022 by Eryk Chełchowski'
-
-# This will get replaced with a git SHA1 when you do a git archive
-
-__revision__ = '$Format:%H$'
-
 import os
 
 from qgis.core import QgsProcessingProvider
 
-from .VectorAlgorithms.PostGISToolboxVectorMakeValid import PostGISToolboxVectorMakeValid
-from .VectorAlgorithms.PostGISToolboxVectorGeneraterPolygonByPoints import PostGISToolboxVectorGeneratePolygonFromPoints
-from .VectorAlgorithms.PostGISToolboxVectorAggregate import PostGISToolboxVectorAggregate
-from .VectorAlgorithms.PostGISToolboxVectorGeneratePoints import PostGISToolboxVectorGeneratePoints
-from .VectorAlgorithms.PostGISToolboxVectorIntersect import PostGISToolboxVectorIntersects
-from .VectorAlgorithms.PostGISToolboxVectorBuffer import PostGISToolboxVectorBuffer
-from .RasterAlgorithms.PostGISToolboxRasterClip import PostGISToolboxRasterClip
-from .RasterAlgorithms.PostGISToolboxRasterSummary import PostGISToolboxRasterSummary
-from .RasterAlgorithms.PostGISToolboxRasterTile import PostGISToolboxRasterTile
-from .RasterAlgorithms.PostGISToolboxRasterMerge import PostGISToolboxRasterMerge
-from .RasterAlgorithms.PostGISToolboxRasterResample import PostGISToolboxRasterResample
-from .RasterAlgorithms.PostGISToolboxRasterReproject import PostGISToolboxRasterReproject
-from .VectorAlgorithms.PostGISToolboxVectorClip import PostGISToolboxVectorClip
+from .VectorAlgorithms.PostGISToolboxVectorMakeValid import \
+    PostGISToolboxVectorMakeValid
+from .VectorAlgorithms.PostGISToolboxVectorGeneraterPolygonByPoints import \
+    PostGISToolboxVectorGeneratePolygonFromPoints
+from .VectorAlgorithms.PostGISToolboxVectorAggregate import \
+    PostGISToolboxVectorAggregate
+from .VectorAlgorithms.PostGISToolboxVectorGeneratePoints import \
+    PostGISToolboxVectorGeneratePoints
+from .VectorAlgorithms.PostGISToolboxVectorIntersect import \
+    PostGISToolboxVectorIntersects
+from .VectorAlgorithms.PostGISToolboxVectorBuffer import \
+    PostGISToolboxVectorBuffer
+from .RasterAlgorithms.PostGISToolboxRasterClip import \
+    PostGISToolboxRasterClip
+from .RasterAlgorithms.PostGISToolboxRasterSummary import \
+    PostGISToolboxRasterSummary
+from .RasterAlgorithms.PostGISToolboxRasterTile import \
+    PostGISToolboxRasterTile
+from .RasterAlgorithms.PostGISToolboxRasterMerge import \
+    PostGISToolboxRasterMerge
+from .RasterAlgorithms.PostGISToolboxRasterResample import \
+    PostGISToolboxRasterResample
+from .RasterAlgorithms.PostGISToolboxRasterReproject import \
+    PostGISToolboxRasterReproject
+from .VectorAlgorithms.PostGISToolboxVectorClip import \
+    PostGISToolboxVectorClip
 from .VectorAlgorithms.PostGISToolboxVectorDifference import \
     PostGISToolboxVectorDifference
 from .VectorAlgorithms.PostGISToolboxVectorMerge import \
     PostGISToolboxVectorMerge
 from .VectorAlgorithms.PostGISToolboxVectorNearestNeighbor import \
     PostGISToolboxVectorNearestNeighbor
+from .VectorAlgorithms.PostGISToolboxVectorCluster import \
+    PostGISToolboxVectorCluster
+from .VectorAlgorithms.PostGISToolboxVectorSimplify import \
+    PostGISToolboxVectorSimplify
+from .VectorAlgorithms.PostGISToolboxVectorVoronoi import \
+    PostGISToolboxVectorVoronoi
+from .VectorAlgorithms.PostGISToolboxVectorCentroids import \
+    PostGISToolboxVectorCentroids
+from .VectorAlgorithms.PostGISToolboxVectorDissolve import \
+    PostGISToolboxVectorDissolve
+from .RasterAlgorithms.PostGISToolboxRasterTerrain import \
+    PostGISToolboxRasterTerrain
+from .RasterAlgorithms.PostGISToolboxRasterVectorize import \
+    PostGISToolboxRasterVectorize
+from .RasterAlgorithms.PostGISToolboxRasterZonalStatistics import \
+    PostGISToolboxRasterZonalStatistics
 from .utils import tr, plugin_dir_name, main_plugin_icon
 
 pluginPath = os.path.dirname(__file__)
@@ -77,12 +77,20 @@ class PostGISToolboxProvider(QgsProcessingProvider):
         self.addAlgorithm(PostGISToolboxVectorBuffer())
         self.addAlgorithm(PostGISToolboxVectorMerge())
         self.addAlgorithm(PostGISToolboxVectorNearestNeighbor())
+        self.addAlgorithm(PostGISToolboxVectorCluster())
+        self.addAlgorithm(PostGISToolboxVectorSimplify())
+        self.addAlgorithm(PostGISToolboxVectorVoronoi())
+        self.addAlgorithm(PostGISToolboxVectorCentroids())
+        self.addAlgorithm(PostGISToolboxVectorDissolve())
         self.addAlgorithm(PostGISToolboxRasterSummary())
         self.addAlgorithm(PostGISToolboxRasterMerge())
         self.addAlgorithm(PostGISToolboxRasterResample())
         self.addAlgorithm(PostGISToolboxRasterTile())
         self.addAlgorithm(PostGISToolboxRasterClip())
         self.addAlgorithm(PostGISToolboxRasterReproject())
+        self.addAlgorithm(PostGISToolboxRasterTerrain())
+        self.addAlgorithm(PostGISToolboxRasterVectorize())
+        self.addAlgorithm(PostGISToolboxRasterZonalStatistics())
 
     def id(self):
         return plugin_dir_name

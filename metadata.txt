@@ -1,27 +1,42 @@
 [general]
 name=PostGIS Toolbox
-qgisMinimumVersion=3.16
-description=Plugin for QGIS implementing selected PostGIS functions
-version=1.2
+qgisMinimumVersion=3.34.9
+description=PostGIS from inside QGIS: manage databases, browse and fix tables, write SQL, run PostGIS tools from Processing
+version=2.0
 author=Eryk Chełchowski
 email=erwinek1998@gmail.com
-about=The plugin implements:
- • database and schema management mechanism,
- • import of vector and raster data,
- • extended query editor,
- • several algorithms for vectors and rasters.
+about=The everyday PostGIS stuff without leaving QGIS.
+ - Databases: pick a connection, see what's on the server, add / rename / drop databases and schemas, check PostGIS, see who's connected and kill a stuck session, choose the database the rest of the plugin works on.
+ - Import: vectors and rasters from the project or from disk, many at once. Rasters get tiled, compressed and get overviews if you want.
+ - Table registry: one list of every table, view and raster in the database, with geometry, SRID, resolution, size, owner, comments, privileges, columns, keys, indexes and overviews. Add to the project or drag onto the map, export, rename, move, copy (also to another database), drop, vacuum, index, fix SRID or geometry type, rebuild overviews, set privileges per table or per schema, edit comments, grab the CREATE statement, manage styles saved in the database. A health check finds tables without a key or index, bloated tables, unused indexes and rasters without constraints, and fixes them with one click.
+ - Projects in the database: open, save and delete QGIS projects kept in the database, same storage as QGIS itself.
+ - Query editor: the DB Manager SQL window with schema-qualified tables, PostGIS function help and create table / view from a query.
+ - 24 Processing algorithms running in the database: buffer, clip, intersection, difference, merge, aggregate, dissolve, repair, simplify, centroids, cluster, Voronoi, nearest neighbour, point and polygon generation, raster clip, merge, reproject, resample, summary, tiling, slope / aspect / hillshade, raster to polygons, zonal statistics.
+ Needs PostgreSQL with PostGIS (postgis_raster for the raster tools).
 
 homepage=https://github.com/eryk918/postgis_toolbox
 tracker=https://github.com/eryk918/postgis_toolbox/issues
 repository=https://github.com/eryk918/postgis_toolbox
 
 hasProcessingProvider=yes
-# Uncomment the following line and add your changelog:
-# changelog=
+changelog=2.0
+ - rebuilt for QGIS 3.44: provider connections instead of QSqlDatabase, no more temp connection entries
+ - Processing algorithms on a common base, 8 new ones: cluster, simplify, Voronoi, centroids, dissolve, slope / aspect / hillshade, raster to polygons, zonal statistics
+ - query editor built on the DB Manager that ships with QGIS, our copy is gone
+ - new table registry: browse, inspect, load, export, rename, move, copy, drop, maintenance tools, privileges, comments, CREATE statements, styles, copy to another database, health check with one-click fixes
+ - long operations run in the background with progress
+ - QGIS projects in the database: open, save, delete
+ - database manager: much faster tree, "Last used" button, filter box, server info, sessions and locks, QGIS connection dialog for new connections
+ - SQL log of everything the plugin runs
+ - raster import: many files at once, compressed tiles, batched inserts, tile size presets
+ - imported layers land in their own groups, alpha band for RGBA rasters
+ - dialogs redone with native QGIS widgets, dark theme ok, import dialogs remember their settings
+ - disconnect button on the toolbar, new scalable icons
+ - requires QGIS 3.34.9 or newer
 
 category=Database
 tags=processing, raster, database, postgis, postgres, postgresql, spatial, schema
-icon=icons/main.png
+icon=icons/main.svg
 experimental=False
 
 deprecated=False
