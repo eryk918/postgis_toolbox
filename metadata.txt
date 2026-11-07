@@ -2,7 +2,7 @@
 name=PostGIS Toolbox
 qgisMinimumVersion=3.34.9
 description=PostGIS from inside QGIS: manage databases, browse and fix tables, write SQL, run PostGIS tools from Processing
-version=2.0
+version=2.0.1
 author=Eryk Chełchowski
 email=erwinek1998@gmail.com
 about=The everyday PostGIS stuff without leaving QGIS.
@@ -19,7 +19,10 @@ tracker=https://github.com/eryk918/postgis_toolbox/issues
 repository=https://github.com/eryk918/postgis_toolbox
 
 hasProcessingProvider=yes
-changelog=2.0
+changelog=2.0.1
+ - fix password prompt for every database on the server
+ - keep import dialogs open and on top when changing the database
+2.0
  - rebuilt for QGIS 3.44: provider connections instead of QSqlDatabase, no more temp connection entries
  - Processing algorithms on a common base, 8 new ones: cluster, simplify, Voronoi, centroids, dissolve, slope / aspect / hillshade, raster to polygons, zonal statistics
  - query editor built on the DB Manager that ships with QGIS, our copy is gone
