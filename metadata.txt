@@ -22,7 +22,7 @@ hasProcessingProvider=yes
 changelog=2.0.1
  - fix password prompt for every database on the server
  - keep import dialogs open and on top when changing the database
-2.0
+ 2.0
  - rebuilt for QGIS 3.44: provider connections instead of QSqlDatabase, no more temp connection entries
  - Processing algorithms on a common base, 8 new ones: cluster, simplify, Voronoi, centroids, dissolve, slope / aspect / hillshade, raster to polygons, zonal statistics
  - query editor built on the DB Manager that ships with QGIS, our copy is gone
