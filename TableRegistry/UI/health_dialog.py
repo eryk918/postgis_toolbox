@@ -31,8 +31,8 @@ CHECK_HINTS = {
     'raster_no_constraints': 'raster_columns has no SRID, scale or bands',
 }
 
-CHECK_ROLE = Qt.UserRole
-FINDING_ROLE = Qt.UserRole + 1
+CHECK_ROLE = Qt.ItemDataRole.UserRole
+FINDING_ROLE = Qt.ItemDataRole.UserRole + 1
 
 
 class HealthDialog(QDialog, FORM_CLASS):
@@ -44,9 +44,9 @@ class HealthDialog(QDialog, FORM_CLASS):
         super().__init__(parent)
         self.setupUi(self)
         repair_dialog(self, 'table_registry.svg')
-        self.setWindowFlags(Qt.Window)
+        self.setWindowFlags(Qt.WindowType.Window)
         self.findings_tree.header().setSectionResizeMode(
-            QHeaderView.ResizeToContents)
+            QHeaderView.ResizeMode.ResizeToContents)
         self.findings_tree.itemSelectionChanged.connect(
             self.selection_changed)
         self.findings_tree.itemDoubleClicked.connect(
@@ -74,7 +74,7 @@ class HealthDialog(QDialog, FORM_CLASS):
                 [f'{tr(CHECK_LABELS[check])} ({len(rows)})',
                  tr(CHECK_HINTS[check])])
             section.setData(0, CHECK_ROLE, check)
-            section.setFlags(section.flags() & ~Qt.ItemIsSelectable)
+            section.setFlags(section.flags() & ~Qt.ItemFlag.ItemIsSelectable)
             for schema, table, detail in rows:
                 item = QTreeWidgetItem([f'{schema}.{table}', detail])
                 item.setData(0, CHECK_ROLE, check)

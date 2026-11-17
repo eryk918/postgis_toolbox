@@ -10,7 +10,7 @@ from db_manager.dlg_query_builder import QueryBuilderDlg
 from db_manager.dlg_sql_window import DlgSqlWindow
 from qgis.PyQt.QtCore import QModelIndex
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QPushButton, QHBoxLayout
+from qgis.PyQt.QtWidgets import QPushButton, QHBoxLayout, QDialog
 from qgis.core import Qgis
 from qgis.gui import QgisInterface
 
@@ -108,7 +108,7 @@ class CustomDbSqlWindow(DlgSqlWindow):
 
     def ask_object_name(self, title: str, label: str) -> tuple:
         dialog = NewObjectDialog(title, label, self.schema_names(), self)
-        if dialog.exec() != NewObjectDialog.Accepted:
+        if dialog.exec() != QDialog.DialogCode.Accepted:
             return None, None
         return dialog.schema_name(), dialog.object_name()
 
@@ -141,7 +141,7 @@ class CustomDbSqlWindow(DlgSqlWindow):
         dialog = CustomQueryBuilder(
             self.iface, self.db, self, reset=self.queryBuilderFirst)
         self.queryBuilderFirst = False
-        if dialog.exec() == CustomQueryBuilder.Accepted:
+        if dialog.exec() == QDialog.DialogCode.Accepted:
             self.editSql.setText(dialog.query)
 
 
@@ -184,7 +184,7 @@ class FilteredDBManager(DBManager):
         if db is None:
             self.infoBar.pushMessage(
                 tr('No database selected or you are not connected to it.'),
-                Qgis.Info, self.iface.messageTimeout())
+                Qgis.MessageLevel.Info, self.iface.messageTimeout())
             self.tabs.setCurrentIndex(0)
             return None
         query = CustomDbSqlWindow(self.iface, db, self)
@@ -208,7 +208,8 @@ class FilteredDBManagerPlugin:
             self.dlg.destroyed.connect(self.on_destroyed)
         self.dlg.show()
         self.dlg.raise_()
-        self.dlg.setWindowState(self.dlg.windowState() & ~Qt.WindowMinimized)
+        self.dlg.setWindowState(
+            self.dlg.windowState() & ~Qt.WindowState.WindowMinimized)
         self.dlg.activateWindow()
         return self.dlg
 

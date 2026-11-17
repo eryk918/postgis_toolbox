@@ -16,7 +16,8 @@ class PostGISToolboxVectorMerge(PostGISToolboxAlgorithm):
 
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterMultipleLayers(
-            self.INPUT, tr('Input layers'), QgsProcessing.TypeVector))
+            self.INPUT, tr('Input layers'),
+            QgsProcessing.SourceType.TypeVector))
         self.addParameter(QgsProcessingParameterBoolean(
             self.SINGLE, tr('Force output as singlepart'), False))
         self.add_connection_parameter()

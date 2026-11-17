@@ -36,7 +36,8 @@ def ensure_gdal_drivers(
 def open_raster_dataset(raster_path: str) -> Optional[gdal.Dataset]:
     dataset = gdal.Open(raster_path, gdal.GA_ReadOnly)
     if dataset is None:
-        log(f'GDAL cannot open raster: {raster_path}', Qgis.Critical)
+        log(f'GDAL cannot open raster: {raster_path}',
+            Qgis.MessageLevel.Critical)
     return dataset
 
 
@@ -77,7 +78,7 @@ def iter_raster_tiles(raster_path: str, tile_width: int,
                         min(tile_height, y_size - y_offset)])
             if tile_dataset is None:
                 log(f'GDAL cannot cut tile at {x_offset}, {y_offset} '
-                    f'from {raster_path}', Qgis.Critical)
+                    f'from {raster_path}', Qgis.MessageLevel.Critical)
                 return
             tile_dataset = None
             yield read_vsimem_file(mem_path)
@@ -104,7 +105,7 @@ def log_raster_table_info(connection: QgsAbstractDatabaseProviderConnection,
             f'scale={info[5]}, {info[6]}')
     else:
         log(f'{schema_name}.{table_name}: no entry in raster_columns',
-            Qgis.Warning)
+            Qgis.MessageLevel.Warning)
 
 
 def drop_raster_table(connection: QgsAbstractDatabaseProviderConnection,

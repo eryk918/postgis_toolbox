@@ -10,7 +10,7 @@ from qgis.core import QgsProcessingAlgorithm, QgsProcessingException, \
     QgsProcessingFeedback, QgsProviderConnectionException, \
     QgsAbstractDatabaseProviderConnection, \
     QgsDataSourceUri, QgsVectorLayer, QgsRasterLayer, QgsMapLayer, \
-    QgsWkbTypes
+    QgsWkbTypes, Qgis
 
 from .utils import tr, get_plugin_object, remove_unsupported_chars, \
     PROCESSING_LAYERS_GROUP, quote_identifier, quote_literal, qualified_name, \
@@ -175,9 +175,9 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
     def output_geometry_type(self, layer: QgsVectorLayer,
                              single: bool) -> str:
         geometry_type = layer.geometryType()
-        if geometry_type == QgsWkbTypes.PointGeometry:
+        if geometry_type == Qgis.GeometryType.Point:
             type_name = 'POINT'
-        elif geometry_type == QgsWkbTypes.LineGeometry:
+        elif geometry_type == Qgis.GeometryType.Line:
             type_name = 'LINESTRING'
         else:
             type_name = 'POLYGON'
@@ -196,7 +196,7 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
     def output_wkb_types(
             self, connection: QgsAbstractDatabaseProviderConnection,
             schema: str, table: str,
-            feedback: QgsProcessingFeedback) -> List[QgsWkbTypes.Type]:
+            feedback: QgsProcessingFeedback) -> List[Qgis.WkbType]:
         rows = self.execute_sql(connection, f'''
             SELECT DISTINCT GeometryType("geom")
             FROM {qualified_name(schema, table)}
@@ -204,12 +204,12 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
         ''', feedback)
         wkb_types = [QgsWkbTypes.parseType(row[0]) for row in rows if row[0]]
         return [wkb_type for wkb_type in wkb_types
-                if wkb_type != QgsWkbTypes.Unknown]
+                if wkb_type != Qgis.WkbType.Unknown]
 
     def create_output_vector_layer(
             self, connection: QgsAbstractDatabaseProviderConnection,
             schema: str, table: str, name: str,
-            wkb_type: Optional[QgsWkbTypes.Type] = None) -> QgsVectorLayer:
+            wkb_type: Optional[Qgis.WkbType] = None) -> QgsVectorLayer:
         uri = QgsDataSourceUri(connection.uri())
         uri.setDataSource(schema, table, 'geom')
         if wkb_type is not None:

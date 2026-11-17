@@ -34,7 +34,8 @@ class Projects:
         self.refresh()
         self.dlg.show()
         self.dlg.raise_()
-        self.dlg.setWindowState(self.dlg.windowState() & ~Qt.WindowMinimized)
+        self.dlg.setWindowState(
+            self.dlg.windowState() & ~Qt.WindowState.WindowMinimized)
         self.dlg.activateWindow()
 
     def sync_active_db(self) -> None:
@@ -116,7 +117,7 @@ class Projects:
         iface.messageBar().pushMessage(
             plugin_name,
             tr('Project "{0}" saved to the database.').format(name),
-            Qgis.Success, 3)
+            Qgis.MessageLevel.Success, 3)
         self.load_projects()
         self.dlg.select_project(name)
 

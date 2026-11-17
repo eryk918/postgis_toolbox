@@ -16,7 +16,7 @@ class PostGISToolboxVectorGeneratePoints(PostGISToolboxAlgorithm):
             self.INPUT, tr('Input layer')))
         self.addParameter(QgsProcessingParameterNumber(
             self.POINT_COUNT, tr('Number of points'),
-            type=QgsProcessingParameterNumber.Integer, defaultValue=1,
+            type=QgsProcessingParameterNumber.Type.Integer, defaultValue=1,
             minValue=1, maxValue=99999))
         self.add_connection_parameter()
         self.add_output_parameters('points')

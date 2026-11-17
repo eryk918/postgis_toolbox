@@ -50,7 +50,7 @@ def project_uri(connection: QgsAbstractDatabaseProviderConnection,
         query.addQueryItem('service', uri.service())
     if uri.authConfigId():
         query.addQueryItem('authcfg', uri.authConfigId())
-    if uri.sslMode() != QgsDataSourceUri.SslPrefer:
+    if uri.sslMode() != QgsDataSourceUri.SslMode.SslPrefer:
         query.addQueryItem(
             'sslmode', QgsDataSourceUri.encodeSslMode(uri.sslMode()))
     query.addQueryItem('dbname', uri.database())
@@ -58,7 +58,7 @@ def project_uri(connection: QgsAbstractDatabaseProviderConnection,
     if name:
         query.addQueryItem('project', name)
     url.setQuery(query)
-    return url.toString(QUrl.FullyEncoded)
+    return url.toString(QUrl.ComponentFormattingOption.FullyEncoded)
 
 
 def list_projects(connection: QgsAbstractDatabaseProviderConnection,

@@ -23,7 +23,8 @@ class CopyDialog(QDialog, FORM_CLASS):
         repair_dialog(self, 'table_registry.svg')
         self.object_name_label.setText(object_name)
         self.name_lineedit.setText(default_name)
-        self.button_box.button(QDialogButtonBox.Ok).setText(tr('Copy'))
+        self.button_box.button(
+            QDialogButtonBox.StandardButton.Ok).setText(tr('Copy'))
         self.button_box.accepted.connect(self.validate)
         self.connection_cbbx.currentTextChanged.connect(
             self.connection_changed)

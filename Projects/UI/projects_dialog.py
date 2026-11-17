@@ -17,9 +17,9 @@ class ProjectsDialog(QDialog, FORM_CLASS):
         self.setupUi(self)
         self.projects = projects
         repair_dialog(self, 'db_projects.svg')
-        self.setWindowFlags(Qt.Window)
+        self.setWindowFlags(Qt.WindowType.Window)
         self.projects_table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents)
+            QHeaderView.ResizeMode.ResizeToContents)
         self.projects_table.horizontalHeader().setStretchLastSection(True)
         self.refresh_btn.clicked.connect(self.projects.refresh)
         self.schema_cbbx.currentIndexChanged.connect(

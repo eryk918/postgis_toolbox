@@ -76,7 +76,8 @@ class VectorImporter(QgsTask):
         layer = QgsVectorLayer(
             check_for_duplicate_id_column(vector_path), table_name, 'ogr')
         if not layer.isValid():
-            log(f'Invalid vector layer: {vector_path}', Qgis.Critical)
+            log(f'Invalid vector layer: {vector_path}',
+                Qgis.MessageLevel.Critical)
             return False
         layer.setProviderEncoding('UTF-8')
         geom_column = 'geom' \
@@ -93,7 +94,7 @@ class VectorImporter(QgsTask):
         result, message = QgsVectorLayerExporter.exportLayer(
             layer, uri.uri(False), 'postgres', layer.crs(), False, options)
         if result != Qgis.VectorExportResult.Success:
-            log(f'{message}\n{vector_path}', Qgis.Critical)
+            log(f'{message}\n{vector_path}', Qgis.MessageLevel.Critical)
             return False
         if self.q_create_index and geom_column:
             index_name = quote_identifier(f'{table_name}_{geom_column}_idx')
@@ -108,19 +109,19 @@ class VectorImporter(QgsTask):
         if self.isCanceled():
             iface.messageBar().pushMessage(
                 tr('The import was aborted by the user.'),
-                Qgis.Info,
+                Qgis.MessageLevel.Info,
                 3)
         elif not result:
             iface.messageBar().pushMessage(
                 tr('An error occurred while importing the vector.'),
-                Qgis.Critical,
+                Qgis.MessageLevel.Critical,
                 3)
         else:
             if self.q_add_to_project:
                 self.add_imported_layers()
             iface.messageBar().pushMessage(
                 tr('The vector import has been completed successfully.'),
-                Qgis.Success,
+                Qgis.MessageLevel.Success,
                 3)
 
     def add_imported_layers(self) -> None:

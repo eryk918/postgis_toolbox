@@ -32,11 +32,11 @@ class PostGISToolboxRasterTerrain(PostGISToolboxAlgorithm):
             [tr('Degrees'), tr('Radians'), tr('Percent')], defaultValue=0))
         self.addParameter(QgsProcessingParameterNumber(
             self.AZIMUTH, tr('Hillshade azimuth'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=315,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=315,
             minValue=0, maxValue=360))
         self.addParameter(QgsProcessingParameterNumber(
             self.ALTITUDE, tr('Hillshade sun altitude'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=45,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=45,
             minValue=0, maxValue=90))
         self.addParameter(QgsProcessingParameterBoolean(
             self.CREATE_OVERVIEWS, tr('Create raster overviews'), True))

@@ -24,11 +24,11 @@ class PostGISToolboxVectorCluster(PostGISToolboxAlgorithm):
             optional=True, defaultToAllFields=True))
         self.addParameter(QgsProcessingParameterNumber(
             self.DISTANCE, tr('Maximum distance between cluster members'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=100,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=100,
             minValue=0))
         self.addParameter(QgsProcessingParameterNumber(
             self.MIN_POINTS, tr('Minimum cluster size'),
-            type=QgsProcessingParameterNumber.Integer, defaultValue=5,
+            type=QgsProcessingParameterNumber.Type.Integer, defaultValue=5,
             minValue=1))
         self.add_connection_parameter()
         self.add_output_parameters('cluster')

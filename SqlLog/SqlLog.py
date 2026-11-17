@@ -14,7 +14,8 @@ class SqlLog:
         self.dlg.refresh()
         self.dlg.show()
         self.dlg.raise_()
-        self.dlg.setWindowState(self.dlg.windowState() & ~Qt.WindowMinimized)
+        self.dlg.setWindowState(
+            self.dlg.windowState() & ~Qt.WindowState.WindowMinimized)
         self.dlg.activateWindow()
 
     def close(self) -> None:

@@ -18,8 +18,8 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         self.setupUi(self)
         self.dbManager = dbManager
         repair_dialog(self, 'manage_dbs.svg')
-        self.setWindowFlags(Qt.Window)
-        self.setWindowModality(Qt.NonModal)
+        self.setWindowFlags(Qt.WindowType.Window)
+        self.setWindowModality(Qt.WindowModality.NonModal)
         self.server_info_label.clear()
         self.filter_lineedit.setShowSearchIcon(True)
         self.filter_lineedit.setPlaceholderText(
@@ -44,7 +44,8 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         self.add_conn_btn.clicked.connect(self.dbManager.add_connection)
         self.edit_conn_btn.clicked.connect(self.dbManager.edit_connection)
         self.remove_conn_btn.clicked.connect(self.dbManager.delete_connection)
-        self.db_obj_treeview.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.db_obj_treeview.setContextMenuPolicy(
+            Qt.ContextMenuPolicy.CustomContextMenu)
         self.db_obj_treeview.customContextMenuRequested.connect(
             lambda: self.db_obj_treeview.selectionModel().clearSelection())
 
@@ -110,7 +111,8 @@ class DBManagerMenu_UI(QDialog, FORM_CLASS):
         for index in range(table.topLevelItemCount()):
             item = table.topLevelItem(index)
             item.setToolTip(0, tooltips.get(item.text(0), ''))
-        model.setHeaderData(0, 1, tr('Databases'))
+        model.setHeaderData(
+            0, Qt.Orientation.Horizontal, tr('Databases'))
         self.show_server_info(server_connection, len(db_dict))
         self.apply_filter(self.filter_lineedit.value())
         progress_bar.close()

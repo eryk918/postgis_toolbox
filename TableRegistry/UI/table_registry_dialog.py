@@ -63,13 +63,13 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
         repair_dialog(self, 'table_registry.svg')
         self.progress_label.hide()
         self.progress_bar.hide()
-        self.setWindowFlags(Qt.Window)
+        self.setWindowFlags(Qt.WindowType.Window)
         self.filter_lineedit.setShowSearchIcon(True)
         self.filter_lineedit.setPlaceholderText(tr('Filter tables'))
         self.tables_table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents)
+            QHeaderView.ResizeMode.ResizeToContents)
         self.details_tree.header().setSectionResizeMode(
-            QHeaderView.ResizeToContents)
+            QHeaderView.ResizeMode.ResizeToContents)
         self.splitter.setStretchFactor(0, 3)
         self.splitter.setStretchFactor(1, 2)
         self.tools_menu = QMenu(self)
@@ -86,7 +86,8 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
             self.selection_changed)
         self.tables_table.itemDoubleClicked.connect(
             lambda item: self.registry.add_layer())
-        self.tables_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tables_table.setContextMenuPolicy(
+            Qt.ContextMenuPolicy.CustomContextMenu)
         self.tables_table.customContextMenuRequested.connect(
             self.show_context_menu)
         self.tables_table.delete_requested.connect(self.delete_btn.click)
@@ -103,7 +104,7 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
                 if column == 0:
-                    item.setData(Qt.UserRole, info)
+                    item.setData(Qt.ItemDataRole.UserRole, info)
                     item.setData(LAYER_URI_ROLE,
                                  self.registry.layer_uris(info))
                 self.tables_table.setItem(row, column, item)
@@ -143,7 +144,7 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
         if not rows:
             return None
         item = self.tables_table.item(rows[0].row(), 0)
-        return item.data(Qt.UserRole) if item else None
+        return item.data(Qt.ItemDataRole.UserRole) if item else None
 
     def selection_changed(self) -> None:
         info = self.selected_table()

@@ -25,7 +25,7 @@ class PostGISToolboxVectorSimplify(PostGISToolboxAlgorithm):
             optional=True, defaultToAllFields=True))
         self.addParameter(QgsProcessingParameterNumber(
             self.TOLERANCE, tr('Tolerance'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=10,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=10,
             minValue=0))
         self.addParameter(QgsProcessingParameterBoolean(
             self.PRESERVE_TOPOLOGY, tr('Preserve topology'), True))

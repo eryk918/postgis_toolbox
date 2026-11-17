@@ -23,7 +23,7 @@ class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
             optional=True, defaultToAllFields=True))
         self.addParameter(QgsProcessingParameterNumber(
             self.BUFFER_SIZE, tr('Buffer size'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=10,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=10,
             minValue=0, maxValue=99999))
         self.add_connection_parameter()
         self.add_output_parameters('buffer')

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtCore import Qt
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtCore import QMimeData, pyqtSignal
 from qgis.PyQt.QtGui import QDrag
 from qgis.PyQt.QtWidgets import QTableWidget, QAbstractItemView
 from qgis.core import QgsMimeDataUtils
 
-LAYER_URI_ROLE = Qt.UserRole + 1
+LAYER_URI_ROLE = Qt.ItemDataRole.UserRole + 1
 
 
 class TableRegistryView(QTableWidget):
@@ -14,10 +14,10 @@ class TableRegistryView(QTableWidget):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setDragEnabled(True)
-        self.setDragDropMode(QAbstractItemView.DragOnly)
+        self.setDragDropMode(QAbstractItemView.DragDropMode.DragOnly)
 
     def keyPressEvent(self, event) -> None:
-        if event.key() == Qt.Key_Delete and not event.modifiers():
+        if event.key() == Qt.Key.Key_Delete and not event.modifiers():
             self.delete_requested.emit()
             event.accept()
             return
@@ -46,4 +46,4 @@ class TableRegistryView(QTableWidget):
             return
         drag = QDrag(self)
         drag.setMimeData(data)
-        drag.exec(Qt.CopyAction)
+        drag.exec(Qt.DropAction.CopyAction)

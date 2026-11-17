@@ -27,14 +27,14 @@ class PostGISToolboxVectorNearestNeighbor(PostGISToolboxAlgorithm):
             optional=True, defaultToAllFields=True))
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT_NEIGHBOR, tr('Neighbor layer: [point layer]'),
-            types=[QgsProcessing.TypeVectorPoint]))
+            types=[QgsProcessing.SourceType.TypeVectorPoint]))
         self.addParameter(QgsProcessingParameterNumber(
             self.MIN_DISTANCE, tr('Minimum distance'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=None,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=None,
             optional=True, minValue=0, maxValue=99999))
         self.addParameter(QgsProcessingParameterNumber(
             self.MAX_DISTANCE, tr('Maximum distance'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=0,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=0,
             minValue=0, maxValue=99999))
         self.addParameter(QgsProcessingParameterBoolean(
             self.SINGLE, tr('Force output as singlepart'), False))

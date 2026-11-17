@@ -16,10 +16,10 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(PostGISToolboxAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input point layer'),
-            types=[QgsProcessing.TypeVectorPoint]))
+            types=[QgsProcessing.SourceType.TypeVectorPoint]))
         self.addParameter(QgsProcessingParameterNumber(
             self.CONCAVITY_RATIO, tr('Concavity ratio'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=0.4,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=0.4,
             minValue=0, maxValue=1))
         self.addParameter(QgsProcessingParameterBoolean(
             self.ALLOW_HOLES, tr('Allow holes?'), True))

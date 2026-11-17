@@ -9,7 +9,7 @@ from time import perf_counter
 from typing import List, Tuple, Any, Dict, Optional
 
 import qgis
-from PyQt5 import QtCore
+from qgis.PyQt import QtCore
 from qgis.PyQt import sip
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
@@ -52,9 +52,11 @@ VECTORS_LAYERS_GROUP = tr('Imported vectors')
 
 
 def message_box(parent: Optional[QWidget], text: str,
-                icon: int = QMessageBox.Information,
-                buttons: int = QMessageBox.Ok,
-                default: int = QMessageBox.NoButton,
+                icon: QMessageBox.Icon = QMessageBox.Icon.Information,
+                buttons: QMessageBox.StandardButton =
+                QMessageBox.StandardButton.Ok,
+                default: QMessageBox.StandardButton =
+                QMessageBox.StandardButton.NoButton,
                 details: str = None) -> int:
     box = QMessageBox(icon, plugin_name, text, buttons, parent)
     window_icon = parent.windowIcon() \
@@ -62,7 +64,7 @@ def message_box(parent: Optional[QWidget], text: str,
         else QIcon()
     box.setWindowIcon(
         main_plugin_icon if window_icon.isNull() else window_icon)
-    if default != QMessageBox.NoButton:
+    if default != QMessageBox.StandardButton.NoButton:
         box.setDefaultButton(default)
     if details:
         box.setDetailedText(details)
@@ -71,21 +73,22 @@ def message_box(parent: Optional[QWidget], text: str,
 
 def show_info(parent: Optional[QWidget], text: str,
               details: str = None) -> None:
-    message_box(parent, text, QMessageBox.Information, details=details)
+    message_box(parent, text, QMessageBox.Icon.Information, details=details)
 
 
 def show_warning(parent: Optional[QWidget], text: str) -> None:
-    message_box(parent, text, QMessageBox.Warning)
+    message_box(parent, text, QMessageBox.Icon.Warning)
 
 
 def show_error(parent: Optional[QWidget], text: str) -> None:
-    message_box(parent, text, QMessageBox.Critical)
+    message_box(parent, text, QMessageBox.Icon.Critical)
 
 
 def ask_question(parent: Optional[QWidget], text: str) -> bool:
     return message_box(
-        parent, text, QMessageBox.Question,
-        QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes
+        parent, text, QMessageBox.Icon.Question,
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes
 
 
 def repair_dialog(dlg: QDialog, icon_file: str = None,
@@ -158,7 +161,8 @@ def set_raster_alpha_band(layer: QgsRasterLayer) -> None:
     provider = layer.dataProvider()
     if renderer is None or provider is None or layer.bandCount() != 4:
         return
-    if any(provider.dataType(band) != Qgis.Byte for band in range(1, 5)):
+    if any(provider.dataType(band) != Qgis.DataType.Byte
+           for band in range(1, 5)):
         return
     renderer.setAlphaBand(4)
 
@@ -174,7 +178,7 @@ def add_rasters_to_project(group_name: str,
             else QgsRasterLayer(raster, os.path.basename(raster))
         if not rlayer.isValid():
             log(f'Invalid raster layer skipped: {rlayer.name()}',
-                Qgis.Warning)
+                Qgis.MessageLevel.Warning)
             continue
         set_raster_alpha_band(rlayer)
         add_layer_into_map(rlayer, group_name)
@@ -195,7 +199,7 @@ def add_vectors_to_project(group_name: str,
                                 "ogr")
         if not vlayer.isValid():
             log(f'Invalid vector layer skipped: {vlayer.name()}',
-                Qgis.Warning)
+                Qgis.MessageLevel.Warning)
             continue
         add_layer_into_map(vlayer, group_name)
         if symbology:
@@ -271,7 +275,8 @@ def remove_unsupported_chars(input_str: str) -> str:
     return temp_str
 
 
-def log(message: str, level: int = Qgis.Info) -> None:
+def log(message: str,
+        level: Qgis.MessageLevel = Qgis.MessageLevel.Info) -> None:
     QgsMessageLog.logMessage(message, tag=plugin_name, level=level)
 
 
@@ -326,7 +331,7 @@ def create_connection(
     try:
         return postgres_metadata().createConnection(name)
     except QgsProviderConnectionException as error:
-        log(str(error), Qgis.Critical)
+        log(str(error), Qgis.MessageLevel.Critical)
         return None
 
 
@@ -335,7 +340,7 @@ def create_connection_from_uri(
     try:
         return postgres_metadata().createConnection(uri, {})
     except QgsProviderConnectionException as error:
-        log(str(error), Qgis.Critical)
+        log(str(error), Qgis.MessageLevel.Critical)
         return None
 
 
@@ -395,7 +400,7 @@ def make_query(connection: QgsAbstractDatabaseProviderConnection,
         result = connection.executeSql(query)
     except QgsProviderConnectionException as error:
         record_sql(query, started, str(error))
-        log(f'{error}\n{query}', Qgis.Critical)
+        log(f'{error}\n{query}', Qgis.MessageLevel.Critical)
         return None
     record_sql(query, started)
     return result
@@ -426,7 +431,7 @@ def get_schema_names(
     try:
         schemas = connection.schemas()
     except QgsProviderConnectionException as error:
-        log(str(error), Qgis.Warning)
+        log(str(error), Qgis.MessageLevel.Warning)
         return []
     return [schema for schema in schemas if schema not in system_tables]
 
@@ -536,7 +541,8 @@ class NewThreadAlg:
         self.msg.layout().addWidget(self.btn_cancel)
         self.task = self.func_to_run
         self.task.begun.connect(
-            lambda: iface.messageBar().pushWidget(self.msg, Qgis.Info))
+            lambda: iface.messageBar().pushWidget(
+                self.msg, Qgis.MessageLevel.Info))
         self.task.progressChanged.connect(self.update_progress)
         self.task.taskCompleted.connect(self.task_ended_info)
         self.task.taskTerminated.connect(self.task_ended_info)

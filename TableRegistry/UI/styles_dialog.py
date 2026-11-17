@@ -13,8 +13,8 @@ from ...utils import repair_dialog, tr, Qt
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'styles_dialog.ui'))
 
-STYLE_ID_ROLE = Qt.UserRole
-GEOMETRY_COLUMN_ROLE = Qt.UserRole + 1
+STYLE_ID_ROLE = Qt.ItemDataRole.UserRole
+GEOMETRY_COLUMN_ROLE = Qt.ItemDataRole.UserRole + 1
 
 
 class StylesDialog(QDialog, FORM_CLASS):
@@ -31,7 +31,7 @@ class StylesDialog(QDialog, FORM_CLASS):
         repair_dialog(self, 'table_registry.svg')
         self.object_name_label.setText(object_name)
         self.styles_table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents)
+            QHeaderView.ResizeMode.ResizeToContents)
         self.styles_table.horizontalHeader().setStretchLastSection(True)
         self.layer_cbbx.addItem(tr('No layer selected'), None)
         for layer in layers:

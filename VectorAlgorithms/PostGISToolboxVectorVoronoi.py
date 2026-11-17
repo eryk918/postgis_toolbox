@@ -15,14 +15,14 @@ class PostGISToolboxVectorVoronoi(PostGISToolboxAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input layer'),
-            types=[QgsProcessing.TypeVectorPoint]))
+            types=[QgsProcessing.SourceType.TypeVectorPoint]))
         self.addParameter(QgsProcessingParameterNumber(
             self.TOLERANCE, tr('Snapping tolerance'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=0,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=0,
             minValue=0))
         self.addParameter(QgsProcessingParameterNumber(
             self.BUFFER, tr('Extend the diagram beyond the points by'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=0,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=0,
             minValue=0))
         self.add_connection_parameter()
         self.add_output_parameters('voronoi')

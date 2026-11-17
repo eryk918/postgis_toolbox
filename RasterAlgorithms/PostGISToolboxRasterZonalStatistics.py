@@ -25,7 +25,7 @@ class PostGISToolboxRasterZonalStatistics(PostGISToolboxAlgorithm):
             self.BAND, tr('Band number'), 1, self.INPUT))
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.ZONES, tr('Zone layer'),
-            types=[QgsProcessing.TypeVectorPolygon]))
+            types=[QgsProcessing.SourceType.TypeVectorPolygon]))
         self.addParameter(QgsProcessingParameterField(
             self.FIELDS, tr('Choose columns from zone layer'),
             parentLayerParameterName=self.ZONES, allowMultiple=True,

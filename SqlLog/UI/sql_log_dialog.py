@@ -18,9 +18,10 @@ class SqlLogDialog(QDialog, FORM_CLASS):
         super().__init__(parent)
         self.setupUi(self)
         repair_dialog(self, 'sql_log.svg')
-        self.setWindowFlags(Qt.Window)
+        self.setWindowFlags(Qt.WindowType.Window)
         self.log_text.setFont(
-            QFontDatabase.systemFont(QFontDatabase.FixedFont))
+            QFontDatabase.systemFont(
+                QFontDatabase.SystemFont.FixedFont))
         self.refresh_btn.clicked.connect(self.refresh)
         self.copy_btn.clicked.connect(self.copy_log)
         self.save_btn.clicked.connect(self.save_log)

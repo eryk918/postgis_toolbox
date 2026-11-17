@@ -70,9 +70,10 @@ class PostGISHelpDialog(QDialog, FORM_CLASS):
             return
         self.reply = None
         reply.deleteLater()
-        if reply.error() == QNetworkReply.OperationCanceledError:
+        if reply.error() == QNetworkReply.NetworkError.OperationCanceledError:
             return
-        status = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute)
+        status = reply.attribute(
+            QNetworkRequest.Attribute.HttpStatusCodeAttribute)
         if status == 404 or b'404 Not Found' in bytes(reply.readAll()):
             self.open_url(raster_function_doc_url(function_name))
         else:

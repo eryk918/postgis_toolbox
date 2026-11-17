@@ -32,7 +32,8 @@ class ImportVector_UI(QDialog, FORM_CLASS):
         if con_status:
             self.get_schemas()
         self.set_object_visibility(con_status)
-        self.button_box.button(QDialogButtonBox.Ok).setText(tr('Import'))
+        self.button_box.button(
+            QDialogButtonBox.StandardButton.Ok).setText(tr('Import'))
         self.button_box.accepted.connect(self.validate_fields)
         self.layer_file_widget.setDialogTitle(
             f"{plugin_name} - {tr('Select a vector file')}")
@@ -85,7 +86,8 @@ class ImportVector_UI(QDialog, FORM_CLASS):
     def set_object_visibility(self, visible: bool = True) -> None:
         self.destination_groupbox.setEnabled(visible)
         self.additional_params_groupbox.setEnabled(visible)
-        self.button_box.button(QDialogButtonBox.Ok).setEnabled(visible)
+        self.button_box.button(
+            QDialogButtonBox.StandardButton.Ok).setEnabled(visible)
 
     def add_layer_table_names(self) -> None:
         self.tablename_lineedit.setEnabled(True)

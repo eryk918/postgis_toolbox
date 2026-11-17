@@ -1536,6 +1536,10 @@ Wiersze, których nie da się przekonwertować, przerwą operację.</translation
         <translation>Zapis projektu do bazy danych nie powiódł się.</translation>
     </message>
     <message>
+        <source>Unknown error</source>
+        <translation>Nieznany błąd</translation>
+    </message>
+    <message>
         <source>Saving the style failed: {0}</source>
         <translation>Zapis stylu nie powiódł się: {0}</translation>
     </message>

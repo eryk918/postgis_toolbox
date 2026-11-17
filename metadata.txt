@@ -1,6 +1,8 @@
 [general]
 name=PostGIS Toolbox
 qgisMinimumVersion=3.34.9
+qgisMaximumVersion=4.99
+supportsQt6=True
 description=PostGIS from inside QGIS: manage databases, browse and fix tables, write SQL, run PostGIS tools from Processing
 version=2.0.1
 author=Eryk Chełchowski
@@ -35,7 +37,7 @@ changelog=2.0.1
  - imported layers land in their own groups, alpha band for RGBA rasters
  - dialogs redone with native QGIS widgets, dark theme ok, import dialogs remember their settings
  - disconnect button on the toolbar, new scalable icons
- - requires QGIS 3.34.9 or newer
+ - requires QGIS 3.34.9 or newer, runs on QGIS 4 (Qt6) too
 
 category=Database
 tags=processing, raster, database, postgis, postgres, postgresql, spatial, schema

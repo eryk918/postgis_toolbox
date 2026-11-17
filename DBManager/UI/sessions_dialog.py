@@ -13,9 +13,9 @@ from ...utils import repair_dialog, tr, Qt
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'sessions_dialog.ui'))
 
-PID_ROLE = Qt.UserRole
-OWN_ROLE = Qt.UserRole + 1
-QUERY_ROLE = Qt.UserRole + 2
+PID_ROLE = Qt.ItemDataRole.UserRole
+OWN_ROLE = Qt.ItemDataRole.UserRole + 1
+QUERY_ROLE = Qt.ItemDataRole.UserRole + 2
 REFRESH_INTERVAL = 5000
 QUERY_PREVIEW_LENGTH = 120
 
@@ -29,11 +29,12 @@ class SessionsDialog(QDialog, FORM_CLASS):
         super().__init__(parent)
         self.setupUi(self)
         repair_dialog(self, 'manage_dbs.svg')
-        self.setWindowFlags(Qt.Window)
+        self.setWindowFlags(Qt.WindowType.Window)
         self.query_text.setFont(
-            QFontDatabase.systemFont(QFontDatabase.FixedFont))
+            QFontDatabase.systemFont(
+                QFontDatabase.SystemFont.FixedFont))
         self.sessions_table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents)
+            QHeaderView.ResizeMode.ResizeToContents)
         self.sessions_table.horizontalHeader().setStretchLastSection(True)
         self.splitter.setStretchFactor(0, 3)
         self.splitter.setStretchFactor(1, 1)
@@ -79,7 +80,7 @@ class SessionsDialog(QDialog, FORM_CLASS):
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
                 if column == 0:
-                    item.setData(Qt.DisplayRole, int(pid))
+                    item.setData(Qt.ItemDataRole.DisplayRole, int(pid))
                     item.setData(PID_ROLE, int(pid))
                     item.setData(OWN_ROLE, bool(own))
                     item.setData(QUERY_ROLE, query or '')

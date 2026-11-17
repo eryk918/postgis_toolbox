@@ -23,7 +23,7 @@ class PostGISToolboxRasterResample(PostGISToolboxAlgorithm):
             self.INPUT, tr('Input raster layer')))
         self.addParameter(QgsProcessingParameterNumber(
             self.SCALE_VALUE, tr('Spatial resolution'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=100,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=100,
             minValue=0.0000001, maxValue=99999999))
         self.addParameter(QgsProcessingParameterEnum(
             self.ALG_NAME, tr('Resampling algorithm'),
@@ -31,7 +31,7 @@ class PostGISToolboxRasterResample(PostGISToolboxAlgorithm):
             defaultValue=0))
         self.addParameter(QgsProcessingParameterNumber(
             self.MAX_ERR, tr('Maximum percentage error'),
-            type=QgsProcessingParameterNumber.Double, defaultValue=0.125,
+            type=QgsProcessingParameterNumber.Type.Double, defaultValue=0.125,
             minValue=0, maxValue=100))
         self.addParameter(QgsProcessingParameterBoolean(
             self.OVERVIEWS, tr('Create raster overviews'), True))

@@ -318,7 +318,7 @@ def copy_vector_to_database(
         connection, info.schema, info.name, geometry_column, info.name)
     if not layer.isValid():
         log(f'Source layer is not valid: {info.qualified_name()}',
-            Qgis.Critical)
+            Qgis.MessageLevel.Critical)
         return False
     fields = layer.fields()
     keys = [fields[index].name() for index in layer.primaryKeyAttributes()]
@@ -329,7 +329,7 @@ def copy_vector_to_database(
         layer, uri.uri(False), 'postgres', layer.crs(), False,
         {'overwrite': overwrite})
     if result != Qgis.VectorExportResult.Success:
-        log(f'{message}\n{info.qualified_name()}', Qgis.Critical)
+        log(f'{message}\n{info.qualified_name()}', Qgis.MessageLevel.Critical)
         return False
     if not spatial_index or not geometry_column:
         return True

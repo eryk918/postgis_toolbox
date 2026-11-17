@@ -187,7 +187,7 @@ class PostGISToolboxPlugin(object):
         iface.messageBar().pushMessage(
             plugin_name,
             tr('Disconnected from database {0}.').format(db_name),
-            Qgis.Info, 3)
+            Qgis.MessageLevel.Info, 3)
 
     def run_query_editor(self) -> None:
         if not self.db:

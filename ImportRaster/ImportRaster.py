@@ -72,7 +72,8 @@ class RasterImporter(QgsTask):
                         self.destination_table)
                 if self.cancel_detection():
                     return False
-                log(f'Import of {self.input_file} failed', Qgis.Warning)
+                log(f'Import of {self.input_file} failed',
+                    Qgis.MessageLevel.Warning)
                 self.failed.append(job)
         self.setProgress(100)
         return bool(self.imported)
@@ -133,7 +134,7 @@ class RasterImporter(QgsTask):
         if self.isCanceled():
             iface.messageBar().pushMessage(
                 tr('The import was aborted by the user.'),
-                Qgis.Info,
+                Qgis.MessageLevel.Info,
                 3)
             return
         if self.imported and self.q_add_to_project:
@@ -152,25 +153,25 @@ class RasterImporter(QgsTask):
         if not result:
             iface.messageBar().pushMessage(
                 tr('An error occurred while importing the raster.'),
-                Qgis.Critical,
+                Qgis.MessageLevel.Critical,
                 3)
         elif self.failed:
             iface.messageBar().pushMessage(
                 tr('Imported {0} of {1} rasters. Failed: {2}.').format(
                     len(self.imported), len(self.jobs),
                     ', '.join(job['layer_name'] for job in self.failed)),
-                Qgis.Warning,
+                Qgis.MessageLevel.Warning,
                 8)
         elif len(self.imported) > 1:
             iface.messageBar().pushMessage(
                 tr('{0} rasters have been imported successfully.').format(
                     len(self.imported)),
-                Qgis.Success,
+                Qgis.MessageLevel.Success,
                 3)
         else:
             iface.messageBar().pushMessage(
                 tr('The raster import has been completed successfully.'),
-                Qgis.Success,
+                Qgis.MessageLevel.Success,
                 3)
 
     def cancel_detection(self) -> bool:

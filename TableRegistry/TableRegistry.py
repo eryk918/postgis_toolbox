@@ -3,7 +3,7 @@ from functools import partial
 from typing import Any, Callable, List, Optional, Tuple
 
 from qgis.PyQt.QtCore import QTimer
-from qgis.PyQt.QtWidgets import QApplication, QInputDialog
+from qgis.PyQt.QtWidgets import QApplication, QInputDialog, QDialog
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import QgsCoordinateReferenceSystem, QgsMapLayer, \
     QgsProject, QgsApplication, QgsTask
@@ -59,7 +59,8 @@ class TableRegistry:
         self.refresh()
         self.dlg.show()
         self.dlg.raise_()
-        self.dlg.setWindowState(self.dlg.windowState() & ~Qt.WindowMinimized)
+        self.dlg.setWindowState(
+            self.dlg.windowState() & ~Qt.WindowState.WindowMinimized)
         self.dlg.activateWindow()
 
     def sync_active_db(self) -> None:
@@ -241,7 +242,7 @@ class TableRegistry:
         self.progress_timer.stop()
         self.task = None
         self.dlg.set_busy(False)
-        completed = task.status() == QgsTask.Complete
+        completed = task.status() == QgsTask.TaskStatus.Complete
         on_finished(task.result if completed else None)
         if self.health_refresh_needed:
             self.health_refresh_needed = False
@@ -363,7 +364,7 @@ class TableRegistry:
         dialog = NewObjectDialog(title, tr('Table name'), schemas, self.dlg)
         dialog.schema_cbbx.setCurrentText(info.schema)
         dialog.name_lineedit.setText(default_name)
-        if dialog.exec() != NewObjectDialog.Accepted:
+        if dialog.exec() != QDialog.DialogCode.Accepted:
             return None, None
         return dialog.schema_name(), dialog.object_name()
 
@@ -437,7 +438,7 @@ class TableRegistry:
         if self.main.connection_name in connections:
             dialog.connection_cbbx.setCurrentText(self.main.connection_name)
         self.fill_copy_databases(dialog, dialog.connection_name())
-        if dialog.exec() != CopyDialog.Accepted:
+        if dialog.exec() != QDialog.DialogCode.Accepted:
             return
         target = self.target_connection(dialog.connection_name(),
                                         dialog.database())
@@ -768,8 +769,8 @@ class TableRegistry:
         if hasattr(layer, 'saveStyleToDatabaseV2'):
             results, error = layer.saveStyleToDatabaseV2(
                 name.strip(), '', False, '')
-            if int(results) != 0 and not error:
-                error = str(results)
+            if results != QgsMapLayer.SaveStyleResults() and not error:
+                error = tr('Unknown error')
         else:
             error = layer.saveStyleToDatabase(name.strip(), '', False, '')
         if error:

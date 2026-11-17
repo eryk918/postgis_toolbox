@@ -41,7 +41,7 @@ def export_vector(
     error, message, new_file, new_layer = \
         QgsVectorFileWriter.writeAsVectorFormatV3(
             layer, dialog.fileName(), project.transformContext(), options)
-    if error != QgsVectorFileWriter.NoError:
+    if error != QgsVectorFileWriter.WriterError.NoError:
         return False, message, None
     if not dialog.addToCanvas():
         return True, new_file, None
@@ -72,7 +72,7 @@ def export_raster(
     writer.setPyramidsFormat(dialog.pyramidsFormat())
     writer.setPyramidsConfigOptions(dialog.pyramidsConfigOptions())
     writer.setCreateOptions(dialog.createOptions())
-    if dialog.mode() == QgsRasterLayerSaveAsDialog.RawDataMode:
+    if dialog.mode() == QgsRasterLayerSaveAsDialog.Mode.RawDataMode:
         pipe = QgsRasterPipe()
         pipe.set(provider.clone())
         nuller = QgsRasterNuller()
@@ -88,7 +88,7 @@ def export_raster(
     error = writer.writeRaster(
         pipe, dialog.nColumns(), dialog.nRows(), dialog.outputRectangle(),
         dialog.outputCrs(), context)
-    if error != QgsRasterFileWriter.NoError:
+    if error != QgsRasterFileWriter.WriterError.NoError:
         return False, str(error), None
     if not dialog.addToCanvas():
         return True, dialog.outputFileName(), None

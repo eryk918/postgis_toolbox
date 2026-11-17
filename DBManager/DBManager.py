@@ -59,7 +59,8 @@ class DBManager:
             if provider is None:
                 return None
             self.source_widget = provider.createDataSourceWidget(
-                self.dlg, Qt.Widget, QgsProviderRegistry.WidgetMode.Embedded)
+                self.dlg, Qt.WindowType.Widget,
+                QgsProviderRegistry.WidgetMode.Embedded)
             self.source_widget.hide()
             self.source_widget.connectionsChanged.connect(
                 self.connections_changed)

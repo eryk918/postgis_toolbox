@@ -34,7 +34,8 @@ class PrivilegesDialog(QDialog, FORM_CLASS):
         self.none_btn.clicked.connect(lambda: self.set_privileges(set()))
         self.role_cbbx.currentTextChanged.connect(self.role_changed)
         self.schema_radio.toggled.connect(self.scope_changed)
-        self.button_box.button(QDialogButtonBox.Apply).clicked.connect(
+        self.button_box.button(
+            QDialogButtonBox.StandardButton.Apply).clicked.connect(
             self.apply_requested)
 
     def schema_scope(self) -> bool:
@@ -58,16 +59,16 @@ class PrivilegesDialog(QDialog, FORM_CLASS):
                        partial: Set[str] = frozenset()) -> None:
         for privilege, checkbox in self.checkboxes.items():
             if privilege in privileges:
-                checkbox.setCheckState(Qt.Checked)
+                checkbox.setCheckState(Qt.CheckState.Checked)
             elif privilege in partial:
-                checkbox.setCheckState(Qt.PartiallyChecked)
+                checkbox.setCheckState(Qt.CheckState.PartiallyChecked)
             else:
-                checkbox.setCheckState(Qt.Unchecked)
+                checkbox.setCheckState(Qt.CheckState.Unchecked)
 
     def checked_privileges(self) -> Set[str]:
         return {privilege for privilege, checkbox in self.checkboxes.items()
-                if checkbox.checkState() == Qt.Checked}
+                if checkbox.checkState() == Qt.CheckState.Checked}
 
     def unchecked_privileges(self) -> Set[str]:
         return {privilege for privilege, checkbox in self.checkboxes.items()
-                if checkbox.checkState() == Qt.Unchecked}
+                if checkbox.checkState() == Qt.CheckState.Unchecked}

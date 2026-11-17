@@ -24,7 +24,7 @@ class NewObjectDialog(QDialog, FORM_CLASS):
         self.update_ok_button()
 
     def update_ok_button(self) -> None:
-        self.button_box.button(QDialogButtonBox.Ok).setEnabled(
+        self.button_box.button(QDialogButtonBox.StandardButton.Ok).setEnabled(
             bool(self.object_name()) and bool(self.schema_name()))
 
     def schema_name(self) -> str:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import tempfile
 
-from qgis.core import QgsWkbTypes, QgsVectorLayer, QgsVectorFileWriter, \
+from qgis.core import Qgis, QgsVectorLayer, QgsVectorFileWriter, \
     QgsCoordinateTransformContext
 
 vector_extensions = [
@@ -17,9 +17,8 @@ simple_vector_extensions = [
 ]
 
 none_geometry_types = (
-    QgsWkbTypes.Unknown,
-    QgsWkbTypes.NoGeometry,
-    QgsWkbTypes.NullGeometry
+    Qgis.WkbType.Unknown,
+    Qgis.WkbType.NoGeometry
 )
 
 
