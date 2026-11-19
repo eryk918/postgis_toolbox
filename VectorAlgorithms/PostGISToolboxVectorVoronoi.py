@@ -8,6 +8,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorVoronoi(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_VoronoiPolygons'
     INPUT = 'INPUT'
     TOLERANCE = 'TOLERANCE'
     BUFFER = 'BUFFER'
@@ -83,6 +84,18 @@ class PostGISToolboxVectorVoronoi(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Voronoi polygons')
+
+    def shortDescription(self):
+        return tr('Creates Voronoi polygons around points.')
+
+    def help_text(self):
+        return tr(
+            'Creates a polygon around every point of the input layer with '
+            'ST_VoronoiPolygons; each polygon covers the area closer to its '
+            'point than to any other. Points closer together than the '
+            'snapping tolerance are treated as one. The diagram can be '
+            'extended beyond the extent of the points by a distance in layer '
+            'units. The result has only an id column.')
 
     def group(self):
         return tr('Vector')

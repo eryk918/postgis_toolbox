@@ -1557,11 +1557,11 @@ Wiersze, których nie da się przekonwertować, przerwą operację.</translation
     </message>
     <message>
         <source>Slope</source>
-        <translation>Spadki</translation>
+        <translation>Nachylenie</translation>
     </message>
     <message>
         <source>Slope units</source>
-        <translation>Jednostki spadku</translation>
+        <translation>Jednostki nachylenia</translation>
     </message>
     <message>
         <source>Snapping tolerance</source>
@@ -1638,6 +1638,206 @@ Mimo to otworzyć "{0}"?</translation>
     <message>
         <source>{0} session(s), {1} active, {2} blocked</source>
         <translation>Sesje: {0}, aktywne: {1}, zablokowane: {2}</translation>
+    </message>
+    <message>
+        <source>Input layers have to be PostGIS layers stored in the selected database.</source>
+        <translation>Warstwy wejściowe muszą być warstwami PostGIS zapisanymi w wybranej bazie danych.</translation>
+    </message>
+    <message>
+        <source>The result is saved as a new table in the chosen schema of that database. When overwriting is enabled, an existing table with the same name is dropped first.</source>
+        <translation>Wynik trafia do nowej tabeli w wybranym schemacie tej bazy. Przy włączonym nadpisywaniu istniejąca tabela o tej samej nazwie jest najpierw usuwana.</translation>
+    </message>
+    <message>
+        <source>Merges features sharing a value in the chosen column into one feature.</source>
+        <translation>Łączy obiekty o tej samej wartości w wybranej kolumnie w jeden obiekt.</translation>
+    </message>
+    <message>
+        <source>Groups features by the values of the chosen column and merges the geometries of each group with ST_Union. The remaining columns are kept as text with the distinct values of the group separated by commas.</source>
+        <translation>Grupuje obiekty według wartości wybranej kolumny i łączy geometrie każdej grupy funkcją ST_Union. Pozostałe kolumny zostają zapisane jako tekst z unikalnymi wartościami grupy rozdzielonymi przecinkami.</translation>
+    </message>
+    <message>
+        <source>Creates buffer polygons around features.</source>
+        <translation>Tworzy poligony buforów wokół obiektów.</translation>
+    </message>
+    <message>
+        <source>Creates a polygon around every feature of the input layer with ST_Buffer. The buffer size is given in the units of the layer coordinate system, so in degrees for geographic systems. The chosen columns are copied to the result.</source>
+        <translation>Tworzy poligon wokół każdego obiektu warstwy wejściowej funkcją ST_Buffer. Rozmiar bufora podaje się w jednostkach układu współrzędnych warstwy, czyli w stopniach dla układów geograficznych. Wybrane kolumny są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Creates one point for every feature.</source>
+        <translation>Tworzy jeden punkt dla każdego obiektu.</translation>
+    </message>
+    <message>
+        <source>Creates a point for every feature of the input layer. Centroid uses ST_Centroid and the point may fall outside the feature; Point on surface uses ST_PointOnSurface and the point always lies on the feature. The chosen columns are copied to the result.</source>
+        <translation>Tworzy punkt dla każdego obiektu warstwy wejściowej. Centroid używa ST_Centroid i punkt może wypaść poza obiektem; Punkt na powierzchni używa ST_PointOnSurface i punkt zawsze leży na obiekcie. Wybrane kolumny są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Cuts features to the shape of another layer.</source>
+        <translation>Przycina obiekty do kształtu innej warstwy.</translation>
+    </message>
+    <message>
+        <source>Cuts the features of the input layer to the features of the second layer with ST_Intersection. One feature is written for every pair of overlapping features. If the layers use different coordinate systems, the second one is transformed to the system of the input layer. The chosen columns are copied to the result.</source>
+        <translation>Przycina obiekty warstwy wejściowej do obiektów drugiej warstwy funkcją ST_Intersection. Dla każdej pary nakładających się obiektów powstaje jeden obiekt. Gdy warstwy mają różne układy współrzędnych, druga jest transformowana do układu warstwy wejściowej. Wybrane kolumny są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Assigns features to density based clusters.</source>
+        <translation>Przypisuje obiekty do klastrów wyznaczanych na podstawie gęstości.</translation>
+    </message>
+    <message>
+        <source>Groups features into clusters with ST_ClusterDBSCAN. A cluster needs at least the minimum number of features lying no further apart than the maximum distance, given in layer units. The result has the input features with a cluster_id column, which is empty for features outside any cluster.</source>
+        <translation>Grupuje obiekty w klastry funkcją ST_ClusterDBSCAN. Klaster wymaga co najmniej minimalnej liczby obiektów leżących nie dalej od siebie niż maksymalna odległość podana w jednostkach warstwy. Wynik zawiera obiekty wejściowe z kolumną cluster_id, pustą dla obiektów spoza klastrów.</translation>
+    </message>
+    <message>
+        <source>Removes from features the area covered by another layer.</source>
+        <translation>Usuwa z obiektów obszar pokryty przez inną warstwę.</translation>
+    </message>
+    <message>
+        <source>Subtracts the merged geometry of the second layer from every feature of the input layer with ST_Difference. If the layers use different coordinate systems, the second one is transformed to the system of the input layer. The chosen columns are copied to the result.</source>
+        <translation>Odejmuje połączoną geometrię drugiej warstwy od każdego obiektu warstwy wejściowej funkcją ST_Difference. Gdy warstwy mają różne układy współrzędnych, druga jest transformowana do układu warstwy wejściowej. Wybrane kolumny są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Merges all features, or features sharing a value, into one geometry.</source>
+        <translation>Łączy wszystkie obiekty albo obiekty o tej samej wartości w jedną geometrię.</translation>
+    </message>
+    <message>
+        <source>Merges the geometries of the input layer into one multipart feature with ST_Union. When a column is chosen, one feature is created for each of its values. Other columns are not copied to the result.</source>
+        <translation>Łączy geometrie warstwy wejściowej w jeden obiekt wieloczęściowy funkcją ST_Union. Po wybraniu kolumny powstaje jeden obiekt dla każdej jej wartości. Pozostałe kolumny nie są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Creates random points inside polygons.</source>
+        <translation>Tworzy losowe punkty wewnątrz poligonów.</translation>
+    </message>
+    <message>
+        <source>Creates the given number of random points inside the merged polygons of the input layer with ST_GeneratePoints. The points are saved as one multipoint feature without attributes.</source>
+        <translation>Tworzy podaną liczbę losowych punktów wewnątrz połączonych poligonów warstwy wejściowej funkcją ST_GeneratePoints. Punkty zapisywane są jako jeden obiekt wielopunktowy bez atrybutów.</translation>
+    </message>
+    <message>
+        <source>Creates a concave hull around points.</source>
+        <translation>Tworzy otoczkę wklęsłą wokół punktów.</translation>
+    </message>
+    <message>
+        <source>Creates one polygon enclosing all points of the input layer with ST_ConcaveHull. The concavity ratio goes from 0 for the tightest shape to 1 for the convex hull. Allowing holes lets the polygon have empty areas inside.</source>
+        <translation>Tworzy jeden poligon obejmujący wszystkie punkty warstwy wejściowej funkcją ST_ConcaveHull. Stopień wklęsłości przyjmuje wartości od 0 dla najciaśniejszego kształtu do 1 dla otoczki wypukłej. Zgoda na dziury pozwala na puste obszary wewnątrz poligonu.</translation>
+    </message>
+    <message>
+        <source>Extracts the parts of features that overlap a mask layer.</source>
+        <translation>Wyodrębnia części obiektów pokrywające się z warstwą maski.</translation>
+    </message>
+    <message>
+        <source>Writes the common part of every pair of intersecting features from the input and mask layers, computed with ST_Intersection. Both layers should use the same coordinate system. The chosen columns are copied to the result.</source>
+        <translation>Zapisuje część wspólną każdej pary przecinających się obiektów warstwy wejściowej i warstwy maski, liczoną funkcją ST_Intersection. Obie warstwy powinny mieć ten sam układ współrzędnych. Wybrane kolumny są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Repairs invalid geometries.</source>
+        <translation>Naprawia niepoprawne geometrie.</translation>
+    </message>
+    <message>
+        <source>Repairs the geometries of the input layer. ST_MakeValid fixes them without losing vertices; ST_Buffer applies a buffer of 0.001 layer units outwards and back inwards, which is meant for polygons. The chosen columns are copied to the result.</source>
+        <translation>Naprawia geometrie warstwy wejściowej. ST_MakeValid poprawia je bez utraty wierzchołków; ST_Buffer nakłada bufor 0,001 jednostki warstwy na zewnątrz i z powrotem do środka, co ma sens dla poligonów. Wybrane kolumny są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Combines several layers into one table.</source>
+        <translation>Łączy kilka warstw w jedną tabelę.</translation>
+    </message>
+    <message>
+        <source>Writes the features of all input layers to one table. The layers must have the same geometry type and the same columns; layers in another coordinate system are transformed to the system of the first layer. Identical rows are written once.</source>
+        <translation>Zapisuje obiekty wszystkich warstw wejściowych do jednej tabeli. Warstwy muszą mieć ten sam typ geometrii i te same kolumny; warstwy w innym układzie współrzędnych są transformowane do układu pierwszej warstwy. Identyczne wiersze zapisywane są raz.</translation>
+    </message>
+    <message>
+        <source>Selects features lying near the points of another layer.</source>
+        <translation>Wybiera obiekty leżące w pobliżu punktów innej warstwy.</translation>
+    </message>
+    <message>
+        <source>Selects the features of the input layer that have points of the neighbor layer within the maximum distance, given in layer units. When a minimum distance is set, closer points are skipped. A feature is written once for every matching point. The chosen columns are copied to the result.</source>
+        <translation>Wybiera obiekty warstwy wejściowej, które mają punkty warstwy sąsiedniej w maksymalnej odległości podanej w jednostkach warstwy. Po ustawieniu minimalnej odległości bliższe punkty są pomijane. Obiekt zapisywany jest raz dla każdego pasującego punktu. Wybrane kolumny są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Reduces the number of vertices in geometries.</source>
+        <translation>Zmniejsza liczbę wierzchołków geometrii.</translation>
+    </message>
+    <message>
+        <source>Simplifies the geometries of the input layer with the Douglas-Peucker algorithm. The tolerance is given in layer units; a larger value removes more vertices. With topology preserved ST_SimplifyPreserveTopology is used and the result stays valid, otherwise ST_Simplify. The chosen columns are copied to the result.</source>
+        <translation>Upraszcza geometrie warstwy wejściowej algorytmem Douglasa-Peuckera. Tolerancję podaje się w jednostkach warstwy; większa wartość usuwa więcej wierzchołków. Przy zachowaniu topologii używana jest funkcja ST_SimplifyPreserveTopology i wynik pozostaje poprawny, w przeciwnym razie ST_Simplify. Wybrane kolumny są kopiowane do wyniku.</translation>
+    </message>
+    <message>
+        <source>Creates Voronoi polygons around points.</source>
+        <translation>Tworzy poligony Voronoi wokół punktów.</translation>
+    </message>
+    <message>
+        <source>Creates a polygon around every point of the input layer with ST_VoronoiPolygons; each polygon covers the area closer to its point than to any other. Points closer together than the snapping tolerance are treated as one. The diagram can be extended beyond the extent of the points by a distance in layer units. The result has only an id column.</source>
+        <translation>Tworzy poligon wokół każdego punktu warstwy wejściowej funkcją ST_VoronoiPolygons; każdy poligon obejmuje obszar leżący bliżej swojego punktu niż pozostałych. Punkty leżące bliżej siebie niż tolerancja przyciągania są traktowane jak jeden. Diagram można rozszerzyć poza zasięg punktów o odległość w jednostkach warstwy. Wynik ma tylko kolumnę id.</translation>
+    </message>
+    <message>
+        <source>Clips a raster to a mask layer.</source>
+        <translation>Przycina raster do warstwy maski.</translation>
+    </message>
+    <message>
+        <source>Clips the tiles of the input raster to the mask with ST_Clip. The mask can be any layer of the project and does not have to be stored in the database: the features of a vector layer are merged into one shape, for a raster layer its extent is used. The mask is transformed to the coordinate system of the raster.</source>
+        <translation>Przycina kafle rastra wejściowego do maski funkcją ST_Clip. Maską może być dowolna warstwa projektu i nie musi ona być zapisana w bazie: obiekty warstwy wektorowej są łączone w jeden kształt, a dla warstwy rastrowej brany jest jej zasięg. Maska jest transformowana do układu współrzędnych rastra.</translation>
+    </message>
+    <message>
+        <source>Merges all tiles of a raster into one.</source>
+        <translation>Łączy wszystkie kafle rastra w jeden.</translation>
+    </message>
+    <message>
+        <source>Merges all tiles of the input raster into a single raster stored in one row, using ST_Union. For large rasters this needs a lot of server memory and time.</source>
+        <translation>Łączy wszystkie kafle rastra wejściowego w jeden raster zapisany w jednym wierszu, funkcją ST_Union. Dla dużych rastrów wymaga to dużo pamięci serwera i czasu.</translation>
+    </message>
+    <message>
+        <source>Reprojects a raster to another coordinate system.</source>
+        <translation>Przelicza raster do innego układu współrzędnych.</translation>
+    </message>
+    <message>
+        <source>Transforms every tile of the input raster to the chosen coordinate system with ST_Transform. The coordinate system must be known to the database, so present in the spatial_ref_sys table.</source>
+        <translation>Transformuje każdy kafel rastra wejściowego do wybranego układu współrzędnych funkcją ST_Transform. Układ musi być znany bazie, czyli obecny w tabeli spatial_ref_sys.</translation>
+    </message>
+    <message>
+        <source>Changes the pixel size of a raster.</source>
+        <translation>Zmienia rozmiar piksela rastra.</translation>
+    </message>
+    <message>
+        <source>Resamples every tile of the input raster to the given pixel size with ST_Rescale. The spatial resolution is the new pixel size in the units of the raster coordinate system. The resampling algorithm decides how new pixel values are computed and the maximum error limits the approximation of the transformation.</source>
+        <translation>Przepróbkowuje każdy kafel rastra wejściowego do podanego rozmiaru piksela funkcją ST_Rescale. Rozdzielczość przestrzenna to nowy rozmiar piksela w jednostkach układu współrzędnych rastra. Algorytm przepróbkowania decyduje o sposobie liczenia nowych wartości pikseli, a maksymalny błąd ogranicza przybliżenie transformacji.</translation>
+    </message>
+    <message>
+        <source>Computes statistics of a raster band.</source>
+        <translation>Liczy statystyki pasma rastra.</translation>
+    </message>
+    <message>
+        <source>Computes the minimum, maximum, range, sum, mean and standard deviation of the chosen band over the whole raster with ST_SummaryStats. Nodata pixels are skipped. The result is saved as an HTML report.</source>
+        <translation>Liczy minimum, maksimum, zakres, sumę, średnią i odchylenie standardowe wybranego pasma dla całego rastra funkcją ST_SummaryStats. Piksele bez danych są pomijane. Wynik zapisywany jest jako raport HTML.</translation>
+    </message>
+    <message>
+        <source>Computes slope, aspect or hillshade from an elevation raster.</source>
+        <translation>Liczy nachylenie, ekspozycję lub cieniowanie z rastra wysokości.</translation>
+    </message>
+    <message>
+        <source>Computes slope (ST_Slope), aspect (ST_Aspect) or hillshade (ST_HillShade) from the chosen band of an elevation raster. Slope units apply to slope only, azimuth and sun altitude to hillshade only; aspect is always in degrees. Every tile is computed together with its neighbors, so there are no seams at tile edges. The result is a 32-bit float raster.</source>
+        <translation>Liczy nachylenie (ST_Slope), ekspozycję (ST_Aspect) lub cieniowanie (ST_HillShade) z wybranego pasma rastra wysokości. Jednostki nachylenia dotyczą tylko nachylenia, a azymut i wysokość słońca tylko cieniowania; ekspozycja jest zawsze w stopniach. Każdy kafel liczony jest razem z sąsiadami, więc na krawędziach kafli nie ma szwów. Wynikiem jest raster zmiennoprzecinkowy 32-bitowy.</translation>
+    </message>
+    <message>
+        <source>Splits a raster into tiles of a given size.</source>
+        <translation>Dzieli raster na kafle o podanym rozmiarze.</translation>
+    </message>
+    <message>
+        <source>Merges the input raster and splits it again into tiles of the given width and height in pixels, using ST_Tile. Smaller tiles speed up reading parts of the raster.</source>
+        <translation>Łączy raster wejściowy i dzieli go ponownie na kafle o podanej szerokości i wysokości w pikselach, funkcją ST_Tile. Mniejsze kafle przyspieszają odczyt fragmentów rastra.</translation>
+    </message>
+    <message>
+        <source>Converts raster pixels to polygons.</source>
+        <translation>Zamienia piksele rastra na poligony.</translation>
+    </message>
+    <message>
+        <source>Creates polygons from groups of neighboring pixels with the same value in the chosen band, using ST_DumpAsPolygons. The pixel value is saved in the value column. Polygons are created for each tile separately, so they are split at tile edges.</source>
+        <translation>Tworzy poligony z grup sąsiadujących pikseli o tej samej wartości w wybranym paśmie, funkcją ST_DumpAsPolygons. Wartość piksela zapisywana jest w kolumnie value. Poligony powstają osobno dla każdego kafla, więc są dzielone na krawędziach kafli.</translation>
+    </message>
+    <message>
+        <source>Computes raster statistics inside polygons.</source>
+        <translation>Liczy statystyki rastra wewnątrz poligonów.</translation>
+    </message>
+    <message>
+        <source>Computes statistics of the chosen raster band inside every polygon of the zone layer with ST_SummaryStatsAgg. The result is the zone layer with the chosen columns and the columns _count, _sum, _mean, _stddev, _min and _max. Zones outside the raster get empty values. Zones in another coordinate system are transformed to the system of the raster.</source>
+        <translation>Liczy statystyki wybranego pasma rastra wewnątrz każdego poligonu warstwy stref funkcją ST_SummaryStatsAgg. Wynikiem jest warstwa stref z wybranymi kolumnami oraz kolumnami _count, _sum, _mean, _stddev, _min i _max. Strefy poza rastrem dostają puste wartości. Strefy w innym układzie współrzędnych są transformowane do układu rastra.</translation>
     </message>
 </context>
 <context>

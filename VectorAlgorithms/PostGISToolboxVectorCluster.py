@@ -10,6 +10,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorCluster(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_ClusterDBSCAN'
     INPUT = 'INPUT'
     FIELDS = 'FIELDS'
     DISTANCE = 'DISTANCE'
@@ -86,6 +87,17 @@ class PostGISToolboxVectorCluster(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Cluster (DBSCAN)')
+
+    def shortDescription(self):
+        return tr('Assigns features to density based clusters.')
+
+    def help_text(self):
+        return tr(
+            'Groups features into clusters with ST_ClusterDBSCAN. A cluster '
+            'needs at least the minimum number of features lying no further '
+            'apart than the maximum distance, given in layer units. The '
+            'result has the input features with a cluster_id column, which '
+            'is empty for features outside any cluster.')
 
     def group(self):
         return tr('Vector')

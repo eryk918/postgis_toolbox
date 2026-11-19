@@ -17,6 +17,7 @@ from .utils import tr, get_plugin_object, remove_unsupported_chars, \
     postgres_metadata, connection_uri
 
 OVERVIEW_LEVELS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]
+POSTGIS_DOCS_URL = 'https://postgis.net/docs/{0}.html'
 
 
 def select_columns(alias: str, columns: List[str]) -> str:
@@ -33,6 +34,26 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
     DEST_TABLE = 'DEST_TABLE'
     OVERWRITE = 'OVERWRITE'
     LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
+    HELP_PAGE = 'reference'
+    TABLE_OUTPUT = True
+
+    def help_text(self) -> str:
+        return ''
+
+    def shortHelpString(self):
+        paragraphs = [self.help_text(), tr(
+            'Input layers have to be PostGIS layers stored in the selected '
+            'database.')]
+        if self.TABLE_OUTPUT:
+            paragraphs.append(tr(
+                'The result is saved as a new table in the chosen schema of '
+                'that database. When overwriting is enabled, an existing '
+                'table with the same name is dropped first.'))
+        return '\n'.join(
+            paragraph for paragraph in paragraphs if paragraph)
+
+    def helpUrl(self):
+        return POSTGIS_DOCS_URL.format(self.HELP_PAGE)
 
     def default_connection_name(self) -> Optional[str]:
         plugin = get_plugin_object()

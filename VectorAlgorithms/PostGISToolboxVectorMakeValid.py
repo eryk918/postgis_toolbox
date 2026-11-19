@@ -12,6 +12,7 @@ REPAIR_METHODS = ['ST_Buffer', 'ST_MakeValid']
 
 
 class PostGISToolboxVectorMakeValid(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_MakeValid'
     INPUT = 'INPUT'
     FIELDS = 'FIELDS'
     METHOD = 'METHOD'
@@ -84,6 +85,16 @@ class PostGISToolboxVectorMakeValid(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Repair geometry')
+
+    def shortDescription(self):
+        return tr('Repairs invalid geometries.')
+
+    def help_text(self):
+        return tr(
+            'Repairs the geometries of the input layer. ST_MakeValid fixes '
+            'them without losing vertices; ST_Buffer applies a buffer of '
+            '0.001 layer units outwards and back inwards, which is meant for '
+            'polygons. The chosen columns are copied to the result.')
 
     def group(self):
         return tr('Vector')

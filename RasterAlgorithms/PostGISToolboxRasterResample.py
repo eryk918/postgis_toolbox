@@ -12,6 +12,7 @@ RESAMPLING_ALGORITHMS = ['NearestNeighbor', 'Bilinear', 'Cubic',
 
 
 class PostGISToolboxRasterResample(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_Rescale'
     INPUT = 'INPUT'
     SCALE_VALUE = 'SCALE_VALUE'
     ALG_NAME = 'ALG_NAME'
@@ -93,6 +94,18 @@ class PostGISToolboxRasterResample(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Resample')
+
+    def shortDescription(self):
+        return tr('Changes the pixel size of a raster.')
+
+    def help_text(self):
+        return tr(
+            'Resamples every tile of the input raster to the given pixel '
+            'size with ST_Rescale. The spatial resolution is the new pixel '
+            'size in the units of the raster coordinate system. The '
+            'resampling algorithm decides how new pixel values are computed '
+            'and the maximum error limits the approximation of the '
+            'transformation.')
 
     def group(self):
         return tr('Raster')

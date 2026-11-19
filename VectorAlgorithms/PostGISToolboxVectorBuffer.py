@@ -10,6 +10,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_Buffer'
     INPUT = 'INPUT'
     FIELDS = 'FIELDS'
     BUFFER_SIZE = 'BUFFER_SIZE'
@@ -79,6 +80,16 @@ class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Buffer')
+
+    def shortDescription(self):
+        return tr('Creates buffer polygons around features.')
+
+    def help_text(self):
+        return tr(
+            'Creates a polygon around every feature of the input layer with '
+            'ST_Buffer. The buffer size is given in the units of the layer '
+            'coordinate system, so in degrees for geographic systems. The '
+            'chosen columns are copied to the result.')
 
     def group(self):
         return tr('Vector')

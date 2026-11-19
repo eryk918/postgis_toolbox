@@ -11,6 +11,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorSimplify(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_SimplifyPreserveTopology'
     INPUT = 'INPUT'
     FIELDS = 'FIELDS'
     TOLERANCE = 'TOLERANCE'
@@ -87,6 +88,18 @@ class PostGISToolboxVectorSimplify(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Simplify')
+
+    def shortDescription(self):
+        return tr('Reduces the number of vertices in geometries.')
+
+    def help_text(self):
+        return tr(
+            'Simplifies the geometries of the input layer with the '
+            'Douglas-Peucker algorithm. The tolerance is given in layer '
+            'units; a larger value removes more vertices. With topology '
+            'preserved ST_SimplifyPreserveTopology is used and the result '
+            'stays valid, otherwise ST_Simplify. The chosen columns are '
+            'copied to the result.')
 
     def group(self):
         return tr('Vector')

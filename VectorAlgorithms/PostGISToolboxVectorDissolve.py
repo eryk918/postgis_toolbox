@@ -8,6 +8,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorDissolve(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_Union'
     INPUT = 'INPUT'
     GROUP_FIELD = 'GROUP_FIELD'
 
@@ -81,6 +82,18 @@ class PostGISToolboxVectorDissolve(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Dissolve')
+
+    def shortDescription(self):
+        return tr(
+            'Merges all features, or features sharing a value, into one '
+            'geometry.')
+
+    def help_text(self):
+        return tr(
+            'Merges the geometries of the input layer into one multipart '
+            'feature with ST_Union. When a column is chosen, one feature is '
+            'created for each of its values. Other columns are not copied to '
+            'the result.')
 
     def group(self):
         return tr('Vector')

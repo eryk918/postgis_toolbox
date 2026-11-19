@@ -13,6 +13,7 @@ STATISTICS = ['count', 'sum', 'mean', 'stddev', 'min', 'max']
 
 
 class PostGISToolboxRasterZonalStatistics(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_SummaryStatsAgg'
     INPUT = 'INPUT'
     BAND = 'BAND'
     ZONES = 'ZONES'
@@ -114,6 +115,18 @@ class PostGISToolboxRasterZonalStatistics(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Zonal statistics')
+
+    def shortDescription(self):
+        return tr('Computes raster statistics inside polygons.')
+
+    def help_text(self):
+        return tr(
+            'Computes statistics of the chosen raster band inside every '
+            'polygon of the zone layer with ST_SummaryStatsAgg. The result '
+            'is the zone layer with the chosen columns and the columns '
+            '_count, _sum, _mean, _stddev, _min and _max. Zones outside the '
+            'raster get empty values. Zones in another coordinate system are '
+            'transformed to the system of the raster.')
 
     def group(self):
         return tr('Raster')

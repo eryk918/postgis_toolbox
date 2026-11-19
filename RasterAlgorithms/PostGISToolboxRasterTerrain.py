@@ -11,6 +11,7 @@ SLOPE_UNITS = ['DEGREES', 'RADIANS', 'PERCENT']
 
 
 class PostGISToolboxRasterTerrain(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_Slope'
     INPUT = 'INPUT'
     BAND = 'BAND'
     METHOD = 'METHOD'
@@ -118,6 +119,19 @@ class PostGISToolboxRasterTerrain(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Terrain analysis')
+
+    def shortDescription(self):
+        return tr(
+            'Computes slope, aspect or hillshade from an elevation raster.')
+
+    def help_text(self):
+        return tr(
+            'Computes slope (ST_Slope), aspect (ST_Aspect) or hillshade '
+            '(ST_HillShade) from the chosen band of an elevation raster. '
+            'Slope units apply to slope only, azimuth and sun altitude to '
+            'hillshade only; aspect is always in degrees. Every tile is '
+            'computed together with its neighbors, so there are no seams at '
+            'tile edges. The result is a 32-bit float raster.')
 
     def group(self):
         return tr('Raster')

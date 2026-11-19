@@ -10,6 +10,7 @@ from ..utils import tr
 
 
 class PostGISToolboxRasterClip(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_Clip'
     INPUT = 'INPUT'
     INPUT_CLIP = 'INPUT_CLIP'
     CREATE_OVERVIEWS = 'CREATE_OVERVIEWS'
@@ -101,6 +102,17 @@ class PostGISToolboxRasterClip(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Clip')
+
+    def shortDescription(self):
+        return tr('Clips a raster to a mask layer.')
+
+    def help_text(self):
+        return tr(
+            'Clips the tiles of the input raster to the mask with ST_Clip. '
+            'The mask can be any layer of the project and does not have to '
+            'be stored in the database: the features of a vector layer are '
+            'merged into one shape, for a raster layer its extent is used. '
+            'The mask is transformed to the coordinate system of the raster.')
 
     def group(self):
         return tr('Raster')

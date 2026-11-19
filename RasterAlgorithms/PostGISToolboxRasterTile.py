@@ -8,6 +8,7 @@ from ..utils import tr
 
 
 class PostGISToolboxRasterTile(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_Tile'
     INPUT = 'INPUT'
     SIZE_X = 'SIZE_X'
     SIZE_Y = 'SIZE_Y'
@@ -78,6 +79,15 @@ class PostGISToolboxRasterTile(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Tiles')
+
+    def shortDescription(self):
+        return tr('Splits a raster into tiles of a given size.')
+
+    def help_text(self):
+        return tr(
+            'Merges the input raster and splits it again into tiles of the '
+            'given width and height in pixels, using ST_Tile. Smaller tiles '
+            'speed up reading parts of the raster.')
 
     def group(self):
         return tr('Raster')

@@ -10,6 +10,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorDifference(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_Difference'
     INPUT = 'INPUT'
     INPUT_DIFF = 'INPUT_DIFF'
     FIELDS = 'FIELDS'
@@ -100,6 +101,17 @@ class PostGISToolboxVectorDifference(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Difference')
+
+    def shortDescription(self):
+        return tr('Removes from features the area covered by another layer.')
+
+    def help_text(self):
+        return tr(
+            'Subtracts the merged geometry of the second layer from every '
+            'feature of the input layer with ST_Difference. If the layers '
+            'use different coordinate systems, the second one is transformed '
+            'to the system of the input layer. The chosen columns are copied '
+            'to the result.')
 
     def group(self):
         return tr('Vector')

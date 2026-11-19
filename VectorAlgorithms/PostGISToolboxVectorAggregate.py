@@ -10,6 +10,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorAggregate(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_Union'
     INPUT = 'INPUT'
     GROUP_FIELD = 'GROUP_FIELD'
 
@@ -77,6 +78,18 @@ class PostGISToolboxVectorAggregate(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Aggregate')
+
+    def shortDescription(self):
+        return tr(
+            'Merges features sharing a value in the chosen column into one '
+            'feature.')
+
+    def help_text(self):
+        return tr(
+            'Groups features by the values of the chosen column and merges '
+            'the geometries of each group with ST_Union. The remaining '
+            'columns are kept as text with the distinct values of the group '
+            'separated by commas.')
 
     def group(self):
         return tr('Vector')

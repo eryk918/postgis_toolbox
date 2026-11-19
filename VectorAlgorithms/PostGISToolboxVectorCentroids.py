@@ -12,6 +12,7 @@ CENTROID_FUNCTIONS = ['ST_Centroid', 'ST_PointOnSurface']
 
 
 class PostGISToolboxVectorCentroids(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_Centroid'
     INPUT = 'INPUT'
     FIELDS = 'FIELDS'
     METHOD = 'METHOD'
@@ -80,6 +81,17 @@ class PostGISToolboxVectorCentroids(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Centroids')
+
+    def shortDescription(self):
+        return tr('Creates one point for every feature.')
+
+    def help_text(self):
+        return tr(
+            'Creates a point for every feature of the input layer. Centroid '
+            'uses ST_Centroid and the point may fall outside the feature; '
+            'Point on surface uses ST_PointOnSurface and the point always '
+            'lies on the feature. The chosen columns are copied to the '
+            'result.')
 
     def group(self):
         return tr('Vector')

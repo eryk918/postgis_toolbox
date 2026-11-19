@@ -8,6 +8,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorGeneratePoints(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_GeneratePoints'
     INPUT = 'INPUT'
     POINT_COUNT = 'POINT_COUNT'
 
@@ -69,6 +70,15 @@ class PostGISToolboxVectorGeneratePoints(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Generate points')
+
+    def shortDescription(self):
+        return tr('Creates random points inside polygons.')
+
+    def help_text(self):
+        return tr(
+            'Creates the given number of random points inside the merged '
+            'polygons of the input layer with ST_GeneratePoints. The points '
+            'are saved as one multipoint feature without attributes.')
 
     def group(self):
         return tr('Vector')

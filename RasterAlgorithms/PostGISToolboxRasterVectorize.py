@@ -8,6 +8,7 @@ from ..utils import tr
 
 
 class PostGISToolboxRasterVectorize(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_DumpAsPolygons'
     INPUT = 'INPUT'
     BAND = 'BAND'
     EXCLUDE_NODATA = 'EXCLUDE_NODATA'
@@ -77,6 +78,16 @@ class PostGISToolboxRasterVectorize(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Raster to polygons')
+
+    def shortDescription(self):
+        return tr('Converts raster pixels to polygons.')
+
+    def help_text(self):
+        return tr(
+            'Creates polygons from groups of neighboring pixels with the '
+            'same value in the chosen band, using ST_DumpAsPolygons. The '
+            'pixel value is saved in the value column. Polygons are created '
+            'for each tile separately, so they are split at tile edges.')
 
     def group(self):
         return tr('Raster')

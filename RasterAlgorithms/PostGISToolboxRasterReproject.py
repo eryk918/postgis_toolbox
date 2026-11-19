@@ -9,6 +9,7 @@ from ..utils import tr
 
 
 class PostGISToolboxRasterReproject(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_Transform'
     INPUT = 'INPUT'
     OUTPUTCRS = 'OUTPUTCRS'
     CREATE_OVERVIEWS = 'CREATE_OVERVIEWS'
@@ -75,6 +76,16 @@ class PostGISToolboxRasterReproject(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Reproject')
+
+    def shortDescription(self):
+        return tr('Reprojects a raster to another coordinate system.')
+
+    def help_text(self):
+        return tr(
+            'Transforms every tile of the input raster to the chosen '
+            'coordinate system with ST_Transform. The coordinate system must '
+            'be known to the database, so present in the spatial_ref_sys '
+            'table.')
 
     def group(self):
         return tr('Raster')

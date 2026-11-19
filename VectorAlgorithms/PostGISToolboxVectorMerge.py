@@ -90,6 +90,16 @@ class PostGISToolboxVectorMerge(PostGISToolboxAlgorithm):
     def displayName(self):
         return tr('Merge')
 
+    def shortDescription(self):
+        return tr('Combines several layers into one table.')
+
+    def help_text(self):
+        return tr(
+            'Writes the features of all input layers to one table. The '
+            'layers must have the same geometry type and the same columns; '
+            'layers in another coordinate system are transformed to the '
+            'system of the first layer. Identical rows are written once.')
+
     def group(self):
         return tr('Vector')
 

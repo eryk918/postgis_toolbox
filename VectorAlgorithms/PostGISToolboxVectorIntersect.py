@@ -10,6 +10,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorIntersects(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_Intersection'
     INPUT = 'INPUT'
     INPUT_MASK = 'INPUT_MASK'
     FIELDS = 'FIELDS'
@@ -88,6 +89,16 @@ class PostGISToolboxVectorIntersects(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Intersection')
+
+    def shortDescription(self):
+        return tr('Extracts the parts of features that overlap a mask layer.')
+
+    def help_text(self):
+        return tr(
+            'Writes the common part of every pair of intersecting features '
+            'from the input and mask layers, computed with ST_Intersection. '
+            'Both layers should use the same coordinate system. The chosen '
+            'columns are copied to the result.')
 
     def group(self):
         return tr('Vector')

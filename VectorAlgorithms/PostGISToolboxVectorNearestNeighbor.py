@@ -11,6 +11,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorNearestNeighbor(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'geometry_distance_knn'
     INPUT = 'INPUT'
     INPUT_NEIGHBOR = 'INPUT_NEIGHBOR'
     FIELDS = 'FIELDS'
@@ -126,6 +127,17 @@ class PostGISToolboxVectorNearestNeighbor(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Nearest Neighbor')
+
+    def shortDescription(self):
+        return tr('Selects features lying near the points of another layer.')
+
+    def help_text(self):
+        return tr(
+            'Selects the features of the input layer that have points of the '
+            'neighbor layer within the maximum distance, given in layer '
+            'units. When a minimum distance is set, closer points are '
+            'skipped. A feature is written once for every matching point. '
+            'The chosen columns are copied to the result.')
 
     def group(self):
         return tr('Vector')

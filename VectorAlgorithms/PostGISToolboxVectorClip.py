@@ -10,6 +10,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorClip(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_Intersection'
     INPUT = 'INPUT'
     INPUT_CLIP = 'INPUT_CLIP'
     FIELDS = 'FIELDS'
@@ -99,6 +100,18 @@ class PostGISToolboxVectorClip(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Clip')
+
+    def shortDescription(self):
+        return tr('Cuts features to the shape of another layer.')
+
+    def help_text(self):
+        return tr(
+            'Cuts the features of the input layer to the features of the '
+            'second layer with ST_Intersection. One feature is written for '
+            'every pair of overlapping features. If the layers use different '
+            'coordinate systems, the second one is transformed to the system '
+            'of the input layer. The chosen columns are copied to the '
+            'result.')
 
     def group(self):
         return tr('Vector')

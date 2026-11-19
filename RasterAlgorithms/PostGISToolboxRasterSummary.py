@@ -9,6 +9,8 @@ from ..utils import tr
 
 
 class PostGISToolboxRasterSummary(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_SummaryStats'
+    TABLE_OUTPUT = False
     INPUT = 'INPUT'
     BAND = 'BAND'
     SAVE = 'SAVE'
@@ -73,6 +75,16 @@ class PostGISToolboxRasterSummary(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Summary')
+
+    def shortDescription(self):
+        return tr('Computes statistics of a raster band.')
+
+    def help_text(self):
+        return tr(
+            'Computes the minimum, maximum, range, sum, mean and standard '
+            'deviation of the chosen band over the whole raster with '
+            'ST_SummaryStats. Nodata pixels are skipped. The result is saved '
+            'as an HTML report.')
 
     def group(self):
         return tr('Raster')

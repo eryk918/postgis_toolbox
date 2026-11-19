@@ -9,6 +9,7 @@ from ..utils import tr
 
 
 class PostGISToolboxVectorGeneratePolygonFromPoints(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'ST_ConcaveHull'
     INPUT = 'INPUT'
     CONCAVITY_RATIO = 'CONCAVITY_RATIO'
     ALLOW_HOLES = 'ALLOW_HOLES'
@@ -77,6 +78,16 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Generate polygon from points')
+
+    def shortDescription(self):
+        return tr('Creates a concave hull around points.')
+
+    def help_text(self):
+        return tr(
+            'Creates one polygon enclosing all points of the input layer '
+            'with ST_ConcaveHull. The concavity ratio goes from 0 for the '
+            'tightest shape to 1 for the convex hull. Allowing holes lets '
+            'the polygon have empty areas inside.')
 
     def group(self):
         return tr('Vector')

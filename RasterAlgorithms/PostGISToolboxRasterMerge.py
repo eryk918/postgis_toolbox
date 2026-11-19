@@ -8,6 +8,7 @@ from ..utils import tr
 
 
 class PostGISToolboxRasterMerge(PostGISToolboxAlgorithm):
+    HELP_PAGE = 'RT_ST_Union'
     INPUT = 'INPUT'
     OVERVIEWS = 'OVERVIEWS'
 
@@ -65,6 +66,15 @@ class PostGISToolboxRasterMerge(PostGISToolboxAlgorithm):
 
     def displayName(self):
         return tr('Merge tiles')
+
+    def shortDescription(self):
+        return tr('Merges all tiles of a raster into one.')
+
+    def help_text(self):
+        return tr(
+            'Merges all tiles of the input raster into a single raster '
+            'stored in one row, using ST_Union. For large rasters this needs '
+            'a lot of server memory and time.')
 
     def group(self):
         return tr('Raster')
