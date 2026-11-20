@@ -19,6 +19,7 @@ class PostGISToolboxVectorCluster(PostGISToolboxAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input layer')))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterField(
             self.FIELDS, tr('Choose columns from input layer'),
             parentLayerParameterName=self.INPUT, allowMultiple=True,
@@ -38,7 +39,7 @@ class PostGISToolboxVectorCluster(PostGISToolboxAlgorithm):
         connection = self.get_connection(parameters, context)
         input_layer = self.get_postgis_layer(
             parameters, self.INPUT, context, connection)
-        schema, table, geom_column = self.layer_table(input_layer)
+        source, geom_column = self.input_source(input_layer)
         columns = self.get_input_columns(
             parameters, self.FIELDS, context, input_layer)
         distance = self.parameterAsDouble(parameters, self.DISTANCE, context)
@@ -50,7 +51,7 @@ class PostGISToolboxVectorCluster(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         self.execute_sql(connection, self.generate_cluster_query(
-            out_schema, out_table, schema, table, geom_column, columns,
+            out_schema, out_table, source, geom_column, columns,
             distance, min_points), feedback)
         feedback.setProgress(80)
         self.create_geometry_index(connection, out_schema, out_table, feedback)
@@ -68,7 +69,7 @@ class PostGISToolboxVectorCluster(PostGISToolboxAlgorithm):
         }
 
     def generate_cluster_query(
-            self, out_schema: str, out_table: str, schema: str, table: str,
+            self, out_schema: str, out_table: str, source: str,
             geom_column: str, columns: List[str], distance: float,
             min_points: int) -> str:
         geometry = f'input_table.{quote_identifier(geom_column)}'
@@ -78,7 +79,7 @@ class PostGISToolboxVectorCluster(PostGISToolboxAlgorithm):
                     ST_ClusterDBSCAN({geometry}, {distance}, {min_points})
                         OVER () AS "cluster_id",
                     {geometry} AS "geom"
-                FROM {qualified_name(schema, table)} AS input_table
+                FROM {source} AS input_table
             );
         '''
 

@@ -113,6 +113,11 @@
         <string>SRID</string>
        </property>
       </column>
+      <column>
+       <property name="text">
+        <string>Index size</string>
+       </property>
+      </column>
      </widget>
      <widget class="QGroupBox" name="details_groupbox">
       <property name="title">

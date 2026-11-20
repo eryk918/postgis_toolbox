@@ -20,6 +20,7 @@ class PostGISToolboxVectorCentroids(PostGISToolboxAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input layer')))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterField(
             self.FIELDS, tr('Choose columns from input layer'),
             parentLayerParameterName=self.INPUT, allowMultiple=True,
@@ -34,7 +35,7 @@ class PostGISToolboxVectorCentroids(PostGISToolboxAlgorithm):
         connection = self.get_connection(parameters, context)
         input_layer = self.get_postgis_layer(
             parameters, self.INPUT, context, connection)
-        schema, table, geom_column = self.layer_table(input_layer)
+        source, geom_column = self.input_source(input_layer)
         columns = self.get_input_columns(
             parameters, self.FIELDS, context, input_layer)
         method = self.parameterAsEnum(parameters, self.METHOD, context)
@@ -45,7 +46,7 @@ class PostGISToolboxVectorCentroids(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         self.execute_sql(connection, self.generate_centroids_query(
-            out_schema, out_table, schema, table, geom_column, columns,
+            out_schema, out_table, source, geom_column, columns,
             CENTROID_FUNCTIONS[method], input_layer.crs().postgisSrid()),
             feedback)
         feedback.setProgress(80)
@@ -64,7 +65,7 @@ class PostGISToolboxVectorCentroids(PostGISToolboxAlgorithm):
         }
 
     def generate_centroids_query(
-            self, out_schema: str, out_table: str, schema: str, table: str,
+            self, out_schema: str, out_table: str, source: str,
             geom_column: str, columns: List[str], function: str,
             srid: int) -> str:
         return f'''
@@ -72,7 +73,7 @@ class PostGISToolboxVectorCentroids(PostGISToolboxAlgorithm):
                 SELECT {select_columns('input_table', columns)}
                     {function}(input_table.{quote_identifier(geom_column)})
                         ::geometry(POINT, {srid}) AS "geom"
-                FROM {qualified_name(schema, table)} AS input_table
+                FROM {source} AS input_table
             );
         '''
 

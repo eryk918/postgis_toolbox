@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import textwrap
 from typing import List, Tuple, Optional
 
 from qgis.core import QgsProcessingAlgorithm, QgsProcessingException, \
@@ -10,7 +11,7 @@ from qgis.core import QgsProcessingAlgorithm, QgsProcessingException, \
     QgsProcessingFeedback, QgsProviderConnectionException, \
     QgsAbstractDatabaseProviderConnection, \
     QgsDataSourceUri, QgsVectorLayer, QgsRasterLayer, QgsMapLayer, \
-    QgsWkbTypes, Qgis
+    QgsWkbTypes, QgsFeatureRequest, Qgis
 
 from .utils import tr, get_plugin_object, remove_unsupported_chars, \
     PROCESSING_LAYERS_GROUP, quote_identifier, quote_literal, qualified_name, \
@@ -28,6 +29,8 @@ def select_columns(alias: str, columns: List[str]) -> str:
 
 
 class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
+    INPUT = 'INPUT'
+    SELECTED = 'SELECTED'
     OUTPUT = 'OUTPUT'
     CONNECTION = 'CONNECTION'
     DEST_SCHEMA = 'DEST_SCHEMA'
@@ -36,6 +39,7 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
     LOAD_TO_PROJECT = 'LOAD_TO_PROJECT'
     HELP_PAGE = 'reference'
     TABLE_OUTPUT = True
+    selection_filters = {}
 
     def help_text(self) -> str:
         return ''
@@ -44,11 +48,18 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
         paragraphs = [self.help_text(), tr(
             'Input layers have to be PostGIS layers stored in the selected '
             'database.')]
+        if self.parameterDefinition(self.SELECTED) is not None:
+            paragraphs.append(tr(
+                'With Selected features only checked, only the features '
+                'selected in the input layer are processed. The layer needs '
+                'a primary key for that.'))
         if self.TABLE_OUTPUT:
             paragraphs.append(tr(
                 'The result is saved as a new table in the chosen schema of '
                 'that database. When overwriting is enabled, an existing '
                 'table with the same name is dropped first.'))
+        paragraphs.append(tr(
+            'Every SQL statement is written to the log before it runs.'))
         return '\n'.join(
             paragraph for paragraph in paragraphs if paragraph)
 
@@ -67,6 +78,60 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
                 connection_uri(plugin.db).database():
             return plugin.connection_name
         return None
+
+    def add_selected_parameter(self) -> None:
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.SELECTED, tr('Selected features only'), False))
+
+    def prepareAlgorithm(self, parameters, context, feedback):
+        self.selection_filters = {}
+        if self.parameterDefinition(self.SELECTED) is None \
+                or not self.parameterAsBool(
+                    parameters, self.SELECTED, context):
+            return True
+        for layer in self.selection_layers(parameters, context):
+            self.selection_filters[layer.id()] = self.selection_filter(layer)
+        return True
+
+    def selection_layers(self, parameters: dict, context) -> list:
+        layer = self.parameterAsVectorLayer(parameters, self.INPUT, context)
+        return [layer] if layer is not None else []
+
+    def selection_filter(self, layer: QgsVectorLayer) -> str:
+        keys = layer.primaryKeyAttributes()
+        if not keys:
+            raise QgsProcessingException(
+                tr('Layer "{0}" has no primary key, so its selection cannot '
+                   'be used.').format(layer.name()))
+        if not layer.selectedFeatureCount():
+            raise QgsProcessingException(
+                tr('Layer "{0}" has no selected features.').format(
+                    layer.name()))
+        request = QgsFeatureRequest().setSubsetOfAttributes(keys).setFlags(
+            QgsFeatureRequest.Flag.NoGeometry)
+        rows = [
+            ', '.join(self.sql_literal(feature.attribute(key))
+                      for key in keys)
+            for feature in layer.getSelectedFeatures(request)]
+        columns = ', '.join(
+            quote_identifier(layer.fields().at(key).name()) for key in keys)
+        if len(keys) == 1:
+            return f'{columns} IN ({", ".join(rows)})'
+        values = ', '.join(f'({row})' for row in rows)
+        return f'({columns}) IN ({values})'
+
+    def sql_literal(self, value) -> str:
+        if isinstance(value, int) and not isinstance(value, bool):
+            return str(value)
+        return quote_literal(str(value))
+
+    def input_source(self, layer: QgsMapLayer) -> Tuple[str, str]:
+        schema, table, geom_column = self.layer_table(layer)
+        source = qualified_name(schema, table)
+        selection = self.selection_filters.get(layer.id())
+        if selection:
+            source = f'(SELECT * FROM {source} WHERE {selection})'
+        return source, geom_column
 
     def add_connection_parameter(self) -> None:
         self.addParameter(QgsProcessingParameterProviderConnection(
@@ -110,6 +175,7 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
 
     def execute_sql(self, connection: QgsAbstractDatabaseProviderConnection,
                     sql: str, feedback: QgsProcessingFeedback) -> list:
+        feedback.pushCommandInfo(textwrap.dedent(sql).strip())
         try:
             return connection.executeSql(sql, feedback)
         except QgsProviderConnectionException as error:
@@ -203,6 +269,14 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
         else:
             type_name = 'POLYGON'
         return type_name if single else f'MULTI{type_name}'
+
+    def collection_type(self, layer: QgsVectorLayer) -> int:
+        geometry_type = layer.geometryType()
+        if geometry_type == Qgis.GeometryType.Point:
+            return 1
+        if geometry_type == Qgis.GeometryType.Line:
+            return 2
+        return 3
 
     def create_geometry_index(
             self, connection: QgsAbstractDatabaseProviderConnection,

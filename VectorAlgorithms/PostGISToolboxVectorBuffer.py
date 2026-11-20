@@ -18,6 +18,7 @@ class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input layer')))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterField(
             self.FIELDS, tr('Choose columns from input layer'),
             parentLayerParameterName=self.INPUT, allowMultiple=True,
@@ -25,7 +26,7 @@ class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
         self.addParameter(QgsProcessingParameterNumber(
             self.BUFFER_SIZE, tr('Buffer size'),
             type=QgsProcessingParameterNumber.Type.Double, defaultValue=10,
-            minValue=0, maxValue=99999))
+            minValue=0))
         self.add_connection_parameter()
         self.add_output_parameters('buffer')
 
@@ -33,7 +34,7 @@ class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
         connection = self.get_connection(parameters, context)
         input_layer = self.get_postgis_layer(
             parameters, self.INPUT, context, connection)
-        schema, table, geom_column = self.layer_table(input_layer)
+        source, geom_column = self.input_source(input_layer)
         columns = self.get_input_columns(
             parameters, self.FIELDS, context, input_layer)
         buffer_size = self.parameterAsDouble(
@@ -45,7 +46,7 @@ class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         self.execute_sql(connection, self.generate_buffer_query(
-            out_schema, out_table, schema, table, geom_column, columns,
+            out_schema, out_table, source, geom_column, columns,
             buffer_size), feedback)
         feedback.setProgress(80)
         self.create_geometry_index(connection, out_schema, out_table, feedback)
@@ -63,7 +64,7 @@ class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
         }
 
     def generate_buffer_query(
-            self, out_schema: str, out_table: str, schema: str, table: str,
+            self, out_schema: str, out_table: str, source: str,
             geom_column: str, columns: List[str],
             buffer_size: float) -> str:
         return f'''
@@ -71,7 +72,7 @@ class PostGISToolboxVectorBuffer(PostGISToolboxAlgorithm):
                 SELECT {select_columns('input_table', columns)}
                     ST_Buffer(input_table.{quote_identifier(geom_column)},
                         {buffer_size}) AS "geom"
-                FROM {qualified_name(schema, table)} AS input_table
+                FROM {source} AS input_table
             );
         '''
 

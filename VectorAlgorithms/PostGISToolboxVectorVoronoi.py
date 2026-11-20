@@ -17,6 +17,7 @@ class PostGISToolboxVectorVoronoi(PostGISToolboxAlgorithm):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input layer'),
             types=[QgsProcessing.SourceType.TypeVectorPoint]))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterNumber(
             self.TOLERANCE, tr('Snapping tolerance'),
             type=QgsProcessingParameterNumber.Type.Double, defaultValue=0,
@@ -32,7 +33,7 @@ class PostGISToolboxVectorVoronoi(PostGISToolboxAlgorithm):
         connection = self.get_connection(parameters, context)
         input_layer = self.get_postgis_layer(
             parameters, self.INPUT, context, connection)
-        schema, table, geom_column = self.layer_table(input_layer)
+        source, geom_column = self.input_source(input_layer)
         tolerance = self.parameterAsDouble(
             parameters, self.TOLERANCE, context)
         buffer_size = self.parameterAsDouble(parameters, self.BUFFER, context)
@@ -43,7 +44,7 @@ class PostGISToolboxVectorVoronoi(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         self.execute_sql(connection, self.generate_voronoi_query(
-            out_schema, out_table, schema, table, geom_column, tolerance,
+            out_schema, out_table, source, geom_column, tolerance,
             buffer_size, input_layer.crs().postgisSrid()), feedback)
         feedback.setProgress(80)
         self.create_geometry_index(connection, out_schema, out_table, feedback)
@@ -61,7 +62,7 @@ class PostGISToolboxVectorVoronoi(PostGISToolboxAlgorithm):
         }
 
     def generate_voronoi_query(
-            self, out_schema: str, out_table: str, schema: str, table: str,
+            self, out_schema: str, out_table: str, source: str,
             geom_column: str, tolerance: float, buffer_size: float,
             srid: int) -> str:
         extent = f'ST_Expand(points.geom, {buffer_size})' \
@@ -70,7 +71,7 @@ class PostGISToolboxVectorVoronoi(PostGISToolboxAlgorithm):
             CREATE TABLE {qualified_name(out_schema, out_table)} AS (
                 WITH points AS (
                     SELECT ST_Collect({quote_identifier(geom_column)}) AS geom
-                    FROM {qualified_name(schema, table)}
+                    FROM {source} AS source_table
                 )
                 SELECT row_number() OVER () AS "id",
                     (ST_Dump(ST_VoronoiPolygons(points.geom, {tolerance},

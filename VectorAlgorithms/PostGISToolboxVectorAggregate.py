@@ -17,6 +17,7 @@ class PostGISToolboxVectorAggregate(PostGISToolboxAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input layer')))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterField(
             self.GROUP_FIELD, tr('Group by column'),
             parentLayerParameterName=self.INPUT))
@@ -27,7 +28,7 @@ class PostGISToolboxVectorAggregate(PostGISToolboxAlgorithm):
         connection = self.get_connection(parameters, context)
         input_layer = self.get_postgis_layer(
             parameters, self.INPUT, context, connection)
-        schema, table, geom_column = self.layer_table(input_layer)
+        source, geom_column = self.input_source(input_layer)
         group_column = self.parameterAsString(
             parameters, self.GROUP_FIELD, context)
         columns = [field.name() for field in input_layer.fields()
@@ -39,7 +40,7 @@ class PostGISToolboxVectorAggregate(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         self.execute_sql(connection, self.generate_aggregate_query(
-            out_schema, out_table, schema, table, geom_column, columns,
+            out_schema, out_table, source, geom_column, columns,
             group_column), feedback)
         feedback.setProgress(80)
         self.create_geometry_index(connection, out_schema, out_table, feedback)
@@ -57,7 +58,7 @@ class PostGISToolboxVectorAggregate(PostGISToolboxAlgorithm):
         }
 
     def generate_aggregate_query(
-            self, out_schema: str, out_table: str, schema: str, table: str,
+            self, out_schema: str, out_table: str, source: str,
             geom_column: str, columns: List[str], group_column: str) -> str:
         aggregated_columns = ''.join(
             f"STRING_AGG(DISTINCT {quote_identifier(column)}::TEXT, ', ') "
@@ -68,7 +69,7 @@ class PostGISToolboxVectorAggregate(PostGISToolboxAlgorithm):
             CREATE TABLE {qualified_name(out_schema, out_table)} AS (
                 SELECT {aggregated_columns}{quote_identifier(group_column)},
                     ST_Union({quote_identifier(geom_column)}) AS "geom"
-                FROM {qualified_name(schema, table)}
+                FROM {source} AS source_table
                 GROUP BY {quote_identifier(group_column)}
             );
         '''

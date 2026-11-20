@@ -24,11 +24,14 @@ POSTGIS_RELATIONS = ('spatial_ref_sys', 'geometry_columns',
 
 class TableInfo:
     def __init__(self, schema: str, name: str, relkind: str,
-                 estimated_rows: int) -> None:
+                 estimated_rows: int, index_size: Optional[int] = None,
+                 index_size_label: Optional[str] = None) -> None:
         self.schema = schema
         self.name = name
         self.relkind = relkind
         self.estimated_rows = estimated_rows
+        self.index_size = index_size
+        self.index_size_label = index_size_label or ''
         self.geometry_columns = []
         self.raster_column = None
         self.raster_srid = None
@@ -56,7 +59,11 @@ def relations_query() -> str:
     excluded = ', '.join(quote_literal(name) for name in EXCLUDED_SCHEMAS)
     postgis = ', '.join(quote_literal(name) for name in POSTGIS_RELATIONS)
     return f'''
-        SELECT n.nspname, c.relname, c.relkind, c.reltuples::bigint
+        SELECT n.nspname, c.relname, c.relkind, c.reltuples::bigint,
+            CASE WHEN c.relkind IN ('r', 'm')
+                THEN pg_indexes_size(c.oid) END,
+            CASE WHEN c.relkind IN ('r', 'm')
+                THEN pg_size_pretty(pg_indexes_size(c.oid)) END
         FROM pg_class c
         JOIN pg_namespace n ON n.oid = c.relnamespace
         WHERE c.relkind IN ('r', 'v', 'm', 'p', 'f')
@@ -96,9 +103,10 @@ def load_tables(
     if rows is None:
         return []
     tables = {}
-    for schema, name, relkind, estimated_rows in rows:
+    for schema, name, relkind, estimated_rows, index_size, size_label \
+            in rows:
         tables[(schema, name)] = TableInfo(
-            schema, name, relkind, estimated_rows)
+            schema, name, relkind, estimated_rows, index_size, size_label)
     for row in make_query(connection, geometry_columns_query) or []:
         info = tables.get((row[0], row[1]))
         if info is not None:

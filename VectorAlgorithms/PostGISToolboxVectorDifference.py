@@ -19,6 +19,7 @@ class PostGISToolboxVectorDifference(PostGISToolboxAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input layer')))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterField(
             self.FIELDS, tr('Choose columns from input layer'),
             parentLayerParameterName=self.INPUT, allowMultiple=True,
@@ -36,7 +37,7 @@ class PostGISToolboxVectorDifference(PostGISToolboxAlgorithm):
             parameters, self.INPUT, context, connection)
         diff_layer = self.get_postgis_layer(
             parameters, self.INPUT_DIFF, context, connection)
-        schema, table, geom_column = self.layer_table(input_layer)
+        source, geom_column = self.input_source(input_layer)
         diff_schema, diff_table, diff_geom_column = \
             self.layer_table(diff_layer)
         columns = self.get_input_columns(
@@ -49,7 +50,7 @@ class PostGISToolboxVectorDifference(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         self.execute_sql(connection, self.generate_difference_query(
-            out_schema, out_table, schema, table, geom_column, columns,
+            out_schema, out_table, source, geom_column, columns,
             diff_schema, diff_table, diff_geom_column,
             input_layer.crs().postgisSrid(),
             diff_layer.crs().postgisSrid(),
@@ -71,7 +72,7 @@ class PostGISToolboxVectorDifference(PostGISToolboxAlgorithm):
         }
 
     def generate_difference_query(
-            self, out_schema: str, out_table: str, schema: str, table: str,
+            self, out_schema: str, out_table: str, source: str,
             geom_column: str, columns: List[str], diff_schema: str,
             diff_table: str, diff_geom_column: str, srid: int,
             diff_srid: int, out_geom_type: str, single: bool) -> str:
@@ -92,7 +93,7 @@ class PostGISToolboxVectorDifference(PostGISToolboxAlgorithm):
                 SELECT {select_columns('g1', columns)}
                     ({difference})::geometry({out_geom_type}, {srid})
                         AS "geom"
-                FROM {qualified_name(schema, table)} AS g1, union_geom AS g2
+                FROM {source} AS g1, union_geom AS g2
             );
         '''
 

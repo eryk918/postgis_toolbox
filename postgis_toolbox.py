@@ -20,7 +20,9 @@ from .SqlLog.SqlLog import SqlLog
 from .TableRegistry.TableRegistry import TableRegistry
 from .postgis_toolbox_provider import PostGISToolboxProvider
 from .utils import tr, plugin_dir, get_active_db_info, plugin_name, \
-    show_error, connection_uri, save_setting
+    show_error, connection_uri, save_setting, read_setting, Qt, \
+    get_connection_names, create_connection, connection_for_database, \
+    check_connection
 
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
@@ -52,8 +54,11 @@ class PostGISToolboxPlugin(object):
         self._add_action(
             os.path.join(self.plugin_dir, 'icons', 'manage_dbs.svg'),
             text=tr('Manage databases'),
-            callback=lambda: self.run_db_config(),
-            parent=self.iface.mainWindow())
+            callback=self.open_db_manager,
+            parent=self.iface.mainWindow()
+        ).setToolTip(tr(
+            'Manage databases\n'
+            'Ctrl+click connects to the last used database'))
         self._add_action(
             os.path.join(self.plugin_dir, 'icons', 'import_vector_layer.svg'),
             text=tr('Import vector data'),
@@ -161,6 +166,41 @@ class PostGISToolboxPlugin(object):
     def run_db_config(self, parent: Optional[QWidget] = None) -> None:
         self.db_manager = DBManager(self, parent)
         self.db_manager.run()
+
+    def open_db_manager(self) -> None:
+        control = Qt.KeyboardModifier.ControlModifier
+        if QgsApplication.keyboardModifiers() & control == control:
+            self.connect_last_db()
+        else:
+            self.run_db_config()
+
+    def connect_last_db(self) -> None:
+        connection_name = read_setting('last/connection', '') or ''
+        db_name = read_setting('last/database', '') or ''
+        if not connection_name or not db_name:
+            self.push_warning(tr('No previous connection was recorded.'))
+            return
+        if connection_name not in get_connection_names():
+            self.push_warning(
+                tr('Connection "{0}" no longer exists.').format(
+                    connection_name))
+            return
+        server = create_connection(connection_name)
+        db = connection_for_database(server, db_name) if server else None
+        if not check_connection(db):
+            self.push_warning(tr('Failed to connect.'))
+            return
+        self.set_active_db(db, connection_name)
+        if self.db_manager is not None:
+            self.db_manager.sync_active_db()
+        iface.messageBar().pushMessage(
+            plugin_name,
+            tr('Connected to database {0}.').format(db_name),
+            Qgis.MessageLevel.Success, 3)
+
+    def push_warning(self, text: str) -> None:
+        iface.messageBar().pushMessage(
+            plugin_name, text, Qgis.MessageLevel.Warning, 5)
 
     def run_table_registry(self) -> None:
         self.table_registry.run()

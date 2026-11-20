@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import functools
 import os
+import re
 from typing import List, Optional
 
 from db_manager.db_manager import DBManager
@@ -99,6 +100,37 @@ class CustomDbSqlWindow(DlgSqlWindow):
             self.buttonLayout.indexOf(self.btnCreateView) + 1,
             self.btnCreateTable)
         self.btnCreateTable.clicked.connect(self.create_table)
+        self.explain_prefix = ''
+        self.btnExplain = QPushButton(tr('Explain analyze'), self)
+        self.btnExplain.setObjectName('btnExplain')
+        self.btnExplain.setToolTip(tr(
+            'Run the query with EXPLAIN (ANALYZE, BUFFERS) and show its '
+            'execution plan'))
+        self.buttonLayout.insertWidget(
+            self.buttonLayout.indexOf(self.btnExecute) + 1, self.btnExplain)
+        self.btnExplain.clicked.connect(self.explain_query)
+
+    def _getExecutableSqlQuery(self) -> str:
+        return self.explain_prefix + super()._getExecutableSqlQuery()
+
+    def explain_query(self) -> None:
+        sql = self._getExecutableSqlQuery()
+        if not sql:
+            return
+        if re.match(r'\s*explain\b', sql, re.IGNORECASE):
+            self.executeSql()
+            return
+        if not re.match(r'\s*(select|with|values|table)\b', sql,
+                        re.IGNORECASE) and not ask_question(
+                self,
+                tr('EXPLAIN ANALYZE really executes the statement, so it '
+                   'will change the data. Continue?')):
+            return
+        self.explain_prefix = 'EXPLAIN (ANALYZE, BUFFERS) '
+        try:
+            self.executeSql()
+        finally:
+            self.explain_prefix = ''
 
     def schema_names(self) -> List[str]:
         schemas = self.db.schemas()

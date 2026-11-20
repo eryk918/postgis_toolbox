@@ -1676,8 +1676,8 @@ Mimo to otworzyć "{0}"?</translation>
         <translation>Przycina obiekty do kształtu innej warstwy.</translation>
     </message>
     <message>
-        <source>Cuts the features of the input layer to the features of the second layer with ST_Intersection. One feature is written for every pair of overlapping features. If the layers use different coordinate systems, the second one is transformed to the system of the input layer. The chosen columns are copied to the result.</source>
-        <translation>Przycina obiekty warstwy wejściowej do obiektów drugiej warstwy funkcją ST_Intersection. Dla każdej pary nakładających się obiektów powstaje jeden obiekt. Gdy warstwy mają różne układy współrzędnych, druga jest transformowana do układu warstwy wejściowej. Wybrane kolumny są kopiowane do wyniku.</translation>
+        <source>Cuts the features of the input layer to the features of the second layer with ST_Intersection. One feature is written for every pair of matching features. With the Intersects relation every feature sharing any space with the second layer is clipped, also lines crossing a polygon. Contains or overlaps takes only pairs where one feature lies inside the other or both partly overlap, which skips lines crossing a polygon. Parts of another geometry type, such as a point where two polygons touch, are left out. If the layers use different coordinate systems, the second one is transformed to the system of the input layer. The chosen columns are copied to the result.</source>
+        <translation>Przycina obiekty warstwy wejściowej do obiektów drugiej warstwy funkcją ST_Intersection. Dla każdej pary pasujących obiektów powstaje jeden obiekt. Relacja Przecina przycina każdy obiekt mający jakąkolwiek część wspólną z drugą warstwą, także linie przecinające poligon. Zawiera lub nachodzi bierze tylko pary, w których jeden obiekt leży wewnątrz drugiego albo oba częściowo się nakładają, przez co pomija linie przecinające poligon. Części o innym typie geometrii, na przykład punkt styku dwóch poligonów, są pomijane. Gdy warstwy mają różne układy współrzędnych, druga jest transformowana do układu warstwy wejściowej. Wybrane kolumny są kopiowane do wyniku.</translation>
     </message>
     <message>
         <source>Assigns features to density based clusters.</source>
@@ -1708,8 +1708,8 @@ Mimo to otworzyć "{0}"?</translation>
         <translation>Tworzy losowe punkty wewnątrz poligonów.</translation>
     </message>
     <message>
-        <source>Creates the given number of random points inside the merged polygons of the input layer with ST_GeneratePoints. The points are saved as one multipoint feature without attributes.</source>
-        <translation>Tworzy podaną liczbę losowych punktów wewnątrz połączonych poligonów warstwy wejściowej funkcją ST_GeneratePoints. Punkty zapisywane są jako jeden obiekt wielopunktowy bez atrybutów.</translation>
+        <source>Creates the given number of random points inside the merged polygons of the input layer with ST_GeneratePoints. By default every point is saved as a separate feature with an id column. With that option disabled all points are saved as one multipoint feature without attributes.</source>
+        <translation>Tworzy podaną liczbę losowych punktów wewnątrz połączonych poligonów warstwy wejściowej funkcją ST_GeneratePoints. Domyślnie każdy punkt zapisywany jest jako osobny obiekt z kolumną id. Po wyłączeniu tej opcji wszystkie punkty trafiają do jednego obiektu wielopunktowego bez atrybutów.</translation>
     </message>
     <message>
         <source>Creates a concave hull around points.</source>
@@ -1724,8 +1724,8 @@ Mimo to otworzyć "{0}"?</translation>
         <translation>Wyodrębnia części obiektów pokrywające się z warstwą maski.</translation>
     </message>
     <message>
-        <source>Writes the common part of every pair of intersecting features from the input and mask layers, computed with ST_Intersection. Both layers should use the same coordinate system. The chosen columns are copied to the result.</source>
-        <translation>Zapisuje część wspólną każdej pary przecinających się obiektów warstwy wejściowej i warstwy maski, liczoną funkcją ST_Intersection. Obie warstwy powinny mieć ten sam układ współrzędnych. Wybrane kolumny są kopiowane do wyniku.</translation>
+        <source>Writes the common part of every pair of intersecting features from the input and mask layers, computed with ST_Intersection. With the transformation enabled a mask layer in another coordinate system is transformed to the system of the input layer. Without it both layers must use the same coordinate system, otherwise the database reports an error. The chosen columns are copied to the result.</source>
+        <translation>Zapisuje część wspólną każdej pary przecinających się obiektów warstwy wejściowej i warstwy maski, liczoną funkcją ST_Intersection. Przy włączonej transformacji warstwa maski w innym układzie współrzędnych jest transformowana do układu warstwy wejściowej. Bez niej obie warstwy muszą mieć ten sam układ współrzędnych, inaczej baza zgłosi błąd. Wybrane kolumny są kopiowane do wyniku.</translation>
     </message>
     <message>
         <source>Repairs invalid geometries.</source>
@@ -1744,12 +1744,12 @@ Mimo to otworzyć "{0}"?</translation>
         <translation>Zapisuje obiekty wszystkich warstw wejściowych do jednej tabeli. Warstwy muszą mieć ten sam typ geometrii i te same kolumny; warstwy w innym układzie współrzędnych są transformowane do układu pierwszej warstwy. Identyczne wiersze zapisywane są raz.</translation>
     </message>
     <message>
-        <source>Selects features lying near the points of another layer.</source>
-        <translation>Wybiera obiekty leżące w pobliżu punktów innej warstwy.</translation>
+        <source>Finds the nearest points of another layer for every feature.</source>
+        <translation>Znajduje dla każdego obiektu najbliższe punkty innej warstwy.</translation>
     </message>
     <message>
-        <source>Selects the features of the input layer that have points of the neighbor layer within the maximum distance, given in layer units. When a minimum distance is set, closer points are skipped. A feature is written once for every matching point. The chosen columns are copied to the result.</source>
-        <translation>Wybiera obiekty warstwy wejściowej, które mają punkty warstwy sąsiedniej w maksymalnej odległości podanej w jednostkach warstwy. Po ustawieniu minimalnej odległości bliższe punkty są pomijane. Obiekt zapisywany jest raz dla każdego pasującego punktu. Wybrane kolumny są kopiowane do wyniku.</translation>
+        <source>Finds for every feature of the input layer the given number of nearest points of the neighbor layer. The feature is written once for every neighbor found, with the distance in layer units in the distance column and the neighbor identifier in the neighbor_id column. The identifier is taken from the chosen column or, when none is chosen, from the primary key of the neighbor layer. A maximum distance of 0 means no limit; points closer than the minimum distance are skipped. Features without any neighbor in range are left out. The chosen columns are copied to the result.</source>
+        <translation>Znajduje dla każdego obiektu warstwy wejściowej podaną liczbę najbliższych punktów warstwy sąsiedniej. Obiekt zapisywany jest raz dla każdego znalezionego sąsiada, z odległością w jednostkach warstwy w kolumnie distance i identyfikatorem sąsiada w kolumnie neighbor_id. Identyfikator pochodzi z wybranej kolumny, a gdy jej nie wybrano, z klucza głównego warstwy sąsiedniej. Maksymalna odległość 0 oznacza brak ograniczenia; punkty bliższe niż minimalna odległość są pomijane. Obiekty bez sąsiada w zasięgu są pomijane. Wybrane kolumny są kopiowane do wyniku.</translation>
     </message>
     <message>
         <source>Reduces the number of vertices in geometries.</source>
@@ -1838,6 +1838,88 @@ Mimo to otworzyć "{0}"?</translation>
     <message>
         <source>Computes statistics of the chosen raster band inside every polygon of the zone layer with ST_SummaryStatsAgg. The result is the zone layer with the chosen columns and the columns _count, _sum, _mean, _stddev, _min and _max. Zones outside the raster get empty values. Zones in another coordinate system are transformed to the system of the raster.</source>
         <translation>Liczy statystyki wybranego pasma rastra wewnątrz każdego poligonu warstwy stref funkcją ST_SummaryStatsAgg. Wynikiem jest warstwa stref z wybranymi kolumnami oraz kolumnami _count, _sum, _mean, _stddev, _min i _max. Strefy poza rastrem dostają puste wartości. Strefy w innym układzie współrzędnych są transformowane do układu rastra.</translation>
+    </message>
+    <message>
+        <source>Spatial relation</source>
+        <translation>Relacja przestrzenna</translation>
+    </message>
+    <message>
+        <source>Intersects</source>
+        <translation>Przecina</translation>
+    </message>
+    <message>
+        <source>Contains or overlaps</source>
+        <translation>Zawiera lub nachodzi</translation>
+    </message>
+    <message>
+        <source>Neighbor identifier column</source>
+        <translation>Kolumna identyfikatora sąsiada</translation>
+    </message>
+    <message>
+        <source>Number of neighbors</source>
+        <translation>Liczba sąsiadów</translation>
+    </message>
+    <message>
+        <source>Transform mask layer to the input layer coordinate system</source>
+        <translation>Transformuj warstwę maski do układu współrzędnych warstwy wejściowej</translation>
+    </message>
+    <message>
+        <source>Save every point as a separate feature</source>
+        <translation>Zapisz każdy punkt jako osobny obiekt</translation>
+    </message>
+    <message>
+        <source>Input polygon layer</source>
+        <translation>Wejściowa warstwa poligonowa</translation>
+    </message>
+    <message>
+        <source>Layer &quot;{0}&quot; is not a polygon layer.</source>
+        <translation>Warstwa &quot;{0}&quot; nie jest warstwą poligonową.</translation>
+    </message>
+    <message>
+        <source>Connected to database {0}.</source>
+        <translation>Połączono z bazą danych {0}.</translation>
+    </message>
+    <message>
+        <source>Manage databases
+Ctrl+click connects to the last used database</source>
+        <translation>Menedżer baz danych
+Ctrl+klik łączy z ostatnio używaną bazą</translation>
+    </message>
+    <message>
+        <source>Selected features only</source>
+        <translation>Tylko zaznaczone obiekty</translation>
+    </message>
+    <message>
+        <source>Layer "{0}" has no selected features.</source>
+        <translation>Warstwa "{0}" nie ma zaznaczonych obiektów.</translation>
+    </message>
+    <message>
+        <source>Layer "{0}" has no primary key, so its selection cannot be used.</source>
+        <translation>Warstwa "{0}" nie ma klucza głównego, więc nie można użyć jej zaznaczenia.</translation>
+    </message>
+    <message>
+        <source>With Selected features only checked, only the features selected in the input layer are processed. The layer needs a primary key for that.</source>
+        <translation>Po zaznaczeniu opcji Tylko zaznaczone obiekty przetwarzane są wyłącznie obiekty zaznaczone w warstwie wejściowej. Warstwa musi mieć do tego klucz główny.</translation>
+    </message>
+    <message>
+        <source>Every SQL statement is written to the log before it runs.</source>
+        <translation>Każde zapytanie SQL jest zapisywane w logu przed wykonaniem.</translation>
+    </message>
+    <message>
+        <source>Index size</source>
+        <translation>Rozmiar indeksów</translation>
+    </message>
+    <message>
+        <source>Explain analyze</source>
+        <translation>Plan zapytania</translation>
+    </message>
+    <message>
+        <source>Run the query with EXPLAIN (ANALYZE, BUFFERS) and show its execution plan</source>
+        <translation>Wykonuje zapytanie z EXPLAIN (ANALYZE, BUFFERS) i pokazuje plan wykonania</translation>
+    </message>
+    <message>
+        <source>EXPLAIN ANALYZE really executes the statement, so it will change the data. Continue?</source>
+        <translation>EXPLAIN ANALYZE naprawdę wykonuje instrukcję, więc zmieni dane. Kontynuować?</translation>
     </message>
 </context>
 <context>
@@ -2141,6 +2223,10 @@ Mimo to otworzyć "{0}"?</translation>
     <message>
         <source>Tools</source>
         <translation>Narzędzia</translation>
+    </message>
+    <message>
+        <source>Index size</source>
+        <translation>Rozmiar indeksów</translation>
     </message>
 </context>
 <context>

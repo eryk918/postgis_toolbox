@@ -15,6 +15,7 @@ class PostGISToolboxVectorDissolve(PostGISToolboxAlgorithm):
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input layer')))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterField(
             self.GROUP_FIELD, tr('Dissolve by column'),
             parentLayerParameterName=self.INPUT, optional=True))
@@ -25,7 +26,7 @@ class PostGISToolboxVectorDissolve(PostGISToolboxAlgorithm):
         connection = self.get_connection(parameters, context)
         input_layer = self.get_postgis_layer(
             parameters, self.INPUT, context, connection)
-        schema, table, geom_column = self.layer_table(input_layer)
+        source, geom_column = self.input_source(input_layer)
         group_column = self.parameterAsString(
             parameters, self.GROUP_FIELD, context)
         out_schema, out_table = self.get_output_target(parameters, context)
@@ -35,7 +36,7 @@ class PostGISToolboxVectorDissolve(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         self.execute_sql(connection, self.generate_dissolve_query(
-            out_schema, out_table, schema, table, geom_column, group_column,
+            out_schema, out_table, source, geom_column, group_column,
             self.output_geometry_type(input_layer, False),
             input_layer.crs().postgisSrid()), feedback)
         feedback.setProgress(80)
@@ -54,7 +55,7 @@ class PostGISToolboxVectorDissolve(PostGISToolboxAlgorithm):
         }
 
     def generate_dissolve_query(
-            self, out_schema: str, out_table: str, schema: str, table: str,
+            self, out_schema: str, out_table: str, source: str,
             geom_column: str, group_column: str, out_geom_type: str,
             srid: int) -> str:
         geometry = f'''
@@ -66,14 +67,14 @@ class PostGISToolboxVectorDissolve(PostGISToolboxAlgorithm):
             return f'''
                 CREATE TABLE {qualified_name(out_schema, out_table)} AS (
                     SELECT {group}, {geometry}
-                    FROM {qualified_name(schema, table)}
+                    FROM {source} AS source_table
                     GROUP BY {group}
                 );
             '''
         return f'''
             CREATE TABLE {qualified_name(out_schema, out_table)} AS (
                 SELECT 1 AS "id", {geometry}
-                FROM {qualified_name(schema, table)}
+                FROM {source} AS source_table
             );
         '''
 

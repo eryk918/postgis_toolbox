@@ -89,6 +89,8 @@ class TableRegistry:
         size = admin_utils.table_size(self.main.db, info)
         if size:
             details['size'] = [('', size)]
+        if info.index_size_label:
+            details['index_size'] = [('', info.index_size_label)]
         details['maintenance'] = admin_utils.table_maintenance(
             self.main.db, info)
         owner = admin_utils.table_owner(self.main.db, info)

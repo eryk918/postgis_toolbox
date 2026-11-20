@@ -18,6 +18,7 @@ class PostGISToolboxVectorMerge(PostGISToolboxAlgorithm):
         self.addParameter(QgsProcessingParameterMultipleLayers(
             self.INPUT, tr('Input layers'),
             QgsProcessing.SourceType.TypeVector))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterBoolean(
             self.SINGLE, tr('Force output as singlepart'), False))
         self.add_connection_parameter()
@@ -59,13 +60,16 @@ class PostGISToolboxVectorMerge(PostGISToolboxAlgorithm):
             self.DEST_TABLE: out_table
         }
 
+    def selection_layers(self, parameters: dict, context) -> list:
+        return self.parameterAsLayerList(parameters, self.INPUT, context)
+
     def generate_merge_query(
             self, out_schema: str, out_table: str,
             layers: List[QgsVectorLayer], base_srid: int,
             out_geom_type: str, single: bool) -> str:
         selects = []
         for position, layer in enumerate(layers, start=1):
-            schema, table, geom_column = self.layer_table(layer)
+            source, geom_column = self.input_source(layer)
             alias = f'g{position}'
             columns = [field.name() for field in layer.fields()]
             geom_part = f'{alias}.{quote_identifier(geom_column)}'
@@ -76,7 +80,7 @@ class PostGISToolboxVectorMerge(PostGISToolboxAlgorithm):
                             f'{out_geom_type}, {base_srid})'
             selects.append(f'''
                 SELECT {select_columns(alias, columns)}{geom_part} AS "geom"
-                FROM {qualified_name(schema, table)} AS {alias}
+                FROM {source} AS {alias}
             ''')
         return f'''
             CREATE TABLE {qualified_name(out_schema, out_table)} AS (

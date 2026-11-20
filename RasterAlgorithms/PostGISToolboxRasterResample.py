@@ -25,7 +25,7 @@ class PostGISToolboxRasterResample(PostGISToolboxAlgorithm):
         self.addParameter(QgsProcessingParameterNumber(
             self.SCALE_VALUE, tr('Spatial resolution'),
             type=QgsProcessingParameterNumber.Type.Double, defaultValue=100,
-            minValue=0.0000001, maxValue=99999999))
+            minValue=0.0000001))
         self.addParameter(QgsProcessingParameterEnum(
             self.ALG_NAME, tr('Resampling algorithm'),
             options=RESAMPLING_ALGORITHMS, allowMultiple=False,

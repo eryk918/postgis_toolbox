@@ -29,6 +29,7 @@ DETAIL_LABELS = {
     'rows': 'Estimated rows',
     'exact_rows': 'Row count',
     'size': 'Size on disk',
+    'index_size': 'Index size',
     'maintenance': 'Maintenance',
     'owner': 'Owner',
     'privileges': 'Privileges',
@@ -52,6 +53,12 @@ SUB_LABELS = {
 }
 
 COLLAPSED_SECTIONS = ('indexes', 'columns', 'privileges', 'styles')
+
+
+class SizeItem(QTableWidgetItem):
+    def __lt__(self, other: QTableWidgetItem) -> bool:
+        return (self.data(Qt.ItemDataRole.UserRole) or 0) \
+            < (other.data(Qt.ItemDataRole.UserRole) or 0)
 
 
 class TableRegistryDialog(QDialog, FORM_CLASS):
@@ -108,6 +115,9 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
                     item.setData(LAYER_URI_ROLE,
                                  self.registry.layer_uris(info))
                 self.tables_table.setItem(row, column, item)
+            size_item = SizeItem(info.index_size_label)
+            size_item.setData(Qt.ItemDataRole.UserRole, info.index_size)
+            self.tables_table.setItem(row, len(values), size_item)
         self.tables_table.setSortingEnabled(True)
         self.tables_table.sortItems(0)
         self.apply_filter(self.filter_lineedit.value())

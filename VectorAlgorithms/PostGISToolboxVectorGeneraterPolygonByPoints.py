@@ -18,6 +18,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(PostGISToolboxAlgorithm):
         self.addParameter(QgsProcessingParameterVectorLayer(
             self.INPUT, tr('Input point layer'),
             types=[QgsProcessing.SourceType.TypeVectorPoint]))
+        self.add_selected_parameter()
         self.addParameter(QgsProcessingParameterNumber(
             self.CONCAVITY_RATIO, tr('Concavity ratio'),
             type=QgsProcessingParameterNumber.Type.Double, defaultValue=0.4,
@@ -31,7 +32,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(PostGISToolboxAlgorithm):
         connection = self.get_connection(parameters, context)
         input_layer = self.get_postgis_layer(
             parameters, self.INPUT, context, connection)
-        schema, table, geom_column = self.layer_table(input_layer)
+        source, geom_column = self.input_source(input_layer)
         concavity_ratio = self.parameterAsDouble(
             parameters, self.CONCAVITY_RATIO, context)
         allow_holes = self.parameterAsBool(
@@ -43,7 +44,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         self.execute_sql(connection, self.generate_polygon_query(
-            out_schema, out_table, schema, table, geom_column,
+            out_schema, out_table, source, geom_column,
             concavity_ratio, allow_holes), feedback)
         feedback.setProgress(80)
         self.create_geometry_index(connection, out_schema, out_table, feedback)
@@ -61,7 +62,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(PostGISToolboxAlgorithm):
         }
 
     def generate_polygon_query(
-            self, out_schema: str, out_table: str, schema: str, table: str,
+            self, out_schema: str, out_table: str, source: str,
             geom_column: str, concavity_ratio: float,
             allow_holes: bool) -> str:
         return f'''
@@ -69,7 +70,7 @@ class PostGISToolboxVectorGeneratePolygonFromPoints(PostGISToolboxAlgorithm):
                 SELECT ST_ConcaveHull(
                     ST_Union({quote_identifier(geom_column)}),
                     {concavity_ratio}, {allow_holes}) AS "geom"
-                FROM {qualified_name(schema, table)}
+                FROM {source} AS source_table
             );
         '''
 
