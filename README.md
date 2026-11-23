@@ -14,6 +14,8 @@ in the database, QGIS just drives.
   add / rename / drop databases and schemas, check PostGIS, and choose the
   database the rest of the plugin works on. "Last used" gets you back to
   yesterday's database in one click, the filter box narrows the tree down.
+  Ctrl+click on the toolbar button skips the window and connects straight
+  to the last used database.
   "Sessions" shows who's connected, what they run, for how long and who
   blocks whom, with buttons to cancel a query or kick a session.
 * **Import vector data** – project layers or files (Shapefile, GeoPackage,
@@ -25,7 +27,9 @@ in the database, QGIS just drives.
   bar on the message bar, and a few can run side by side. Loaded layers land
   in the "Imported vectors" / "Imported rasters" groups.
 * **Table registry** – every table, view and raster of the active database in
-  one list with type, geometry and SRID. Click one and you get its size, last
+  one list with type, geometry, SRID and index size. The combo next to the
+  search box narrows the list to vector data, raster data, plain tables or
+  views, and the search then works inside that choice. Click one and you get its size, last
   vacuum, owner, privileges, comments, columns, keys, indexes, raster
   resolution and overviews. Double-click to add it to the project or drag it
   onto the map. From there you can export it (the QGIS save-as dialogs),
@@ -43,8 +47,9 @@ in the database, QGIS just drives.
   schema, through the same project storage QGIS uses in *Project → Open
   from / Save to*. Open, save the current project, delete the old ones.
 * **Query editor** – the QGIS DB Manager SQL window trimmed to PostGIS, with
-  schema-qualified table names in the builder, PostGIS function help and
-  "create table / view" from the current query.
+  schema-qualified table names in the builder, PostGIS function help,
+  "create table / view" from the current query and an "Explain analyze"
+  button that shows the execution plan in the result table.
 * **SQL log** – everything the plugin ran, with timing and errors, ready to
   copy or save as .txt / .log when something goes wrong.
 * The active database sits on the toolbar, the icon next to it disconnects.
@@ -58,11 +63,39 @@ in the database, QGIS just drives.
 * Raster: clip, merge tiles, reproject, resample, summary, tiles, terrain
   analysis (slope, aspect, hillshade), raster to polygons, zonal statistics.
 
-Results can be loaded back into the project right away.
+Results can be loaded back into the project right away. Vector algorithms
+can run on selected features only (the layer needs a primary key). Every
+algorithm has a description in the help panel, a Help button that opens the
+PostGIS docs, and writes each SQL statement to its log before running it,
+so you can copy the query to the editor.
+
+## Connections through pg_service.conf
+
+Connections that use a service work like any other: fill in only the name
+and the "Service" field in the QGIS connection dialog. Service and password
+go into two files, `~/.pg_service.conf` and `~/.pgpass` (`chmod 600`) on
+Linux and macOS, `.pg_service.conf` and `pgpass.conf` in
+`%APPDATA%\postgresql\` on Windows:
+
+```ini
+[office]
+host=db.example.com
+port=5432
+dbname=gis
+user=gis_user
+```
+
+```
+db.example.com:5432:*:gis_user:password
+```
+
+Without the password file QGIS asks once per server. Restart QGIS after
+editing either file.
 
 ## Requirements
 
-* QGIS 3.34.9 or newer (developed and tested on QGIS 3.44 LTR).
+* QGIS 3.34.9 or newer, including QGIS 4 (developed and tested on
+  QGIS 3.44 LTR and 4.2).
 * PostgreSQL with PostGIS, plus `postgis_raster` for the raster tools.
 
 The query editor builds on the DB Manager plugin that ships with QGIS, so no

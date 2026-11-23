@@ -8,12 +8,12 @@ version=2.1
 author=Eryk Chełchowski
 email=erwinek1998@gmail.com
 about=The everyday PostGIS stuff without leaving QGIS.
- - Databases: pick a connection, see what's on the server, add / rename / drop databases and schemas, check PostGIS, see who's connected and kill a stuck session, choose the database the rest of the plugin works on.
- - Import: vectors and rasters from the project or from disk, many at once. Rasters get tiled, compressed and get overviews if you want.
- - Table registry: one list of every table, view and raster in the database, with geometry, SRID, resolution, size, owner, comments, privileges, columns, keys, indexes and overviews. Add to the project or drag onto the map, export, rename, move, copy (also to another database), drop, vacuum, index, fix SRID or geometry type, rebuild overviews, set privileges per table or per schema, edit comments, grab the CREATE statement, manage styles saved in the database. A health check finds tables without a key or index, bloated tables, unused indexes and rasters without constraints, and fixes them with one click.
- - Projects in the database: open, save and delete QGIS projects kept in the database, same storage as QGIS itself.
- - Query editor: the DB Manager SQL window with schema-qualified tables, PostGIS function help, create table / view from a query and a one-click EXPLAIN ANALYZE.
- - 24 Processing algorithms running in the database: buffer, clip, intersection, difference, merge, aggregate, dissolve, repair, simplify, centroids, cluster, Voronoi, nearest neighbour, point and polygon generation, raster clip, merge, reproject, resample, summary, tiling, slope / aspect / hillshade, raster to polygons, zonal statistics.
+ - Databases: connect (pg_service.conf included), browse the server, add / rename / drop databases and schemas, check PostGIS, watch and kill sessions.
+ - Import: vectors and rasters from the project or from disk, many at once, rasters tiled and compressed with overviews.
+ - Table registry: every table, view and raster in one list, filtered by type, with all the details. Load, export, rename, move, copy, drop, vacuum, index, fix SRID or geometry type, set privileges, manage styles. A health check finds problems and fixes them with one click.
+ - Projects in the database: open, save and delete QGIS projects stored in PostgreSQL.
+ - Query editor: the DB Manager SQL window with PostGIS function help, create table / view from a query and one-click EXPLAIN ANALYZE.
+ - 24 Processing algorithms running in the database, vector and raster, from buffer and clip to terrain analysis and zonal statistics.
  Needs PostgreSQL with PostGIS (postgis_raster for the raster tools).
 
 homepage=https://github.com/eryk918/postgis_toolbox
@@ -34,6 +34,8 @@ changelog=2.1
  - Ctrl+click on "Manage databases" connects straight to the last used database
  - table registry: index size column
  - query editor: "Explain analyze" button
+ - table registry: type filter (vector, raster, tables, views)
+ - pg_service.conf connections fully supported, password asked once per server
  2.0.1
  - fix password prompt for every database on the server
  - keep import dialogs open and on top when changing the database

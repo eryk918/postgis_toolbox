@@ -1,7 +1,8 @@
 from qgis.core import QgsAbstractDatabaseProviderConnection
 
 from ...utils import make_query, quote_identifier, quote_literal, \
-    connection_for_database, connection_uri
+    connection_for_database
+from ...utils import database_name as connected_database
 
 get_postgis_version_query = 'SELECT PostGIS_Lib_Version();'
 get_postgis_version_extended_query = 'SELECT PostGIS_Full_Version();'
@@ -54,7 +55,7 @@ def terminate_users_query(database_name: str) -> str:
 def maintenance_connection(
         server_connection: QgsAbstractDatabaseProviderConnection,
         database_name: str) -> QgsAbstractDatabaseProviderConnection:
-    if connection_uri(server_connection).database() == database_name:
+    if connected_database(server_connection) == database_name:
         return connection_for_database(server_connection, 'postgres')
     return server_connection
 

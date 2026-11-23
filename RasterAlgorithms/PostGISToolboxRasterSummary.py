@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from qgis.core import QgsProcessingParameterRasterLayer, \
     QgsProcessingParameterBand, QgsProcessingParameterFileDestination, \
-    QgsProcessingException, QgsDataSourceUri
+    QgsProcessingException
 
 from ..postgis_toolbox_algorithm import PostGISToolboxAlgorithm, \
     qualified_name
-from ..utils import tr
+from ..utils import tr, database_name
 
 
 class PostGISToolboxRasterSummary(PostGISToolboxAlgorithm):
@@ -41,7 +41,7 @@ class PostGISToolboxRasterSummary(PostGISToolboxAlgorithm):
         if feedback.isCanceled():
             return {}
         count, total, mean, stddev, minimum, maximum = rows[0]
-        database = QgsDataSourceUri(connection.uri()).database()
+        database = database_name(connection)
         html = f'''<h3><b>{tr('File analyzed')}</b>: {tr('database')}
             <i>"{database}"</i>, {tr('schema')} <i>"{schema}"</i>,
             {tr('table')} <i>"{table}"</i></h3>

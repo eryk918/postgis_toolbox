@@ -15,7 +15,8 @@ from qgis.core import QgsProcessingAlgorithm, QgsProcessingException, \
 
 from .utils import tr, get_plugin_object, remove_unsupported_chars, \
     PROCESSING_LAYERS_GROUP, quote_identifier, quote_literal, qualified_name, \
-    postgres_metadata, connection_uri
+    postgres_metadata, database_name, same_database, \
+    create_connection_from_uri
 
 OVERVIEW_LEVELS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]
 POSTGIS_DOCS_URL = 'https://postgis.net/docs/{0}.html'
@@ -74,8 +75,7 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
             plugin.connection_name)
         if saved_connection is None:
             return None
-        if connection_uri(saved_connection).database() == \
-                connection_uri(plugin.db).database():
+        if database_name(saved_connection) == database_name(plugin.db):
             return plugin.connection_name
         return None
 
@@ -241,10 +241,10 @@ class PostGISToolboxAlgorithm(QgsProcessingAlgorithm):
             raise QgsProcessingException(
                 tr('Layer "{0}" is not a PostGIS layer.').format(layer.name()))
         layer_uri = QgsDataSourceUri(layer.source())
-        conn_uri = connection_uri(connection)
-        if layer_uri.database() and conn_uri.database() and (
-                layer_uri.database() != conn_uri.database()
-                or layer_uri.host() != conn_uri.host()):
+        layer_connection = create_connection_from_uri(
+            layer_uri.connectionInfo(False))
+        if layer_connection is not None and not same_database(
+                layer_connection, connection):
             raise QgsProcessingException(
                 tr('Layer "{0}" is not stored in the selected database.')
                 .format(layer.name()))

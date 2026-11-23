@@ -30,7 +30,7 @@ from ..utils import iface, tr, get_active_db_info, \
     add_vectors_to_project, add_rasters_to_project, VECTORS_LAYERS_GROUP, \
     RASTERS_LAYERS_GROUP, get_schema_names, connection_uri, Qt, make_query, \
     plugin_name, get_connection_names, create_connection, \
-    connection_for_database
+    connection_for_database, database_name, same_database
 
 
 class TableRegistry:
@@ -416,7 +416,7 @@ class TableRegistry:
         rows = make_query(connection, get_dbs_query) if connection else None
         dialog.set_databases(
             [row[0] for row in rows or []],
-            connection_uri(connection).database() if connection else '')
+            database_name(connection) if connection else '')
 
     def fill_copy_schemas(self, dialog: CopyDialog, connection_name: str,
                           database: str) -> None:
@@ -447,11 +447,8 @@ class TableRegistry:
         if not check_connection(target):
             show_error(self.dlg, tr('Failed to connect.'))
             return
-        target_uri, source_uri = connection_uri(target), \
-            connection_uri(self.main.db)
-        same_database = target_uri.database() == source_uri.database() \
-            and target_uri.host() == source_uri.host()
-        if same_database and dialog.schema() == info.schema \
+        if same_database(target, self.main.db) \
+                and dialog.schema() == info.schema \
                 and dialog.table_name() == info.name:
             show_error(self.dlg,
                        tr('The target is the same as the source table.'))
@@ -713,7 +710,7 @@ class TableRegistry:
             self.health_refresh_needed = False
 
     def table_layers(self, info: TableInfo) -> List[QgsMapLayer]:
-        database = connection_uri(self.main.db).database()
+        database = database_name(self.main.db)
         return [layer for layer in QgsProject.instance().mapLayers().values()
                 if style_utils.layer_matches_table(layer, info, database)]
 

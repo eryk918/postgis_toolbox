@@ -56,7 +56,14 @@
     </layout>
    </item>
    <item>
-    <widget class="QgsFilterLineEdit" name="filter_lineedit"/>
+    <layout class="QHBoxLayout" name="filter_layout">
+     <item>
+      <widget class="QComboBox" name="kind_cbbx"/>
+     </item>
+     <item>
+      <widget class="QgsFilterLineEdit" name="filter_lineedit"/>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QSplitter" name="splitter">

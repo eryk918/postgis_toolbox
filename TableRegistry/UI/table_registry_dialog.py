@@ -52,6 +52,14 @@ SUB_LABELS = {
     'dead_rows': 'Dead rows',
 }
 
+KIND_FILTERS = {
+    'all': 'All types',
+    'vector': 'Vector data',
+    'raster': 'Raster data',
+    'table': 'Tables',
+    'view': 'Views',
+}
+
 COLLAPSED_SECTIONS = ('indexes', 'columns', 'privileges', 'styles')
 
 
@@ -73,6 +81,8 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
         self.setWindowFlags(Qt.WindowType.Window)
         self.filter_lineedit.setShowSearchIcon(True)
         self.filter_lineedit.setPlaceholderText(tr('Filter tables'))
+        for key, label in KIND_FILTERS.items():
+            self.kind_cbbx.addItem(tr(label), key)
         self.tables_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.ResizeToContents)
         self.details_tree.header().setSectionResizeMode(
@@ -89,6 +99,7 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
         self.delete_btn.clicked.connect(self.registry.delete_table)
         self.privileges_btn.clicked.connect(self.registry.edit_privileges)
         self.filter_lineedit.valueChanged.connect(self.apply_filter)
+        self.kind_cbbx.currentIndexChanged.connect(self.apply_filter)
         self.tables_table.itemSelectionChanged.connect(
             self.selection_changed)
         self.tables_table.itemDoubleClicked.connect(
@@ -120,7 +131,7 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
             self.tables_table.setItem(row, len(values), size_item)
         self.tables_table.setSortingEnabled(True)
         self.tables_table.sortItems(0)
-        self.apply_filter(self.filter_lineedit.value())
+        self.apply_filter()
         self.details_tree.clear()
         self.selection_changed()
 
@@ -140,14 +151,33 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
                                      in info.geometry_columns}))
         return ''
 
-    def apply_filter(self, text: str) -> None:
-        pattern = (text or '').strip().lower()
+    def kind_matches(self, info: TableInfo, kind: str) -> bool:
+        if kind == 'vector':
+            return info.is_vector()
+        if kind == 'raster':
+            return info.is_raster()
+        if kind == 'view':
+            return info.relkind in ('v', 'm')
+        if kind == 'table':
+            return info.relkind not in ('v', 'm') \
+                and not info.is_vector() and not info.is_raster()
+        return True
+
+    def apply_filter(self, *args) -> None:
+        kind = self.kind_cbbx.currentData()
+        pattern = (self.filter_lineedit.value() or '').strip().lower()
         for row in range(self.tables_table.rowCount()):
-            schema = self.tables_table.item(row, 0).text().lower()
+            item = self.tables_table.item(row, 0)
+            schema = item.text().lower()
             name = self.tables_table.item(row, 1).text().lower()
-            visible = not pattern or pattern in schema or pattern in name \
-                or pattern in f'{schema}.{name}'
+            visible = self.kind_matches(
+                item.data(Qt.ItemDataRole.UserRole), kind) and (
+                not pattern or pattern in schema or pattern in name
+                or pattern in f'{schema}.{name}')
             self.tables_table.setRowHidden(row, not visible)
+        selected = self.tables_table.selectionModel().selectedRows()
+        if selected and self.tables_table.isRowHidden(selected[0].row()):
+            self.tables_table.clearSelection()
 
     def selected_table(self) -> Optional[TableInfo]:
         rows = self.tables_table.selectionModel().selectedRows()
@@ -184,6 +214,7 @@ class TableRegistryDialog(QDialog, FORM_CLASS):
                     self.tables_table.item(row, 1).text() == name:
                 if self.tables_table.isRowHidden(row):
                     self.filter_lineedit.clearValue()
+                    self.kind_cbbx.setCurrentIndex(0)
                 self.tables_table.selectRow(row)
                 self.tables_table.scrollToItem(
                     self.tables_table.item(row, 0))

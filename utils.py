@@ -24,8 +24,14 @@ from qgis.core import QgsProject, QgsVectorLayer, \
     QgsRasterLayer, QgsApplication, QgsSettings, QgsLayerTreeGroup
 from qgis.utils import iface
 
+try:
+    import psycopg2
+except ImportError:
+    psycopg2 = None
+
 Qt = QtCore.Qt
 credentials_cache = {}
+server_info_cache = {}
 project = QgsProject.instance()
 root = project.layerTreeRoot()
 main_window = iface.mainWindow()
@@ -344,12 +350,25 @@ def create_connection_from_uri(
         return None
 
 
+def password_required(connection_info: str) -> bool:
+    if psycopg2 is None:
+        return True
+    try:
+        psycopg2.connect(connection_info, connect_timeout=5).close()
+    except psycopg2.Error:
+        return True
+    return False
+
+
 def server_credentials(uri: QgsDataSourceUri) -> Optional[Tuple[str, str]]:
-    if uri.password() or uri.authConfigId() or uri.service():
+    if uri.password() or uri.authConfigId():
         return None
     realm = uri.connectionInfo(False)
     if realm in credentials_cache:
         return credentials_cache[realm]
+    if uri.service() and not password_required(realm):
+        credentials_cache[realm] = None
+        return None
     ok, user, password = QgsCredentials.instance().get(
         realm, uri.username(), '')
     credentials = (user, password) if ok and password else None
@@ -374,6 +393,51 @@ def connection_for_database(
 def connection_uri(
         connection: QgsAbstractDatabaseProviderConnection) -> QgsDataSourceUri:
     return QgsDataSourceUri(connection.uri())
+
+
+def server_info(connection: QgsAbstractDatabaseProviderConnection,
+                cached: bool = False) -> Optional[Tuple[str, str, str]]:
+    key = connection.uri()
+    if cached and key in server_info_cache:
+        return server_info_cache[key]
+    rows = make_query(connection, '''
+        SELECT current_database(),
+            coalesce(inet_server_port()::text, ''),
+            pg_postmaster_start_time()::text;
+    ''')
+    if not rows:
+        return None
+    server_info_cache[key] = tuple(str(value) for value in rows[0])
+    return server_info_cache[key]
+
+
+def database_name(connection: QgsAbstractDatabaseProviderConnection) -> str:
+    name = connection_uri(connection).database()
+    if name:
+        return name
+    info = server_info(connection, True)
+    return info[0] if info else ''
+
+
+def server_port(connection: QgsAbstractDatabaseProviderConnection) -> str:
+    port = connection_uri(connection).port()
+    if port:
+        return port
+    info = server_info(connection, True)
+    return info[1] if info else ''
+
+
+def same_database(first: QgsAbstractDatabaseProviderConnection,
+                  second: QgsAbstractDatabaseProviderConnection) -> bool:
+    first_uri, second_uri = connection_uri(first), connection_uri(second)
+    if all((first_uri.database(), first_uri.host(),
+            second_uri.database(), second_uri.host())):
+        return first_uri.database() == second_uri.database() \
+            and first_uri.host() == second_uri.host()
+    first_info, second_info = server_info(first), server_info(second)
+    if not first_info or not second_info:
+        return True
+    return first_info[0] == second_info[0] and first_info[2] == second_info[2]
 
 
 def record_sql(query: str, started: float, error: str = '') -> None:
@@ -464,8 +528,8 @@ def get_active_db_info(
     active_db_str = tr("Active database:")
     if connection:
         uri = connection_uri(connection)
-        db_info = f'{uri.host() or uri.service()}:{uri.port()}, ' \
-                  f'{uri.database()}'
+        db_info = f'{uri.host() or uri.service()}:' \
+                  f'{server_port(connection)}, {database_name(connection)}'
         if simple:
             label.setText(f'{active_db_str} {db_info}')
         else:

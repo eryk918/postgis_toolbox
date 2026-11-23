@@ -1921,6 +1921,22 @@ Ctrl+klik łączy z ostatnio używaną bazą</translation>
         <source>EXPLAIN ANALYZE really executes the statement, so it will change the data. Continue?</source>
         <translation>EXPLAIN ANALYZE naprawdę wykonuje instrukcję, więc zmieni dane. Kontynuować?</translation>
     </message>
+    <message>
+        <source>All types</source>
+        <translation>Wszystkie typy</translation>
+    </message>
+    <message>
+        <source>Vector data</source>
+        <translation>Dane wektorowe</translation>
+    </message>
+    <message>
+        <source>Raster data</source>
+        <translation>Dane rastrowe</translation>
+    </message>
+    <message>
+        <source>Views</source>
+        <translation>Widoki</translation>
+    </message>
 </context>
 <context>
     <name>db_dialog</name>

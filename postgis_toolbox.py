@@ -20,7 +20,7 @@ from .SqlLog.SqlLog import SqlLog
 from .TableRegistry.TableRegistry import TableRegistry
 from .postgis_toolbox_provider import PostGISToolboxProvider
 from .utils import tr, plugin_dir, get_active_db_info, plugin_name, \
-    show_error, connection_uri, save_setting, read_setting, Qt, \
+    show_error, database_name, save_setting, read_setting, Qt, \
     get_connection_names, create_connection, connection_for_database, \
     check_connection
 
@@ -210,7 +210,7 @@ class PostGISToolboxPlugin(object):
         self.connection_name = connection_name
         if self.db is not None and connection_name:
             save_setting('last/connection', connection_name)
-            save_setting('last/database', connection_uri(self.db).database())
+            save_setting('last/database', database_name(self.db))
         get_active_db_info(self.db, self.connection_label, True)
         self.disconnect_action.setEnabled(self.db is not None)
         self.provider.refreshAlgorithms()
@@ -220,7 +220,7 @@ class PostGISToolboxPlugin(object):
     def disconnect_db(self) -> None:
         if not self.db:
             return
-        db_name = connection_uri(self.db).database()
+        db_name = database_name(self.db)
         self.set_active_db(None, None)
         if self.db_manager is not None:
             self.db_manager.sync_active_db()
